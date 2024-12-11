@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id         Int      @id @default(autoincrement())
+  schoolId   Int
+  campusId   Int?     // Optional, since admins might not always belong to a campus
+  name       String   @db.VarChar(255)
+  email      String   @unique @db.VarChar(255) // Ensure unique emails
+  password   String   @db.VarChar(255)
+  role       Role
+  createdAt  DateTime @default(now()) @db.Timestamp
+
+  // Relationships
+  school     School   @relation(fields: [schoolId], references: [id])
+  campus     Campus?  @relation(fields: [campusId], references: [id])
+
+  @@map("admins")
+}
+
+enum Role {
+  super_admin
+  school_admin
+}
+
+model Campus {
+  id          Int       @id @default(autoincrement())
+  schoolId    Int
+  name        String     @db.VarChar(255)
+  address     String?    @db.Text
+  phoneNumber String?    @db.VarChar(50)
+  email       String?    @db.VarChar(255)
+  logoUrl     String?    @db.VarChar(255)
+  createdAt   DateTime   @default(now()) @db.Timestamp
+
+  school      School     @relation(fields: [schoolId], references: [id])
+  admins      Admin[]
+
+  @@map("campuses")
+}
+
+model School {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique @db.VarChar(255) // Add @unique here
+  prefix       String    @db.VarChar(10)
+  logoUrl      String?   @db.VarChar(255)
+  stampUrl     String?   @db.VarChar(255)
+  email        String?   @db.VarChar(255)
+  phoneNumber  String?   @db.VarChar(50)
+  address      String?   @db.Text
+  createdAt    DateTime  @default(now()) @db.Timestamp
+
+  campuses     Campus[]
+  admins       Admin[]
+
+  @@map("schools")
+}
+
