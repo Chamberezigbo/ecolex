@@ -5,6 +5,7 @@ const { PrismaClient } = require("@prisma/client");
 const upload = require("../middleware/upload");
 const processImage = require("../res/compress");
 const multer = require("multer");
+const authenticateSuperAdmin = require("../middleware/authenticateSuperAdmin");
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -20,6 +21,7 @@ const schoolValidationSchema = Joi.object({
 
 router.post(
   "/setup",
+  authenticateSuperAdmin,
   upload.fields([{ name: "logoUrl" }, { name: "stampUrl" }]),
   async (req, res) => {
     // Validate JSON body with Joi
@@ -61,8 +63,6 @@ router.post(
         `${prefix}-stamp.jpeg`
       );
 
-      console.log(processedStampUrl);
-
       // Create new school in the database
       const newSchool = await prisma.school.create({
         data: {
@@ -73,6 +73,14 @@ router.post(
           email,
           phoneNumber,
           address,
+        },
+      });
+
+      // Want to update the super admin school id //
+      const admin = await prisma.admin.update({
+        where: { id: req.user.id },
+        data: {
+          schoolId: newSchool.id,
         },
       });
 

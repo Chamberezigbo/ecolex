@@ -11,18 +11,18 @@ datasource db {
 }
 
 model Admin {
-  id         Int      @id @default(autoincrement())
-  schoolId   Int
-  campusId   Int?     // Optional, since admins might not always belong to a campus
-  name       String   @db.VarChar(255)
-  email      String   @unique @db.VarChar(255) // Ensure unique emails
-  password   String   @db.VarChar(255)
-  role       Role
-  createdAt  DateTime @default(now()) @db.Timestamp
+  id        Int      @id @default(autoincrement())
+  schoolId  Int?
+  campusId  Int? // Optional, since admins might not always belong to a campus
+  name      String   @db.VarChar(255)
+  email     String   @unique @db.VarChar(255) // Ensure unique emails
+  password  String   @db.VarChar(255)
+  role      Role
+  createdAt DateTime @default(now()) @db.Timestamp
 
   // Relationships
-  school     School   @relation(fields: [schoolId], references: [id])
-  campus     Campus?  @relation(fields: [campusId], references: [id])
+  school School?  @relation(fields: [schoolId], references: [id])
+  campus Campus? @relation(fields: [campusId], references: [id])
 
   @@map("admins")
 }
@@ -32,36 +32,102 @@ enum Role {
   school_admin
 }
 
-model Campus {
-  id          Int       @id @default(autoincrement())
-  schoolId    Int
-  name        String     @db.VarChar(255)
-  address     String?    @db.Text
-  phoneNumber String?    @db.VarChar(50)
-  email       String?    @db.VarChar(255)
-  logoUrl     String?    @db.VarChar(255)
-  createdAt   DateTime   @default(now()) @db.Timestamp
-
-  school      School     @relation(fields: [schoolId], references: [id])
-  admins      Admin[]
-
-  @@map("campuses")
-}
-
 model School {
-  id           Int       @id @default(autoincrement())
-  name         String    @unique @db.VarChar(255) // Add @unique here
-  prefix       String    @db.VarChar(10)
-  logoUrl      String?   @db.VarChar(255)
-  stampUrl     String?   @db.VarChar(255)
-  email        String?   @db.VarChar(255)
-  phoneNumber  String?   @db.VarChar(50)
-  address      String?   @db.Text
-  createdAt    DateTime  @default(now()) @db.Timestamp
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(255) // Add @unique here
+  prefix      String   @db.VarChar(10)
+  logoUrl     String?  @db.VarChar(255)
+  stampUrl    String?  @db.VarChar(255)
+  email       String?  @db.VarChar(255)
+  phoneNumber String?  @db.VarChar(50)
+  address     String?  @db.Text
+  createdAt   DateTime @default(now()) @db.Timestamp
 
-  campuses     Campus[]
-  admins       Admin[]
+  campuses Campus[]
+  admins   Admin[]
+  Class    Class[]
+  Teacher  Teacher[]
+  Student  Student[]
 
   @@map("schools")
 }
 
+model Token {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique @db.VarChar(255) // Unique key to ensure no duplicate email tokens
+  uniqueKey   String   @unique @db.VarChar(255) // Unique key for token generation/validation
+  status      String?  @db.VarChar(50)  
+  schoolName  String   @db.VarChar(255) // School name associated with the token
+  createdAt   DateTime @default(now()) // Timestamp for when the token was created
+
+  @@map("tokens") // Maps to a table named `tokens`
+}
+
+
+model Campus {
+  id          Int      @id @default(autoincrement())
+  schoolId    Int
+  name        String   @db.VarChar(255)
+  address     String?  @db.Text
+  phoneNumber String?  @db.VarChar(50)
+  email       String?  @db.VarChar(255)
+  logoUrl     String?  @db.VarChar(255)
+  createdAt   DateTime @default(now()) @db.Timestamp
+
+  school  School    @relation(fields: [schoolId], references: [id])
+  admins  Admin[]
+  Class   Class[]
+  Teacher Teacher[]
+  Student Student[]
+
+  @@map("campuses")
+}
+
+model Class {
+  id          Int          @id @default(autoincrement())
+  schoolId    Int
+  campusId    Int
+  name        String
+  teacherId   Int? // Optional, in case a class is created without a teacher assigned
+  createdAt   DateTime     @default(now())
+  school      School       @relation(fields: [schoolId], references: [id])
+  campus      Campus       @relation(fields: [campusId], references: [id])
+  teacher     Teacher?     @relation(fields: [teacherId], references: [id])
+  classGroups ClassGroup[] // One-to-many relation with ClassGroup
+  students    Student[] // One-to-many relation with Student
+}
+
+model ClassGroup {
+  id        Int      @id @default(autoincrement())
+  classId   Int
+  name      String
+  createdAt DateTime @default(now())
+  class     Class    @relation(fields: [classId], references: [id])
+}
+
+model Teacher {
+  id          Int      @id @default(autoincrement())
+  schoolId    Int
+  campusId    Int
+  name        String
+  email       String   @unique
+  phoneNumber String?
+  createdAt   DateTime @default(now())
+  school      School   @relation(fields: [schoolId], references: [id])
+  campus      Campus   @relation(fields: [campusId], references: [id])
+  classes     Class[] // One-to-many relation with Class
+}
+
+model Student {
+  id          Int      @id @default(autoincrement())
+  schoolId    Int
+  campusId    Int
+  name        String
+  email       String?  @unique
+  phoneNumber String?
+  classId     Int?
+  createdAt   DateTime @default(now())
+  school      School   @relation(fields: [schoolId], references: [id])
+  campus      Campus   @relation(fields: [campusId], references: [id])
+  class       Class?   @relation(fields: [classId], references: [id])
+}

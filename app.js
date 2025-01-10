@@ -3,6 +3,8 @@ const cors = require("cors");
 
 const adminRoutes = require("./routes/admin");
 const schoolSetupRoutes = require("./routes/school");
+const classRoutes = require("./routes/class");
+const systemAdmin = require("./routes/system-admin/generateToken");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +20,8 @@ app.use("/uploads", express.static("uploads"));
 // Routes
 app.use("/api/admin", adminRoutes);
 app.use("/api/school", schoolSetupRoutes);
+app.use("/api/class", classRoutes);
+app.use("/api/system-admin", systemAdmin);
 
 //Test the root route//
 app.get("/api", (req, res) => {

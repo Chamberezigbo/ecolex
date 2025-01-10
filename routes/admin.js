@@ -17,8 +17,9 @@ const adminSchema = Joi.object({
   password: Joi.string().min(6).required(),
   name: Joi.string().required(),
   role: Joi.string().valid("super_admin", "school_admin").required(),
-  schoolId: Joi.number().required(),
+  schoolId: Joi.number().optional(),
   campusId: Joi.number().optional(),
+  uniqueKey: Joi.string().optional(),
 });
 
 // Validation schema for admin update
@@ -41,13 +42,57 @@ router.post("/create", async (req, res) => {
 
   if (error) return res.status(400).json({ message: error.details[0].message });
 
-  const { name, email, password, role, schoolId, campusId } = req.body;
+  const { name, email, password, role, schoolId, campusId, uniqueKey } =
+    req.body;
 
   try {
+    // For super_admin, ensure schoolId is not provided
+    if (role === "super_admin" && schoolId) {
+      return res.status(400).json({
+        message: "School ID should not be provided for super admin",
+      });
+    }
+
     // Check if email already in use//
     const existingAdmin = await prisma.admin.findUnique({ where: { email } });
     if (existingAdmin) {
       return res.status(409).json({ message: "Email already exists" });
+    }
+
+    //for super admin,validate the uniqueKey
+    if (role == "super_admin") {
+      if (!uniqueKey) {
+        return res.status(400).json({
+          message: "Unique key is required for super admin",
+        });
+      }
+
+      const tokenRecord = await prisma.token.findUnique({
+        where: { email },
+      });
+
+      //check if token exist
+      if (!tokenRecord) {
+        return res
+          .status(404)
+          .json({ message: "Token not found for the provided email" });
+      }
+
+      // validate unique key and email match
+      if (tokenRecord.uniqueKey !== uniqueKey || tokenRecord.email !== email) {
+        return res.status(400).json({
+          message:
+            "Invalid unique key or Email does not match the token record.",
+        });
+      }
+
+      // After successfully validation,update token status to'inactive'
+      await prisma.token.update({
+        where: { email },
+        data: {
+          status: "inactive",
+        },
+      });
     }
 
     //Hash password//
@@ -63,9 +108,11 @@ router.post("/create", async (req, res) => {
         campusId,
       },
     });
+
     res.status(201).json({ message: "Admin created successfully", admin });
   } catch (error) {
-    console.error(err);
+    console.log(error);
+
     res.status(500).json({ message: "An error occurred while creating admin" });
   }
 });
@@ -89,7 +136,7 @@ router.post("/login", async (req, res) => {
 
     // Generate JWT token//
     const token = jwt.sign(
-      { id: admin.id, role: admin.role, schoolId: admin.schoolId },
+      { id: admin.id, role: admin.role }, // { id: admin.id, role: admin.role, schoolId: admin.schoolId },
       JWT_SECRET,
       { expiresIn: "1d" }
     );
