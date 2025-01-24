@@ -86,15 +86,21 @@ model Campus {
 model Class {
   id          Int          @id @default(autoincrement())
   schoolId    Int
-  campusId    Int
+  campusId    Int?
   name        String
   teacherId   Int? // Optional, in case a class is created without a teacher assigned
   createdAt   DateTime     @default(now())
   school      School       @relation(fields: [schoolId], references: [id])
-  campus      Campus       @relation(fields: [campusId], references: [id])
+  campus      Campus?       @relation(fields: [campusId], references: [id])
   teacher     Teacher?     @relation(fields: [teacherId], references: [id])
   classGroups ClassGroup[] // One-to-many relation with ClassGroup
   students    Student[] // One-to-many relation with Student
+
+  @@map("classes") // Maps the model to the "classes" table in the database
+
+  // Optionally, add a unique constraint for name, school, and campus
+  @@unique([name, schoolId, campusId])
+
 }
 
 model ClassGroup {
@@ -108,26 +114,26 @@ model ClassGroup {
 model Teacher {
   id          Int      @id @default(autoincrement())
   schoolId    Int
-  campusId    Int
+  campusId    Int?
   name        String
   email       String   @unique
   phoneNumber String?
   createdAt   DateTime @default(now())
   school      School   @relation(fields: [schoolId], references: [id])
-  campus      Campus   @relation(fields: [campusId], references: [id])
+  campus      Campus?   @relation(fields: [campusId], references: [id])
   classes     Class[] // One-to-many relation with Class
 }
 
 model Student {
   id          Int      @id @default(autoincrement())
   schoolId    Int
-  campusId    Int
+  campusId    Int?
   name        String
   email       String?  @unique
   phoneNumber String?
-  classId     Int?
+  classId     Int
   createdAt   DateTime @default(now())
   school      School   @relation(fields: [schoolId], references: [id])
-  campus      Campus   @relation(fields: [campusId], references: [id])
-  class       Class?   @relation(fields: [classId], references: [id])
+  campus      Campus?  @relation(fields: [campusId], references: [id])
+  class       Class   @relation(fields: [classId], references: [id])
 }

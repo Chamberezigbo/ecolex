@@ -5,6 +5,8 @@ const adminRoutes = require("./routes/admin");
 const schoolSetupRoutes = require("./routes/school");
 const classRoutes = require("./routes/class");
 const systemAdmin = require("./routes/system-admin/generateToken");
+const studentRoutes = require("./routes/student");
+const teacherRoutes = require("./routes/teacher");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,6 +24,8 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/school", schoolSetupRoutes);
 app.use("/api/class", classRoutes);
 app.use("/api/system-admin", systemAdmin);
+app.use("/api/student", studentRoutes);
+app.use("/api/teacher", teacherRoutes);
 
 //Test the root route//
 app.get("/api", (req, res) => {

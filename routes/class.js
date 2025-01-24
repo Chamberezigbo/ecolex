@@ -21,10 +21,12 @@ const classSchema = Joi.object({
 });
 
 const classGroupValidationSchema = Joi.object({
+  campus_id: Joi.number().required().optional(),
   name: Joi.string().max(255).required(),
+  teacher_id: Joi.number().optional(),
 });
 
-router.use(auth)
+router.use(auth);
 
 router.post("/create", async (req, res) => {
   const { error } = classSchema.validate(req.body);
@@ -40,49 +42,54 @@ router.post("/create", async (req, res) => {
         school: {
           connect: { id: school_id }, // Link to existing school
         },
-        campus: campus_id
-          ? { connect: { id: campus_id } }
-          : undefined, // Optional campus
+        campus: campus_id ? { connect: { id: campus_id } } : undefined, // Optional campus
         name,
-        teacher: teacher_id
-          ? { connect: { id: teacher_id } }
-          : undefined, // Optional teacher
+        teacher: teacher_id ? { connect: { id: teacher_id } } : undefined, // Optional teacher
       },
     });
     res.status(201).json({ message: "Class created successfully", newClass });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "An error occurred while creating the class group" });
+    res
+      .status(500)
+      .json({ message: "An error occurred while creating the class group" });
   }
-})
+});
 
 // ROUTE TO GET ALL CLASSES FOR A SCHOOL//
-router.get("/", async (req, res) => {
-       const schoolId = req.query.school_id || req.user.schoolId; // Use query param or user's schoolId
-       if (!schoolId) {
-              return res.status(400).json({ message: "School ID is required to fetch classes." });
-       }
+router.get("/classes", async (req, res) => {
+  const schoolId = req.query.school_id || req.user.schoolId; // Use query param or user's schoolId
+  if (!schoolId) {
+    return res
+      .status(400)
+      .json({ message: "School ID is required to fetch classes." });
+  }
 
-       try {
-              const classes = await prisma.class.findMany({
-                     where: { school_id: parseInt(schoolId) },
-                     include: {
-                            school: true,
-                            campus: true,
-                            teacher: true
-                     },
-              });
+  try {
+    const classes = await prisma.class.findMany({
+      where: { schoolId: parseInt(schoolId) },
+      include: {
+        school: true,
+        campus: true,
+        teacher: true,
+      },
+    });
 
-              if (!classes.length) {
-              return res.status(404).json({ message: "No classes found for the specified school." });
-              }
+    if (!classes.length) {
+      return res
+        .status(404)
+        .json({ message: "No classes found for the specified school." });
+    }
 
-              res.status(200).json({ message: "Classes fetched successfully", classes });
-       } catch (error) {
-           console.error(err);
-          res.status(500).json({ message: "An error occurred while retrieving classes." });   
-       }
-})
+    res
+      .status(200)
+      .json({ message: "Classes fetched successfully", data: { classes } });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "An error occurred while retrieving classes." });
+  }
+});
 
 /* ROUTE: Update a class (only school_admin and super_admin) */
 router.put("/:id", async (req, res) => {
@@ -92,18 +99,22 @@ router.put("/:id", async (req, res) => {
   }
 
   const { id } = req.params;
-  const { school_id, campus_id, name, teacher_id } = req.body;
+  const { campus_id, name, teacher_id } = req.body;
 
   try {
     const updatedClass = await prisma.class.update({
       where: { id: parseInt(id) },
-      data: { school_id, campus_id, name, teacher_id },
+      data: { campus_id, name, teacher_id },
     });
 
-    res.status(200).json({ message: "Class updated successfully", class: updatedClass });
+    res
+      .status(200)
+      .json({ message: "Class updated successfully", class: updatedClass });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "An error occurred while updating the class" });
+    res
+      .status(500)
+      .json({ message: "An error occurred while updating the class" });
   }
 });
 
@@ -116,7 +127,9 @@ router.delete("/:id", async (req, res) => {
     res.status(200).json({ message: "Class deleted successfully" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "An error occurred while deleting the class" });
+    res
+      .status(500)
+      .json({ message: "An error occurred while deleting the class" });
   }
 });
 
@@ -138,12 +151,15 @@ router.post("/:id/groups", async (req, res) => {
       },
     });
 
-    res.status(201).json({ message: "Class group created successfully", group: newGroup });
+    res
+      .status(201)
+      .json({ message: "Class group created successfully", group: newGroup });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "An error occurred while creating the class group" });
+    res
+      .status(500)
+      .json({ message: "An error occurred while creating the class group" });
   }
 });
-
 
 module.exports = router;

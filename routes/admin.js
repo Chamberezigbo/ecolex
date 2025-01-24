@@ -111,8 +111,6 @@ router.post("/create", async (req, res) => {
 
     res.status(201).json({ message: "Admin created successfully", admin });
   } catch (error) {
-    console.log(error);
-
     res.status(500).json({ message: "An error occurred while creating admin" });
   }
 });
@@ -142,7 +140,6 @@ router.post("/login", async (req, res) => {
     );
     res.status(200).json({ message: "Admin logged in successfully", token });
   } catch (error) {
-    console.error(err);
     res.status(500).json({ message: "An error occurred while logging in" });
   }
 });
@@ -163,7 +160,6 @@ router.get(
       });
       res.status(200).json({ message: "Admins fetched successfully", admins });
     } catch (error) {
-      console.error(err);
       res
         .status(500)
         .json({ message: "An error occurred while fetching admins" });
@@ -221,7 +217,6 @@ router.delete("/:id", authenticateSuperAdmin, async (req, res) => {
     await prisma.admin.delete({ where: { id: parseInt(id) } });
     res.status(200).json({ message: "Admin deleted successfully", admin });
   } catch (error) {
-    console.error(err);
     res.status(500).json({ message: "An error occurred while deleting admin" });
   }
 });
