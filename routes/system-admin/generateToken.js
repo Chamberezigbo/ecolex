@@ -2,6 +2,7 @@ const express = require("express");
 const Joi = require("joi");
 const { PrismaClient } = require("@prisma/client");
 const crypto = require("crypto");
+const logger = require("../../res/logger");
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -50,6 +51,7 @@ router.post("/generate", async (req, res) => {
       token: newToken.uniqueKey,
     });
   } catch (error) {
+    logger.error(error.stack || error.message);
     return res.status(500).json({
       message: "An error occurred while generating the token.",
     });
