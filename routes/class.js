@@ -15,7 +15,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const classSchema = Joi.object({
   school_id: Joi.number().required(),
-  campus_id: Joi.number().required().optional(),
+  campus_id: Joi.number().required(),
   name: Joi.string().max(255).required(),
   teacher_id: Joi.number().optional(),
 });

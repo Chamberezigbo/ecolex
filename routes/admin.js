@@ -18,7 +18,7 @@ const adminSchema = Joi.object({
   name: Joi.string().required(),
   role: Joi.string().valid("super_admin", "school_admin").required(),
   schoolId: Joi.number().optional(),
-  campusId: Joi.number().optional(),
+  campusId: Joi.number().required(),
   uniqueKey: Joi.string().optional(),
 });
 
@@ -29,6 +29,7 @@ const updateAdminSchema = Joi.object({
   password: Joi.string().min(6).optional(),
   role: Joi.string().valid("super_admin", "school_admin").optional(),
   campusId: Joi.number().optional(),
+  steps: Joi.number().optional(),
 });
 
 // Validate schema for admin login
@@ -106,6 +107,7 @@ router.post("/create", async (req, res) => {
         role,
         schoolId,
         campusId,
+        steps: 0, // Default steps value is 0
       },
     });
 
@@ -138,7 +140,12 @@ router.post("/login", async (req, res) => {
       JWT_SECRET,
       { expiresIn: "1d" }
     );
-    res.status(200).json({ message: "Admin logged in successfully", token });
+    res
+      .status(200)
+      .json({
+        message: "Admin logged in successfully",
+        data: { token, admin },
+      });
   } catch (error) {
     res.status(500).json({ message: "An error occurred while logging in" });
   }
@@ -190,6 +197,7 @@ router.put("/:id", async (req, res) => {
     if (password) updateData.password = password;
     if (role) updateData.role = role;
     if (campusId) updateData.campusId = campusId;
+    if (steps) updateData.steps = steps;
 
     // update admin
     const updatedAdmin = await prisma.admin.update({
