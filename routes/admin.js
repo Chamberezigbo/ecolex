@@ -18,8 +18,16 @@ const adminSchema = Joi.object({
   name: Joi.string().required(),
   role: Joi.string().valid("super_admin", "school_admin").required(),
   schoolId: Joi.number().optional(),
-  campusId: Joi.number().required(),
-  uniqueKey: Joi.string().optional(),
+  campusId: Joi.when("role", {
+    is: "school_admin",
+    then: Joi.number().required(),
+    otherwise: Joi.forbidden(), // Prevent campusId for super_admin
+  }),
+  uniqueKey: Joi.when("role", {
+    is: "super_admin",
+    then: Joi.string().required(),
+    otherwise: Joi.forbidden(), // Prevent uniqueKey for school_admin
+  }),
 });
 
 // Validation schema for admin update
@@ -51,6 +59,12 @@ router.post("/create", async (req, res) => {
     if (role === "super_admin" && schoolId) {
       return res.status(400).json({
         message: "School ID should not be provided for super admin",
+      });
+    }
+
+    if (role === "school_admin" && !schoolId) {
+      return res.status(400).json({
+        message: "School ID is required for school admin",
       });
     }
 
@@ -99,20 +113,28 @@ router.post("/create", async (req, res) => {
     //Hash password//
     const hashPassword = await bcrypt.hash(password, 12);
 
+    // Create admin with dynamic steps assignment
+    const adminData = {
+      name,
+      email,
+      password: hashPassword,
+      role,
+      schoolId: role === "super_admin" ? null : schoolId,
+      campusId: role === "super_admin" ? null : campusId,
+    };
+
+    // Set steps only for super_admin
+    if (role === "super_admin") {
+      adminData.steps = 0;
+    }
+
     const admin = await prisma.admin.create({
-      data: {
-        name,
-        email,
-        password: hashPassword,
-        role,
-        schoolId,
-        campusId,
-        steps: 0, // Default steps value is 0
-      },
+      data: adminData,
     });
 
     res.status(201).json({ message: "Admin created successfully", admin });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "An error occurred while creating admin" });
   }
 });
@@ -140,12 +162,10 @@ router.post("/login", async (req, res) => {
       JWT_SECRET,
       { expiresIn: "1d" }
     );
-    res
-      .status(200)
-      .json({
-        message: "Admin logged in successfully",
-        data: { token, admin },
-      });
+    res.status(200).json({
+      message: "Admin logged in successfully",
+      data: { token, admin },
+    });
   } catch (error) {
     res.status(500).json({ message: "An error occurred while logging in" });
   }
