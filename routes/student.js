@@ -23,7 +23,7 @@ const studentSchema = Joi.object({
 
 router.use(auth);
 
-router.post("/create", async (req, res) => {
+router.post("/create", async (req, res, next) => {
   const { error } = studentSchema.validate(req.body);
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
@@ -50,15 +50,12 @@ router.post("/create", async (req, res) => {
       .status(201)
       .json({ message: "Student created successfully", newStudent });
   } catch (err) {
-    console.error(err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while creating the class group" });
+    next(err);
   }
 });
 
 // Route to get all students for a school//
-router.get("/students", async (req, res) => {
+router.get("/students", async (req, res, next) => {
   const schoolId = req.query.school_id || req.user.schoolId; // Use query param or user's schoolId
   if (!schoolId) {
     return res
@@ -85,10 +82,7 @@ router.get("/students", async (req, res) => {
       .status(200)
       .json({ message: "Students fetched successfully", data: { students } });
   } catch (err) {
-    console.error(err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while fetching students" });
+    next(err);
   }
 });
 

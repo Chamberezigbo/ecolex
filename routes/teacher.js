@@ -27,7 +27,7 @@ const assignClassSchema = Joi.object({
 
 router.use(auth);
 
-router.post("/create", async (req, res) => {
+router.post("/create", async (req, res, next) => {
   const { error } = teacherSchema.validate(req.body);
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
@@ -52,14 +52,12 @@ router.post("/create", async (req, res) => {
       .status(201)
       .json({ message: "Teacher created successfully", newTeacher });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "An error occurred while creating the teacher" });
+    next(err);
   }
 });
 
 // Route: Assign a class to a teacher
-router.post("/assign-class", async (req, res) => {
+router.post("/assign-class", async (req, res, next) => {
   const { error } = assignClassSchema.validate(req.body);
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
@@ -91,9 +89,7 @@ router.post("/assign-class", async (req, res) => {
       class: updateClass,
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "An error occurred while assigning the class" });
+    next(err);
   }
 });
 

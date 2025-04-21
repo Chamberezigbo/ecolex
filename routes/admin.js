@@ -46,7 +46,7 @@ const loginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
-router.post("/create", async (req, res) => {
+router.post("/create", async (req, res, next) => {
   const { error } = adminSchema.validate(req.body);
 
   if (error) return res.status(400).json({ message: error.details[0].message });
@@ -134,13 +134,12 @@ router.post("/create", async (req, res) => {
 
     res.status(201).json({ message: "Admin created successfully", admin });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "An error occurred while creating admin" });
+    next(error);
   }
 });
 
 // login route
-router.post("/login", async (req, res) => {
+router.post("/login", async (req, res, next) => {
   const { error } = loginSchema.validate(req.body);
   if (error) return res.status(400).json({ message: error.details[0].message });
 
@@ -167,7 +166,7 @@ router.post("/login", async (req, res) => {
       data: { token, admin },
     });
   } catch (error) {
-    res.status(500).json({ message: "An error occurred while logging in" });
+    next(error);
   }
 });
 
@@ -175,7 +174,7 @@ router.post("/login", async (req, res) => {
 router.get(
   "/school-admins/:schoolId",
   authenticateSuperAdmin,
-  async (req, res) => {
+  async (req, res, next) => {
     const { schoolId } = req.params;
     if (!schoolId) {
       return res.status(400).json({ message: "School ID is required" });
@@ -187,15 +186,13 @@ router.get(
       });
       res.status(200).json({ message: "Admins fetched successfully", admins });
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "An error occurred while fetching admins" });
+      next(error);
     }
   }
 );
 
 // Update admin//
-router.put("/:id", async (req, res) => {
+router.put("/:id", async (req, res, next) => {
   const { error } = updateAdminSchema.validate(req.body);
 
   if (error) return res.status(400).json({ message: error.details[0].message });
@@ -228,12 +225,12 @@ router.put("/:id", async (req, res) => {
       .status(200)
       .json({ message: "Admin updated successfully", updatedAdmin });
   } catch (error) {
-    res.status(500).json({ message: "An error occurred while updating admin" });
+    next(error);
   }
 });
 
 // Delete admin//
-router.delete("/:id", authenticateSuperAdmin, async (req, res) => {
+router.delete("/:id", authenticateSuperAdmin, async (req, res, next) => {
   const { id } = req.params;
   try {
     // Find and delete the admin
@@ -245,7 +242,7 @@ router.delete("/:id", authenticateSuperAdmin, async (req, res) => {
     await prisma.admin.delete({ where: { id: parseInt(id) } });
     res.status(200).json({ message: "Admin deleted successfully", admin });
   } catch (error) {
-    res.status(500).json({ message: "An error occurred while deleting admin" });
+    next(error);
   }
 });
 

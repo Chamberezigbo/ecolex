@@ -13,7 +13,7 @@ const tokenSchema = Joi.object({
   schoolName: Joi.string().required(),
 });
 
-router.post("/generate", async (req, res) => {
+router.post("/generate", async (req, res, next) => {
   const { email, schoolName } = req.body;
 
   const { error } = tokenSchema.validate(req.body);
@@ -51,10 +51,7 @@ router.post("/generate", async (req, res) => {
       token: newToken.uniqueKey,
     });
   } catch (error) {
-    logger.error(error.stack || error.message);
-    return res.status(500).json({
-      message: "An error occurred while generating the token.",
-    });
+    next(error);
   }
 });
 

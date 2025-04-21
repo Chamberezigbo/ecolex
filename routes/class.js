@@ -28,7 +28,7 @@ const classGroupValidationSchema = Joi.object({
 
 router.use(auth);
 
-router.post("/create", async (req, res) => {
+router.post("/create", async (req, res, next) => {
   const { error } = classSchema.validate(req.body);
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
@@ -49,15 +49,12 @@ router.post("/create", async (req, res) => {
     });
     res.status(201).json({ message: "Class created successfully", newClass });
   } catch (err) {
-    console.error(err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while creating the class group" });
+    next(error);
   }
 });
 
 // ROUTE TO GET ALL CLASSES FOR A SCHOOL//
-router.get("/classes", async (req, res) => {
+router.get("/classes", async (req, res, next) => {
   const schoolId = req.query.school_id || req.user.schoolId; // Use query param or user's schoolId
   if (!schoolId) {
     return res
@@ -85,14 +82,12 @@ router.get("/classes", async (req, res) => {
       .status(200)
       .json({ message: "Classes fetched successfully", data: { classes } });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred while retrieving classes." });
+    next(error);
   }
 });
 
 /* ROUTE: Update a class (only school_admin and super_admin) */
-router.put("/:id", async (req, res) => {
+router.put("/:id", async (req, res, next) => {
   const { error } = classValidationSchema.validate(req.body);
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
@@ -111,30 +106,24 @@ router.put("/:id", async (req, res) => {
       .status(200)
       .json({ message: "Class updated successfully", class: updatedClass });
   } catch (err) {
-    console.error(err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while updating the class" });
+    next(err);
   }
 });
 
 /* ROUTE: Delete a class (only super_admin) */
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", async (req, res, next) => {
   const { id } = req.params;
 
   try {
     await prisma.class.delete({ where: { id: parseInt(id) } });
     res.status(200).json({ message: "Class deleted successfully" });
   } catch (err) {
-    console.error(err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while deleting the class" });
+    next(err);
   }
 });
 
 /* ROUTE: Add a group to a class (only school_admin and super_admin) */
-router.post("/:id/groups", async (req, res) => {
+router.post("/:id/groups", async (req, res, next) => {
   const { error } = classGroupValidationSchema.validate(req.body);
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
@@ -155,10 +144,7 @@ router.post("/:id/groups", async (req, res) => {
       .status(201)
       .json({ message: "Class group created successfully", group: newGroup });
   } catch (err) {
-    console.error(err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while creating the class group" });
+    next(err);
   }
 });
 

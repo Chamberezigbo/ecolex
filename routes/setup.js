@@ -52,7 +52,7 @@ const requestSchema = Joi.object({
 
 router.use(auth);
 
-router.post("/class", authenticateSuperAdmin, async (req, res) => {
+router.post("/class", authenticateSuperAdmin, async (req, res, next) => {
   const { school_id, classes } = req.body;
 
   if (!school_id || typeof school_id !== "number") {
@@ -101,14 +101,11 @@ router.post("/class", authenticateSuperAdmin, async (req, res) => {
       count: result.count,
     });
   } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while creating classes" });
+    next(error);
   }
 });
 
-router.post("/campus", authenticateSuperAdmin, async (req, res) => {
+router.post("/campus", authenticateSuperAdmin, async (req, res, next) => {
   const { school_id, campuses } = req.body;
 
   // Step 1: Validate Input
@@ -163,15 +160,12 @@ router.post("/campus", authenticateSuperAdmin, async (req, res) => {
       count: result.count,
     });
   } catch (err) {
-    console.error("Error:", err);
-    res
-      .status(500)
-      .json({ message: "An error occurred while creating campuses." });
+    next(err);
   }
 });
 
 // Route to create Continuous Assessments and Exam
-router.post("/ca", async (req, res) => {
+router.post("/ca", async (req, res, next) => {
   const { error } = requestSchema.validate(req.body);
 
   if (error) {
@@ -205,8 +199,7 @@ router.post("/ca", async (req, res) => {
       .status(201)
       .json({ message: "Assessments and exam created successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
-    console.log(error);
+    next(error);
   }
 });
 

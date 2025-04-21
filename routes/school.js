@@ -23,7 +23,7 @@ router.post(
   "/setup",
   authenticateSuperAdmin,
   upload.fields([{ name: "logoUrl" }, { name: "stampUrl" }]),
-  async (req, res) => {
+  async (req, res, next) => {
     // Validate JSON body with Joi
     const { error } = schoolValidationSchema.validate(req.body);
     if (error) {
@@ -89,10 +89,7 @@ router.post(
         school: newSchool,
       });
     } catch (error) {
-      console.error("Error:", error.message);
-      res
-        .status(500)
-        .json({ message: "An error occurred while creating the school" });
+      next(error);
     }
   }
 );
