@@ -1,18 +1,17 @@
 const express = require("express");
 const cors = require("cors");
-const { PrismaClient } = require("@prisma/client");
 
-const adminRoutes = require("./routes/admin");
-const schoolSetupRoutes = require("./routes/school");
-const classRoutes = require("./routes/class");
-const systemAdmin = require("./routes/system-admin/generateToken");
-const studentRoutes = require("./routes/student");
-const teacherRoutes = require("./routes/teacher");
-const setupRoutes = require("./routes/setup");
-const errorMiddleware = require("./middleware/error");
+const prisma = require("./res/util/prisma");
+const adminRoutes = require("./res/routes/admin");
+const schoolSetupRoutes = require("./res/routes/school");
+const classRoutes = require("./res/routes/class");
+const systemAdmin = require("./res/routes/system-admin/generateToken");
+const studentRoutes = require("./res/routes/student");
+const teacherRoutes = require("./res/routes/teacher");
+const setupRoutes = require("./res/routes/setup");
+const errorMiddleware = require("./res/middleware/error");
 
 const app = express();
-const prisma = new PrismaClient();
 
 app.use(cors());
 
@@ -20,7 +19,7 @@ app.use(cors());
 app.use(express.json());
 
 // Static files //
-app.use("/uploads", express.static("uploads"));
+app.use("./res/uploads", express.static("uploads"));
 
 // Routes
 app.use("/api/admin", adminRoutes);

@@ -1,0 +1,63 @@
+[2025-04-24T19:39:35.689Z] ERROR: POST /api/system-admin/generate - email is not defined
+ReferenceError: email is not defined
+    at exports.generateToken (/Users/apple/Documents/Packages/Ecolex/res/controller/system-admin/generateToken.js:16:16)
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:149:13)
+    at /Users/apple/Documents/Packages/Ecolex/res/middleware/validator.js:14:5
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/index.js:346:12)
+[2025-04-24T19:46:19.506Z] ERROR: POST /api/admin/create - role is not defined
+ReferenceError: role is not defined
+    at exports.createAdmin (/Users/apple/Documents/Packages/Ecolex/res/controller/admin/admin.js:11:5)
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:149:13)
+    at /Users/apple/Documents/Packages/Ecolex/res/middleware/validator.js:14:5
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/index.js:346:12)
+[2025-04-24T19:46:36.123Z] ERROR: POST /api/admin/create - role is not defined
+ReferenceError: role is not defined
+    at exports.createAdmin (/Users/apple/Documents/Packages/Ecolex/res/controller/admin/admin.js:11:5)
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:149:13)
+    at /Users/apple/Documents/Packages/Ecolex/res/middleware/validator.js:14:5
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/index.js:346:12)
+[2025-04-24T19:47:57.023Z] ERROR: POST /api/admin/create - schoolId is not defined
+ReferenceError: schoolId is not defined
+    at exports.createAdmin (/Users/apple/Documents/Packages/Ecolex/res/controller/admin/admin.js:12:35)
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:149:13)
+    at /Users/apple/Documents/Packages/Ecolex/res/middleware/validator.js:14:5
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/index.js:346:12)
+[2025-04-24T19:51:01.339Z] ERROR: POST /api/admin/create - schoolId is not defined
+ReferenceError: schoolId is not defined
+    at exports.createAdmin (/Users/apple/Documents/Packages/Ecolex/res/controller/admin/admin.js:12:35)
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:149:13)
+    at /Users/apple/Documents/Packages/Ecolex/res/middleware/validator.js:14:5
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/apple/Documents/Packages/Ecolex/node_modules/express/lib/router/index.js:346:12)
+[2025-04-24T19:52:06.864Z] ERROR: POST /api/admin/create - name is not defined
+ReferenceError: name is not defined
+    at exports.createAdmin (/Users/apple/Documents/Packages/Ecolex/res/controller/admin/admin.js:71:7)

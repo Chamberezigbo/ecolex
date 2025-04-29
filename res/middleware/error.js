@@ -1,4 +1,4 @@
-const logger = require("../res/logger"); // adjust the path if needed
+const logger = require("../config/logger"); // adjust the path if needed
 
 const errorMiddleware = (err, req, res, next) => {
   console.log(err);

@@ -1,61 +1,14 @@
-const express = require("express");
-const Joi = require("joi");
-const { PrismaClient } = require("@prisma/client");
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const authenticateSuperAdmin = require("../middleware/authenticateSuperAdmin");
+const jwt = require("jsonwebtoken");
 
-const router = express.Router();
-const prisma = new PrismaClient();
+const prisma = require("../../util/prisma");
 
-// Environment variables for JWT
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Validation schema//
-const adminSchema = Joi.object({
-  email: Joi.string().email().required(),
-  password: Joi.string().min(6).required(),
-  name: Joi.string().required(),
-  role: Joi.string().valid("super_admin", "school_admin").required(),
-  schoolId: Joi.number().optional(),
-  campusId: Joi.when("role", {
-    is: "school_admin",
-    then: Joi.number().required(),
-    otherwise: Joi.forbidden(), // Prevent campusId for super_admin
-  }),
-  uniqueKey: Joi.when("role", {
-    is: "super_admin",
-    then: Joi.string().required(),
-    otherwise: Joi.forbidden(), // Prevent uniqueKey for school_admin
-  }),
-});
-
-// Validation schema for admin update
-const updateAdminSchema = Joi.object({
-  name: Joi.string().max(255).optional(),
-  email: Joi.string().email().optional(),
-  password: Joi.string().min(6).optional(),
-  role: Joi.string().valid("super_admin", "school_admin").optional(),
-  campusId: Joi.number().optional(),
-  steps: Joi.number().optional(),
-});
-
-// Validate schema for admin login
-const loginSchema = Joi.object({
-  email: Joi.string().email().required(),
-  password: Joi.string().required(),
-});
-
-router.post("/create", async (req, res, next) => {
-  const { error } = adminSchema.validate(req.body);
-
-  if (error) return res.status(400).json({ message: error.details[0].message });
-
-  const { name, email, password, role, schoolId, campusId, uniqueKey } =
-    req.body;
-
+exports.createAdmin = async (req, res, next) => {
   try {
     // For super_admin, ensure schoolId is not provided
+    const { email, password, role, uniqueKey, schoolId, name } = req.body;
     if (role === "super_admin" && schoolId) {
       return res.status(400).json({
         message: "School ID should not be provided for super admin",
@@ -136,13 +89,9 @@ router.post("/create", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
-// login route
-router.post("/login", async (req, res, next) => {
-  const { error } = loginSchema.validate(req.body);
-  if (error) return res.status(400).json({ message: error.details[0].message });
-
+exports.loginAdmin = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
@@ -168,31 +117,25 @@ router.post("/login", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
-// Get all admins for a school
-router.get(
-  "/school-admins/:schoolId",
-  authenticateSuperAdmin,
-  async (req, res, next) => {
-    const { schoolId } = req.params;
-    if (!schoolId) {
-      return res.status(400).json({ message: "School ID is required" });
-    }
-
-    try {
-      const admins = await prisma.admin.findMany({
-        where: { schoolId: parseInt(schoolId) },
-      });
-      res.status(200).json({ message: "Admins fetched successfully", admins });
-    } catch (error) {
-      next(error);
-    }
+exports.getSchoolAdmins = async (req, res, next) => {
+  const { schoolId } = req.params;
+  if (!schoolId) {
+    return res.status(400).json({ message: "School ID is required" });
   }
-);
 
-// Update admin//
-router.put("/:id", async (req, res, next) => {
+  try {
+    const admins = await prisma.admin.findMany({
+      where: { schoolId: parseInt(schoolId) },
+    });
+    res.status(200).json({ message: "Admins fetched successfully", admins });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateAdmin = async (req, res, next) => {
   const { error } = updateAdminSchema.validate(req.body);
 
   if (error) return res.status(400).json({ message: error.details[0].message });
@@ -227,10 +170,9 @@ router.put("/:id", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
-// Delete admin//
-router.delete("/:id", authenticateSuperAdmin, async (req, res, next) => {
+exports.deleteAdmin = async (req, res, next) => {
   const { id } = req.params;
   try {
     // Find and delete the admin
@@ -244,6 +186,15 @@ router.delete("/:id", authenticateSuperAdmin, async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
-module.exports = router;
+exports.checkHealth = async (req, res, next) => {
+  try {
+    res.status(200).json({
+      success: true,
+      message: "This server is up and runing",
+    });
+  } catch (error) {
+    next(error);
+  }
+};

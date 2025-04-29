@@ -1,0 +1,37 @@
+// Validation Schemas
+const Joi = require("joi");
+
+exports.classSchema = Joi.object({
+  campus_id: Joi.number().required(),
+  name: Joi.string().max(255).required(),
+});
+
+exports.campusSchema = Joi.object({
+  name: Joi.string().max(255).required(),
+  address: Joi.string().optional(),
+  phoneNumber: Joi.string().max(50).optional(),
+  email: Joi.string().email().max(255).optional(),
+});
+
+const continuousAssessmentSchema = Joi.array().items(
+  Joi.object({
+    class_id: Joi.number().required(),
+    name: Joi.string().max(50).required(),
+    weightage: Joi.number().precision(2).optional(),
+    max_score: Joi.number().integer().positive().required(),
+  })
+);
+
+const examSchema = Joi.object({
+  class_id: Joi.number().required(),
+  name: Joi.string().max(50).required(),
+  weightage: Joi.number().precision(2).optional(),
+  max_score: Joi.number().required(),
+});
+
+exports.requestSchema = Joi.object({
+  assessments: continuousAssessmentSchema.required(),
+  exam: examSchema.optional(),
+});
+
+module.exports = { continuousAssessmentSchema, examSchema };

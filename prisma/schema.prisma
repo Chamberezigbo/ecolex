@@ -75,6 +75,8 @@ model Campus {
   email       String?  @db.VarChar(255)
   createdAt   DateTime @default(now()) @db.Timestamp
 
+  @@unique([schoolId, name]) // 🔒 Prevent same campus name for same school
+
   school  School    @relation(fields: [schoolId], references: [id])
   admins  Admin[]
   Class   Class[]
