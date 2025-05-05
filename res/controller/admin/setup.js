@@ -6,6 +6,8 @@ const {
   requestSchema,
 } = require("../../schemas/setupSchema");
 
+const validate = require("../../middleware/validator");
+
 exports.createClasses = async (req, res, next) => {
   const { school_id, classes } = req.body;
 

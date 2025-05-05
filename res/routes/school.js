@@ -12,9 +12,9 @@ const router = express.Router();
 
 router.post(
   "/setup",
+  upload.fields([{ name: "logoUrl" }, { name: "stampUrl" }]),
   validate(schoolValidationSchema),
   authenticateSuperAdmin,
-  upload.fields([{ name: "logoUrl" }, { name: "stampUrl" }]),
   setupSchool
 );
 

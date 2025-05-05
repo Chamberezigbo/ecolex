@@ -61,3 +61,46 @@ ReferenceError: schoolId is not defined
 [2025-04-24T19:52:06.864Z] ERROR: POST /api/admin/create - name is not defined
 ReferenceError: name is not defined
     at exports.createAdmin (/Users/apple/Documents/Packages/Ecolex/res/controller/admin/admin.js:71:7)
+[2025-05-02T08:43:40.746Z] ERROR: POST /api/admin/login - 
+Invalid `prisma.admin.findUnique()` invocation in
+/Users/apple/Documents/Packages/Ecolex/res/controller/admin/admin.js:99:38
+
+  96 
+  97 try {
+  98   // Check if email exists//
+→ 99   const admin = await prisma.admin.findUnique(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(Server(MysqlError { code: 1932, message: "Table 'ecolex.admins' doesn't exist in engine", state: "42S02" })), transient: false })
+PrismaClientUnknownRequestError: 
+Invalid `prisma.admin.findUnique()` invocation in
+/Users/apple/Documents/Packages/Ecolex/res/controller/admin/admin.js:99:38
+
+  96 
+  97 try {
+  98   // Check if email exists//
+→ 99   const admin = await prisma.admin.findUnique(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(Server(MysqlError { code: 1932, message: "Table 'ecolex.admins' doesn't exist in engine", state: "42S02" })), transient: false })
+    at $n.handleRequestError (/Users/apple/Documents/Packages/Ecolex/node_modules/@prisma/client/runtime/library.js:121:7505)
+    at $n.handleAndLogRequestError (/Users/apple/Documents/Packages/Ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/apple/Documents/Packages/Ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/apple/Documents/Packages/Ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.loginAdmin (/Users/apple/Documents/Packages/Ecolex/res/controller/admin/admin.js:99:19)
+[2025-05-02T16:48:07.545Z] ERROR: POST /api/setup/campus - Cannot read properties of undefined (reading 'validate')
+TypeError: Cannot read properties of undefined (reading 'validate')
+    at exports.createCampuses (/Users/apple/Documents/Packages/Ecolex/res/controller/admin/setup.js:150:38)
+[2025-05-02T17:13:37.289Z] ERROR: POST /api/setup/campus - Cannot read properties of undefined (reading 'validate')
+TypeError: Cannot read properties of undefined (reading 'validate')
+    at exports.createCampuses (/Users/apple/Documents/Packages/Ecolex/res/controller/admin/setup.js:152:38)
+[2025-05-05T01:51:01.474Z] ERROR: POST /api/setup/campus - Cannot read properties of undefined (reading 'validate')
+TypeError: Cannot read properties of undefined (reading 'validate')
+    at exports.createCampuses (/Users/apple/Documents/Packages/Ecolex/res/controller/admin/setup.js:152:38)
+[2025-05-05T01:53:52.514Z] ERROR: POST /api/setup/campus - Cannot read properties of undefined (reading 'validate')
+TypeError: Cannot read properties of undefined (reading 'validate')
+    at exports.createCampuses (/Users/apple/Documents/Packages/Ecolex/res/controller/admin/setup.js:152:38)
+[2025-05-05T02:26:49.146Z] ERROR: POST /api/setup/campus - Cannot read properties of undefined (reading 'validate')
+TypeError: Cannot read properties of undefined (reading 'validate')
+    at exports.createCampuses (/Users/apple/Documents/Packages/Ecolex/res/controller/admin/setup.js:152:38)
+[2025-05-05T02:56:43.691Z] ERROR: POST /api/setup/campus - Cannot read properties of undefined (reading 'validate')
+TypeError: Cannot read properties of undefined (reading 'validate')
+    at exports.createCampuses (/Users/apple/Documents/Packages/Ecolex/res/controller/admin/setup.js:153:38)
