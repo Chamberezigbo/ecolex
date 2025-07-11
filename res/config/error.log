@@ -104,3 +104,49 @@ TypeError: Cannot read properties of undefined (reading 'validate')
 [2025-05-05T02:56:43.691Z] ERROR: POST /api/setup/campus - Cannot read properties of undefined (reading 'validate')
 TypeError: Cannot read properties of undefined (reading 'validate')
     at exports.createCampuses (/Users/apple/Documents/Packages/Ecolex/res/controller/admin/setup.js:153:38)
+[2025-07-11T14:13:57.505Z] ERROR: POST /api/admin/login - 
+Invalid `prisma.admin.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/admin.js:108:38
+
+  105 
+  106 try {
+  107   // Check if email exists//
+→ 108   const admin = await prisma.admin.findUnique(
+The table `admins` does not exist in the current database.
+PrismaClientKnownRequestError: 
+Invalid `prisma.admin.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/admin.js:108:38
+
+  105 
+  106 try {
+  107   // Check if email exists//
+→ 108   const admin = await prisma.admin.findUnique(
+The table `admins` does not exist in the current database.
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:7315)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.loginAdmin (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/admin.js:108:19)
+[2025-07-11T14:18:35.655Z] ERROR: POST /api/admin/login - 
+Invalid `prisma.admin.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/admin.js:108:38
+
+  105 
+  106 try {
+  107   // Check if email exists//
+→ 108   const admin = await prisma.admin.findUnique(
+The table `admins` does not exist in the current database.
+PrismaClientKnownRequestError: 
+Invalid `prisma.admin.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/admin.js:108:38
+
+  105 
+  106 try {
+  107   // Check if email exists//
+→ 108   const admin = await prisma.admin.findUnique(
+The table `admins` does not exist in the current database.
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:7315)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.loginAdmin (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/admin.js:108:19)

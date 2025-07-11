@@ -7,6 +7,7 @@ const {
 } = require("../../schemas/setupSchema");
 
 const validate = require("../../middleware/validator");
+const { date } = require("joi");
 
 exports.createClasses = async (req, res, next) => {
   const { school_id, classes } = req.body;
@@ -81,10 +82,15 @@ exports.createClasses = async (req, res, next) => {
       data: classDataToInsert,
     });
 
+    // Fetch all classes for this school (across campuses)
+    const savedClasses = await prisma.class.findMany({
+      where: { schoolId: school_id },
+    });
+
     res.status(201).json({
       message: `${result.count} classes created successfully across campuses.`,
       count: result.count,
-      data: {result}
+      data: {savedClasses}
     });
   } catch (error) {
     next(error);
@@ -169,9 +175,15 @@ exports.createCampuses = async (req, res, next) => {
       data: campusDataToInsert,
     });
 
+    // Fetch all campuses for this school
+    const savedCampuses = await prisma.campus.findMany({
+      where: { schoolId: school_id },
+    });
+
     res.status(201).json({
       message: `${result.count} campuses created successfully.`,
       count: result.count,
+      date:{savedCampuses}
     });
   } catch (err) {
     next(err);
