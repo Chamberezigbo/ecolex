@@ -81,11 +81,20 @@ exports.createAdmin = async (req, res, next) => {
       adminData.steps = 0;
     }
 
+
     const admin = await prisma.admin.create({
       data: adminData,
     });
 
-    res.status(201).json({ message: "Admin created successfully", admin });
+    // Generate JWT token//
+    const token = jwt.sign(
+      { id: admin.id, role: admin.role }, // { id: admin.id, role: admin.role, schoolId: admin.schoolId },
+      JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+    
+
+    res.status(201).json({ message: "Admin created successfully", data: { token, admin } });
   } catch (error) {
     next(error);
   }

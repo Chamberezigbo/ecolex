@@ -84,6 +84,7 @@ exports.createClasses = async (req, res, next) => {
     res.status(201).json({
       message: `${result.count} classes created successfully across campuses.`,
       count: result.count,
+      data: {result}
     });
   } catch (error) {
     next(error);
