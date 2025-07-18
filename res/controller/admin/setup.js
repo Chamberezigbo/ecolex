@@ -265,7 +265,10 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
       maxScore: ca.max_score,
     }));
 
-    await prisma.continuousAssessment.createMany({ data: assessmentsData });
+    await prisma.continuousAssessment.createMany({
+      data: assessmentsData,
+      skipDuplicates: true,
+    });
 
     if (exam) {
       const examData = {

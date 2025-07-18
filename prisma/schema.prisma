@@ -189,6 +189,7 @@ model ContinuousAssessment {
   subject   Subject?    @relation(fields: [subjectId], references: [id])
   caResults CAResult[]
 
+  @@unique([classId, name])
   @@map("continuous_assessments")
 }
 
