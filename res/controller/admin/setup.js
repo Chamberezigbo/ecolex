@@ -9,7 +9,21 @@ const {
 const validate = require("../../middleware/validator");
 const { date } = require("joi");
 
+const updateStep = async (adminId) => {
+  try {
+     await prisma.admin.update({
+       where: { id: adminId },
+       data: { step: {increment:1} },
+     });
+  } catch (error) {
+   throw error;
+  }
+}
+
 exports.createClasses = async (req, res, next) => {
+
+  const adminId = req.admin.id;
+
   const { school_id, classes } = req.body;
 
   if (!school_id || typeof school_id !== "number") {
@@ -87,6 +101,8 @@ exports.createClasses = async (req, res, next) => {
       where: { schoolId: school_id },
     });
 
+    await updateStep(adminId);
+
     res.status(201).json({
       message: `${result.count} classes created successfully across campuses.`,
       count: result.count,
@@ -99,6 +115,7 @@ exports.createClasses = async (req, res, next) => {
 
 exports.createCampuses = async (req, res, next) => {
   const { school_id, campuses } = req.body;
+  const adminId = req.admin.id;
 
   if (!school_id || typeof school_id !== "number") {
     return res.status(400).json({ message: "A valid school_id is required." });
@@ -180,6 +197,8 @@ exports.createCampuses = async (req, res, next) => {
       where: { schoolId: school_id },
     });
 
+    await updateStep(adminId);
+
     res.status(201).json({
       message: `${result.count} campuses created successfully.`,
       count: result.count,
@@ -191,6 +210,7 @@ exports.createCampuses = async (req, res, next) => {
 };
 
 exports.createAssessmentsAndExam = async (req, res, next) => {
+  const adminId = req.admin.id;
   try {
     const { assessments, exam } = req.body;
 
@@ -232,9 +252,19 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
 
     // Validate exam if provided
     if (exam) {
+      // Allow single number or array
+      if (Array.isArray(exam.class_id)) {
+        examClassIds = exam.class_id;
+      } else if (typeof exam.class_id === "number") {
+        examClassIds = [exam.class_id];
+      } else {
+        return res
+          .status(400)
+          .json({ message: "exam.class_id must be a number or array of numbers" });
+      }
+
+
       if (
-        !exam.class_id ||
-        typeof exam.class_id !== "number" ||
         !exam.name ||
         typeof exam.name !== "string" ||
         !exam.weightage ||
@@ -246,15 +276,27 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
       }
 
       // Check if class exists for exam
-      const existingClassForExam = await prisma.class.findUnique({
-        where: { id: exam.class_id },
-      });
+      // const existingClassForExam = await prisma.class.findUnique({
+      //   where: { id: exam.class_id },
+      // });
 
-      if (!existingClassForExam) {
-        return res.status(400).json({
-          message: `Class with ID ${exam.class_id} not found for exam.`,
+      // if (!existingClassForExam) {
+      //   return res.status(400).json({
+      //     message: `Class with ID ${exam.class_id} not found for exam.`,
+      //   });
+      // }
+
+      // Check each class ID exists
+      for (const classId of examClassIds) {
+        const existingClass = await prisma.class.findUnique({
+          where: { id: classId },
         });
-      }
+        if (!existingClass) {
+          return res.status(400).json({
+            message: `Class with ID ${classId} not found for exam.`,
+          });
+        }
+    }
     }
 
     // If all validations pass, prepare data
@@ -271,15 +313,21 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
     });
 
     if (exam) {
-      const examData = {
-        classId: exam.class_id,
+      const examDataArray = examClassIds.map((classId) => ({
+        classId,
         name: exam.name,
         weightage: exam.weightage,
         maxScore: exam.max_score,
-      };
+      }));
 
-      await prisma.exam.create({ data: examData });
+      await prisma.exam.createMany({
+        data: examDataArray,
+        skipDuplicates: true,
+      });
     }
+
+    // Update the admin step after successful creation
+    await updateStep(adminId);
 
     res.status(201).json({
       message: "Assessments and exam created successfully.",

@@ -13,6 +13,6 @@ router.post(
   authenticateSuperAdmin,
   academicController.createCampuses
 );
-router.post("/ca", academicController.createAssessmentsAndExam);
+router.post("/ca", authenticateSuperAdmin, academicController.createAssessmentsAndExam);
 
 module.exports = router;
