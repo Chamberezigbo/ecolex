@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 
 const upload = require("../middleware/upload");
-const authenticateSuperAdmin = require("../middleware/authenticateSuperAdmin");
+const auth = require("../middleware/authenticateSuperAdmin");
 const validate = require("../middleware/validator");
 const { schoolValidationSchema } = require("../schemas/index");
 
@@ -14,7 +14,7 @@ router.post(
   "/setup",
   upload.fields([{ name: "logoUrl" }, { name: "stampUrl" }]),
   validate(schoolValidationSchema),
-  authenticateSuperAdmin,
+  auth.authenticateSuperAdmin,
   setupSchool
 );
 

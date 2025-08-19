@@ -1,5 +1,5 @@
 const express = require("express");
-const authenticateSuperAdmin = require("../middleware/authenticateSuperAdmin");
+const auth = require("../middleware/authenticateSuperAdmin");
 const authLogin = require("../middleware/authLogin");
 const academicController = require("../controller/admin/setup");
 
@@ -7,12 +7,12 @@ const router = express.Router();
 
 router.use(authLogin);
 
-router.post("/class", authenticateSuperAdmin, academicController.createClasses);
+router.post("/class", auth.authenticateSuperAdmin, academicController.createClasses);
 router.post(
   "/campus",
-  authenticateSuperAdmin,
+  auth.authenticateSuperAdmin,
   academicController.createCampuses
 );
-router.post("/ca", authenticateSuperAdmin, academicController.createAssessmentsAndExam);
+router.post("/ca", auth.authenticateSuperAdmin, academicController.createAssessmentsAndExam);
 
 module.exports = router;

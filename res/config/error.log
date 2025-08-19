@@ -150,3 +150,271 @@ The table `admins` does not exist in the current database.
     at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
     at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
     at async exports.loginAdmin (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/admin.js:108:19)
+[2025-08-19T04:25:40.306Z] ERROR: GET /api/admin/students?campusId=2&name=John - 
+Invalid `prisma.student.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:24:53
+
+  21 if(classId) filter.classId = parseInt(classId);
+  22 if(classGroupId) filter.classGroupId = parseInt(classGroupId);
+  23 
+→ 24 const students = await prisma.student.findMany({
+       where: {
+         schoolId: 1,
+         campusId: 2,
+         name: {
+           contains: "John",
+           mode: "insensitive",
+           ~~~~
+     ?     equals?: String | StringFieldRefInput,
+     ?     in?: String[],
+     ?     notIn?: String[],
+     ?     lt?: String | StringFieldRefInput,
+     ?     lte?: String | StringFieldRefInput,
+     ?     gt?: String | StringFieldRefInput,
+     ?     gte?: String | StringFieldRefInput,
+     ?     startsWith?: String | StringFieldRefInput,
+     ?     endsWith?: String | StringFieldRefInput,
+     ?     not?: String | NestedStringFilter
+         }
+       },
+       take: 9,
+       skip: 0,
+       orderBy: {
+         createdAt: "desc"
+       },
+       include: {
+         class: {
+           include: {
+             classGroup: true
+           }
+         },
+         campus: true
+       }
+     })
+
+Unknown argument `mode`. Did you mean `lte`? Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.student.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:24:53
+
+  21 if(classId) filter.classId = parseInt(classId);
+  22 if(classGroupId) filter.classGroupId = parseInt(classGroupId);
+  23 
+→ 24 const students = await prisma.student.findMany({
+       where: {
+         schoolId: 1,
+         campusId: 2,
+         name: {
+           contains: "John",
+           mode: "insensitive",
+           ~~~~
+     ?     equals?: String | StringFieldRefInput,
+     ?     in?: String[],
+     ?     notIn?: String[],
+     ?     lt?: String | StringFieldRefInput,
+     ?     lte?: String | StringFieldRefInput,
+     ?     gt?: String | StringFieldRefInput,
+     ?     gte?: String | StringFieldRefInput,
+     ?     startsWith?: String | StringFieldRefInput,
+     ?     endsWith?: String | StringFieldRefInput,
+     ?     not?: String | NestedStringFilter
+         }
+       },
+       take: 9,
+       skip: 0,
+       orderBy: {
+         createdAt: "desc"
+       },
+       include: {
+         class: {
+           include: {
+             classGroup: true
+           }
+         },
+         campus: true
+       }
+     })
+
+Unknown argument `mode`. Did you mean `lte`? Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.getStudentDetails (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:24:32)
+[2025-08-19T04:29:48.701Z] ERROR: GET /api/admin/students?campusId=2&name=John - 
+Invalid `prisma.student.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:24:53
+
+  21 if(classId) filter.classId = parseInt(classId);
+  22 if(classGroupId) filter.classGroupId = parseInt(classGroupId);
+  23 
+→ 24 const students = await prisma.student.findMany({
+       where: {
+         schoolId: 1,
+         campusId: 2,
+         name: {
+           contains: "John"
+         }
+       },
+       take: 9,
+       skip: 0,
+       orderBy: {
+         createdAt: "desc"
+       },
+       include: {
+         class: {
+           include: {
+             classGroup: true,
+             ~~~~~~~~~~
+     ?       school?: true,
+     ?       campus?: true,
+     ?       teacher?: true,
+     ?       classGroups?: true,
+     ?       students?: true,
+     ?       ContinuousAssessment?: true,
+     ?       Exam?: true
+           }
+         },
+         campus: true
+       }
+     })
+
+Unknown field `classGroup` for include statement on model `Class`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.student.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:24:53
+
+  21 if(classId) filter.classId = parseInt(classId);
+  22 if(classGroupId) filter.classGroupId = parseInt(classGroupId);
+  23 
+→ 24 const students = await prisma.student.findMany({
+       where: {
+         schoolId: 1,
+         campusId: 2,
+         name: {
+           contains: "John"
+         }
+       },
+       take: 9,
+       skip: 0,
+       orderBy: {
+         createdAt: "desc"
+       },
+       include: {
+         class: {
+           include: {
+             classGroup: true,
+             ~~~~~~~~~~
+     ?       school?: true,
+     ?       campus?: true,
+     ?       teacher?: true,
+     ?       classGroups?: true,
+     ?       students?: true,
+     ?       ContinuousAssessment?: true,
+     ?       Exam?: true
+           }
+         },
+         campus: true
+       }
+     })
+
+Unknown field `classGroup` for include statement on model `Class`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.getStudentDetails (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:24:32)
+[2025-08-19T05:28:16.872Z] ERROR: POST /api/admin/student/create - Cannot read properties of undefined (reading 'validate')
+TypeError: Cannot read properties of undefined (reading 'validate')
+    at /Users/Chambs/Documents/Backed servers /ecolex/res/middleware/validator.js:7:30
+    at Layer.handle [as handle_request] (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:47:12)
+[2025-08-19T06:33:02.153Z] ERROR: PUT /api/admin/student/change-class/1 - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:133:52
+
+  130        return res.status(404).json({ message: "Class not found" });
+  131 }
+  132 
+→ 133 const student = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:133:52
+
+  130        return res.status(404).json({ message: "Class not found" });
+  131 }
+  132 
+→ 133 const student = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.changeStudentClass (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:133:31)
+[2025-08-19T06:36:25.606Z] ERROR: PUT /api/admin/student/change-class/1 - log.info is not a function
+TypeError: log.info is not a function
+    at exports.changeStudentClass (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:123:19)
+    at Layer.handle [as handle_request] (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/route.js:149:13)
+    at authenticateSuperAdmin (/Users/Chambs/Documents/Backed servers /ecolex/res/middleware/authenticateSuperAdmin.js:26:5)
+    at Layer.handle [as handle_request] (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:284:15
+    at param (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:365:14)
+[2025-08-19T06:37:56.145Z] ERROR: PUT /api/admin/student/change-class/1 - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:134:52
+
+  131        return res.status(404).json({ message: "Class not found" });
+  132 }
+  133 
+→ 134 const student = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:134:52
+
+  131        return res.status(404).json({ message: "Class not found" });
+  132 }
+  133 
+→ 134 const student = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.changeStudentClass (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:134:31)

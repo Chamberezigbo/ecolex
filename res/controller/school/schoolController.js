@@ -2,7 +2,20 @@
 const processImage = require("../../config/compress");
 const prisma = require("../../util/prisma");
 
+const updateStep = async (adminId) => {
+  try {
+     await prisma.admin.update({
+       where: { id: adminId },
+       data: { steps: {increment:1} },
+     });
+  } catch (error) {
+   throw error;
+  }
+}
+
 exports.setupSchool = async (req, res, next) => {
+  const adminId = req.user.id;
+  
   const { name, prefix, email, phoneNumber, address } = req.body;
 
   try {
@@ -48,6 +61,8 @@ exports.setupSchool = async (req, res, next) => {
         schoolId: newSchool.id,
       },
     });
+
+    await updateStep(adminId);
 
     res.status(201).json({
       message: "School created successfully",

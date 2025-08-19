@@ -31,3 +31,24 @@ exports.loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
 });
+
+exports.studentSchema = Joi.object({
+  surname: Joi.string().max(100).required(),
+  name: Joi.string().max(100).required(),
+  otherNames: Joi.string().max(255).optional(),
+  gender: Joi.string().valid("Male", "Female", "Other").required(),
+  dateOfBirth: Joi.date().iso().required(),
+  guardianName: Joi.string().max(255).optional(),
+  guardianNumber: Joi.string().pattern(/^[0-9+\-\s]{7,20}$/).optional(), // allows phone numbers
+  lifestyle: Joi.string().max(255).optional(),
+  session: Joi.string().max(50).required(),
+
+  // Associations
+  // schoolId: Joi.number().integer().required(),
+  campusId: Joi.number().integer().optional(),
+  classId: Joi.number().integer().required(),
+
+  // Optional contact info
+  email: Joi.string().email().max(255).optional(),
+  // phoneNumber: Joi.string().pattern(/^[0-9+\-\s]{7,20}$/).optional(),
+});

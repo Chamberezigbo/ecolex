@@ -13,7 +13,7 @@ const updateStep = async (adminId) => {
   try {
      await prisma.admin.update({
        where: { id: adminId },
-       data: { step: {increment:1} },
+       data: { steps: {increment:1} },
      });
   } catch (error) {
    throw error;
@@ -22,7 +22,7 @@ const updateStep = async (adminId) => {
 
 exports.createClasses = async (req, res, next) => {
 
-  const adminId = req.admin.id;
+  const adminId = req.user.id;
 
   const { school_id, classes } = req.body;
 
@@ -115,7 +115,7 @@ exports.createClasses = async (req, res, next) => {
 
 exports.createCampuses = async (req, res, next) => {
   const { school_id, campuses } = req.body;
-  const adminId = req.admin.id;
+  const adminId = req.user.id;
 
   if (!school_id || typeof school_id !== "number") {
     return res.status(400).json({ message: "A valid school_id is required." });
@@ -210,7 +210,7 @@ exports.createCampuses = async (req, res, next) => {
 };
 
 exports.createAssessmentsAndExam = async (req, res, next) => {
-  const adminId = req.admin.id;
+  const adminId = req.user.id;
   try {
     const { assessments, exam } = req.body;
 
@@ -309,7 +309,6 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
 
     await prisma.continuousAssessment.createMany({
       data: assessmentsData,
-      skipDuplicates: true,
     });
 
     if (exam) {

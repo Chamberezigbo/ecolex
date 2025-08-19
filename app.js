@@ -4,7 +4,7 @@ const express = require("express");
 const cors = require("cors");
 
 const prisma = require("./res/util/prisma");
-const adminRoutes = require("./res/routes/admin");
+const adminRoutes = require("./res/routes/admin/admin");
 const schoolSetupRoutes = require("./res/routes/school");
 const classRoutes = require("./res/routes/class");
 const systemAdmin = require("./res/routes/system-admin/generateToken");

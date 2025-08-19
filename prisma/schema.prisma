@@ -134,10 +134,19 @@ model Student {
   id          Int          @id @default(autoincrement())
   schoolId    Int
   campusId    Int?
-  name        String
-  email       String?      @unique
-  phoneNumber String?
-  classId     Int
+  classId     Int    
+
+  name           String
+  surname        String
+  otherNames     String
+  gender         String?      @db.VarChar(10)
+  dateOfBirth    DateTime?
+  guardianName   String?
+  guardianNumber String?
+  lifestyle      String?
+  session        String
+  email          String?      @unique
+
   createdAt   DateTime     @default(now())
   school      School       @relation(fields: [schoolId], references: [id])
   campus      Campus?      @relation(fields: [campusId], references: [id])
@@ -218,6 +227,8 @@ model Exam {
   class       Class        @relation(fields: [classId], references: [id])
   subject     Subject?      @relation(fields: [subjectId], references: [id])
   examResults ExamResult[]
+
+  @@unique([classId, name]) // ✅ prevents duplicate exams per class
 
   @@map("exams")
 }
