@@ -14,6 +14,12 @@ const {
   updateStudent,changeStudentClass
 } = require("../../controller/admin/StudentController");
 
+const {
+  createStaff,updateStaff,
+  getStaffDetails,assignTeacher,
+  getAllStaff,deleteStaff
+} = require("../../controller/admin/StaffController")
+
 const validate = require("../../middleware/validator");
 
 const {
@@ -21,6 +27,9 @@ const {
   loginSchema,
   updateAdminSchema,
   studentSchema,
+  staffSchema,
+  editStaffSchema,
+  assignTeacherSchema
 } = require("../../schemas/adminSchemas");
 
 const auth = require("../../middleware/authenticateSuperAdmin");
@@ -50,5 +59,13 @@ router.post("/student/create", validate(studentSchema), auth.authenticateSuperAd
 router.put("/student/:id", auth.authenticateSuperAdmin, updateStudent);
 router.get("/student", auth.authenticateSuperAdmin, auth.attachSchoolId,getStudentDetails);
 router.put("/student/change-class/:studentId", auth.authenticateSuperAdmin, changeStudentClass);
+
+// routes/admin/staffRoutes.js
+router.post("/staff/create",validate(staffSchema), auth.authenticateSuperAdmin, auth.attachSchoolId, createStaff);
+router.patch("/staff/:staffId",validate(editStaffSchema), auth.authenticateSuperAdmin, updateStaff); 
+router.get("/staff/:staffId", auth.authenticateSuperAdmin, getStaffDetails);
+router.post('/staff/assign-teacher', validate(assignTeacherSchema), auth.authenticateSuperAdmin, assignTeacher);
+router.get("/staff", auth.authenticateSuperAdmin, auth.attachSchoolId, getAllStaff);
+router.delete("/staff/:staffId", auth.authenticateSuperAdmin, deleteStaff);
 
 module.exports = router;

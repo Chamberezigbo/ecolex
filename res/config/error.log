@@ -418,3 +418,131 @@ Argument `id` is missing.
     at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
     at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
     at async exports.changeStudentClass (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:134:31)
+[2025-09-09T14:00:43.431Z] ERROR: GET /api/admin/staff/?name=Doe&page=1&pageSize=7 - 
+Invalid `prisma.staff.count()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:226:43
+
+  223   });
+  224 }
+  225      
+→ 226 const total = await prisma.staff.count({
+        select: {
+          _count: {
+            select: {
+              _all: true
+            }
+          }
+        },
+        where: {
+          schoolId: 1,
+          AND: [
+            {
+              name: {
+                contains: "Doe",
+                mode: "insensitive"
+              }
+            }
+          ]
+        }
+      })
+
+Unknown argument `mode`. Did you mean `lte`? Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.staff.count()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:226:43
+
+  223   });
+  224 }
+  225      
+→ 226 const total = await prisma.staff.count({
+        select: {
+          _count: {
+            select: {
+              _all: true
+            }
+          }
+        },
+        where: {
+          schoolId: 1,
+          AND: [
+            {
+              name: {
+                contains: "Doe",
+                mode: "insensitive"
+              }
+            }
+          ]
+        }
+      })
+
+Unknown argument `mode`. Did you mean `lte`? Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.getAllStaff (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:226:24)
+[2025-09-09T14:01:14.814Z] ERROR: GET /api/admin/staff/?name=Doe - 
+Invalid `prisma.staff.count()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:226:43
+
+  223   });
+  224 }
+  225      
+→ 226 const total = await prisma.staff.count({
+        select: {
+          _count: {
+            select: {
+              _all: true
+            }
+          }
+        },
+        where: {
+          schoolId: 1,
+          AND: [
+            {
+              name: {
+                contains: "Doe",
+                mode: "insensitive"
+              }
+            }
+          ]
+        }
+      })
+
+Unknown argument `mode`. Did you mean `lte`? Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.staff.count()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:226:43
+
+  223   });
+  224 }
+  225      
+→ 226 const total = await prisma.staff.count({
+        select: {
+          _count: {
+            select: {
+              _all: true
+            }
+          }
+        },
+        where: {
+          schoolId: 1,
+          AND: [
+            {
+              name: {
+                contains: "Doe",
+                mode: "insensitive"
+              }
+            }
+          ]
+        }
+      })
+
+Unknown argument `mode`. Did you mean `lte`? Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.getAllStaff (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:226:24)

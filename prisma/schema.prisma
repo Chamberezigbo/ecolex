@@ -48,7 +48,7 @@ model School {
   campuses Campus[]
   admins   Admin[]
   Class    Class[]
-  Teacher  Teacher[]
+  Staff    Staff[] 
   Student  Student[]
   Subject  Subject[]
 
@@ -80,9 +80,10 @@ model Campus {
   school  School    @relation(fields: [schoolId], references: [id])
   admins  Admin[]
   Class   Class[]
-  Teacher Teacher[]
+  Staff   Staff[]
   Student Student[]
   Subject Subject[]
+  TeacherAssignments TeacherAssignment[] // ✅ added
 
   @@map("campuses")
 }
@@ -92,13 +93,15 @@ model Class {
   schoolId    Int
   campusId    Int?
   name        String
-  teacherId   Int? // Optional, in case a class is created without a teacher assigned
+  staffId   Int? // Optional, in case a class is created without a teacher assigned
   createdAt   DateTime     @default(now())
   school      School       @relation(fields: [schoolId], references: [id])
   campus      Campus?      @relation(fields: [campusId], references: [id])
-  teacher     Teacher?     @relation(fields: [teacherId], references: [id])
+  staff       Staff?     @relation(fields: [staffId], references: [id])
   classGroups ClassGroup[] // One-to-many relation with ClassGroup
   students    Student[] // One-to-many relation with Student
+
+  assignments TeacherAssignment[] // Teachers teaching in this class
 
   ContinuousAssessment ContinuousAssessment[]
   Exam                 Exam[]
@@ -116,18 +119,26 @@ model ClassGroup {
   class     Class    @relation(fields: [classId], references: [id])
 }
 
-model Teacher {
-  id             Int              @id @default(autoincrement())
-  schoolId       Int
-  campusId       Int?
-  name           String
-  email          String           @unique
-  phoneNumber    String?
-  createdAt      DateTime         @default(now())
-  school         School           @relation(fields: [schoolId], references: [id])
-  campus         Campus?          @relation(fields: [campusId], references: [id])
-  classes        Class[] // One-to-many relation with Class
-  TeacherSubject TeacherSubject[]
+model Staff {
+  id          Int       @id @default(autoincrement())
+  schoolId    Int
+  campusId    Int?
+  name        String
+  email       String?   @unique
+  phoneNumber String?
+  address     String?
+  duty        String?   // e.g., "Teacher", "Accountant", "Cleaner"
+  nextOfKin   String?
+  dateEmployed DateTime?
+  payroll     Decimal?  // salary or payroll reference
+  createdAt   DateTime  @default(now())
+
+  school  School  @relation(fields: [schoolId], references: [id])
+  campus  Campus? @relation(fields: [campusId], references: [id])
+  classes Class[] // if staff is a teacher, they can have classes
+   assignments   TeacherAssignment[] // All class+subject+campus teaching assignments
+
+  @@map("staff")
 }
 
 model Student {
@@ -145,7 +156,7 @@ model Student {
   guardianNumber String?
   lifestyle      String?
   session        String
-  email          String?      @unique
+  email          String? 
 
   createdAt   DateTime     @default(now())
   school      School       @relation(fields: [schoolId], references: [id])
@@ -165,25 +176,31 @@ model Subject {
 
   school                School                 @relation(fields: [schoolId], references: [id])
   campus                Campus?                @relation(fields: [campusId], references: [id])
-  teacherSubjects       TeacherSubject[]
+  assignments           TeacherAssignment[] // Who teaches this subject (and where)
   continuousAssessments ContinuousAssessment[]
   exams                 Exam[]
 
   @@map("subjects")
 }
 
-model TeacherSubject {
-  id         Int      @id @default(autoincrement())
-  teacherId  Int
-  subjectId  Int
+
+model TeacherAssignment {
+  id        Int      @id @default(autoincrement())
+  staffId   Int
+  classId   Int
+  subjectId Int
+  campusId  Int?
   assignedAt DateTime @default(now())
 
-  teacher Teacher @relation(fields: [teacherId], references: [id])
+  staff   Staff   @relation(fields: [staffId], references: [id])
+  class   Class   @relation(fields: [classId], references: [id])
   subject Subject @relation(fields: [subjectId], references: [id])
+  campus  Campus? @relation(fields: [campusId], references: [id])
 
-  @@unique([teacherId, subjectId]) // Ensure a teacher can't be assigned the same subject twice
-  @@map("teacher_subjects")
+  @@unique([staffId, classId, subjectId, campusId]) // Prevent duplicate assignment per campus
+  @@map("teacher_assignments")
 }
+
 
 model ContinuousAssessment {
   id        Int      @id @default(autoincrement())

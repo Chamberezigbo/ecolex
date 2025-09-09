@@ -309,6 +309,7 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
 
     await prisma.continuousAssessment.createMany({
       data: assessmentsData,
+      skipDuplicates: true
     });
 
     if (exam) {

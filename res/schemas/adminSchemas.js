@@ -52,3 +52,45 @@ exports.studentSchema = Joi.object({
   email: Joi.string().email().max(255).optional(),
   // phoneNumber: Joi.string().pattern(/^[0-9+\-\s]{7,20}$/).optional(),
 });
+
+exports.staffSchema = Joi.object({
+  // Basic info
+  name: Joi.string().max(100).required(),
+  email: Joi.string().email().max(255).required(),
+  phoneNumber: Joi.string().pattern(/^[0-9+\-\s]{7,20}$/).optional(),
+  address: Joi.string().max(255).optional(),
+
+  // Job-related info
+  duty: Joi.string().max(255).required(),
+  nextOfKin: Joi.string().max(255).optional(),
+  dateEmployed: Joi.date().iso().optional(),
+  payroll: Joi.number().precision(2).optional(), // decimal salary
+
+  // Associations
+  campusId: Joi.number().integer().optional(),
+  // schoolId will come from middleware, so no need to pass here
+});
+
+exports.editStaffSchema = Joi.object({
+  // Basic info
+  name: Joi.string().max(100).optional(),
+  email: Joi.string().email().max(255).optional(),
+  phoneNumber: Joi.string().pattern(/^[0-9+\-\s]{7,20}$/).optional(),
+  address: Joi.string().max(255).optional(),
+
+  // Job-related info
+  duty: Joi.string().max(255).optional(),
+  nextOfKin: Joi.string().max(255).optional(),
+  dateEmployed: Joi.date().iso().optional(),
+  payroll: Joi.number().precision(2).optional(), // decimal salary
+
+  // Associations
+  campusId: Joi.number().integer().optional(),
+  // schoolId will come from middleware, so no need to pass here
+});
+
+const assignTeacherSchema = Joi.object({
+  staffId: Joi.number().integer().required(),
+  classId: Joi.number().integer().required(),
+  subjectId: Joi.number().integer().required(),
+});
