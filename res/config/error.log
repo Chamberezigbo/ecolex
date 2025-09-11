@@ -546,3 +546,407 @@ Unknown argument `mode`. Did you mean `lte`? Available options are marked with ?
     at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
     at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
     at async exports.getAllStaff (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:226:24)
+[2025-09-10T13:24:06.904Z] ERROR: POST /api/admin/classes/create - Cannot read properties of undefined (reading 'validate')
+TypeError: Cannot read properties of undefined (reading 'validate')
+    at /Users/Chambs/Documents/Backed servers /ecolex/res/middleware/validator.js:7:30
+    at Layer.handle [as handle_request] (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:47:12)
+[2025-09-10T13:36:51.758Z] ERROR: GET /api/admin/classes/?name=jss1 - 
+Invalid `prisma.class.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:48:45
+
+  45 const { campusId, name } = req.query;
+  46 const schoolId = req.schoolId;
+  47      
+→ 48 const classes = await prisma.class.findMany({
+       where: {
+         schoolId: 1,
+         name: {
+           contains: "jss1",
+           mode: "insensitive",
+           ~~~~
+     ?     equals?: String | StringFieldRefInput,
+     ?     in?: String[],
+     ?     notIn?: String[],
+     ?     lt?: String | StringFieldRefInput,
+     ?     lte?: String | StringFieldRefInput,
+     ?     gt?: String | StringFieldRefInput,
+     ?     gte?: String | StringFieldRefInput,
+     ?     startsWith?: String | StringFieldRefInput,
+     ?     endsWith?: String | StringFieldRefInput,
+     ?     not?: String | NestedStringFilter
+         }
+       },
+       include: {
+         campus: true,
+         staff: true,
+         students: true
+       }
+     })
+
+Unknown argument `mode`. Did you mean `lte`? Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.class.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:48:45
+
+  45 const { campusId, name } = req.query;
+  46 const schoolId = req.schoolId;
+  47      
+→ 48 const classes = await prisma.class.findMany({
+       where: {
+         schoolId: 1,
+         name: {
+           contains: "jss1",
+           mode: "insensitive",
+           ~~~~
+     ?     equals?: String | StringFieldRefInput,
+     ?     in?: String[],
+     ?     notIn?: String[],
+     ?     lt?: String | StringFieldRefInput,
+     ?     lte?: String | StringFieldRefInput,
+     ?     gt?: String | StringFieldRefInput,
+     ?     gte?: String | StringFieldRefInput,
+     ?     startsWith?: String | StringFieldRefInput,
+     ?     endsWith?: String | StringFieldRefInput,
+     ?     not?: String | NestedStringFilter
+         }
+       },
+       include: {
+         campus: true,
+         staff: true,
+         students: true
+       }
+     })
+
+Unknown argument `mode`. Did you mean `lte`? Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.getAllClasses (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:48:26)
+[2025-09-10T15:31:13.696Z] ERROR: GET /api/admin/campuses/?name=Grade%201&page&limit - schoolId is not defined
+ReferenceError: schoolId is not defined
+    at exports.getCampuses (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/campusController.js:83:24)
+    at Layer.handle [as handle_request] (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/route.js:149:13)
+    at attachSchoolId (/Users/Chambs/Documents/Backed servers /ecolex/res/middleware/authenticateSuperAdmin.js:53:5)
+[2025-09-10T15:31:57.155Z] ERROR: GET /api/admin/campuses/?name=Grade%201&page&limit - 
+Invalid `prisma.campus.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/campusController.js:91:47
+
+  88   }),
+  89 };
+  90      
+→ 91 const campuses = await prisma.campus.findMany({
+       where: {
+         schoolId: 1,
+         name: {
+           contains: "Grade 1",
+           mode: "insensitive",
+           ~~~~
+     ?     equals?: String | StringFieldRefInput,
+     ?     in?: String[],
+     ?     notIn?: String[],
+     ?     lt?: String | StringFieldRefInput,
+     ?     lte?: String | StringFieldRefInput,
+     ?     gt?: String | StringFieldRefInput,
+     ?     gte?: String | StringFieldRefInput,
+     ?     startsWith?: String | StringFieldRefInput,
+     ?     endsWith?: String | StringFieldRefInput,
+     ?     not?: String | NestedStringFilter
+         }
+       },
+       skip: 0,
+       take: 0,
+       orderBy: {
+         createdAt: "desc"
+       },
+       include: {
+         school: {
+           select: {
+             id: true,
+             name: true
+           }
+         },
+         _count: {
+           select: {
+             Class: true,
+             Staff: true,
+             Student: true
+           }
+         }
+       }
+     })
+
+Unknown argument `mode`. Did you mean `lte`? Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.campus.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/campusController.js:91:47
+
+  88   }),
+  89 };
+  90      
+→ 91 const campuses = await prisma.campus.findMany({
+       where: {
+         schoolId: 1,
+         name: {
+           contains: "Grade 1",
+           mode: "insensitive",
+           ~~~~
+     ?     equals?: String | StringFieldRefInput,
+     ?     in?: String[],
+     ?     notIn?: String[],
+     ?     lt?: String | StringFieldRefInput,
+     ?     lte?: String | StringFieldRefInput,
+     ?     gt?: String | StringFieldRefInput,
+     ?     gte?: String | StringFieldRefInput,
+     ?     startsWith?: String | StringFieldRefInput,
+     ?     endsWith?: String | StringFieldRefInput,
+     ?     not?: String | NestedStringFilter
+         }
+       },
+       skip: 0,
+       take: 0,
+       orderBy: {
+         createdAt: "desc"
+       },
+       include: {
+         school: {
+           select: {
+             id: true,
+             name: true
+           }
+         },
+         _count: {
+           select: {
+             Class: true,
+             Staff: true,
+             Student: true
+           }
+         }
+       }
+     })
+
+Unknown argument `mode`. Did you mean `lte`? Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.getCampuses (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/campusController.js:91:27)
+[2025-09-10T15:32:08.270Z] ERROR: GET /api/admin/campuses/?name=Grade%201 - 
+Invalid `prisma.campus.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/campusController.js:91:47
+
+  88   }),
+  89 };
+  90      
+→ 91 const campuses = await prisma.campus.findMany({
+       where: {
+         schoolId: 1,
+         name: {
+           contains: "Grade 1",
+           mode: "insensitive",
+           ~~~~
+     ?     equals?: String | StringFieldRefInput,
+     ?     in?: String[],
+     ?     notIn?: String[],
+     ?     lt?: String | StringFieldRefInput,
+     ?     lte?: String | StringFieldRefInput,
+     ?     gt?: String | StringFieldRefInput,
+     ?     gte?: String | StringFieldRefInput,
+     ?     startsWith?: String | StringFieldRefInput,
+     ?     endsWith?: String | StringFieldRefInput,
+     ?     not?: String | NestedStringFilter
+         }
+       },
+       skip: 0,
+       take: 10,
+       orderBy: {
+         createdAt: "desc"
+       },
+       include: {
+         school: {
+           select: {
+             id: true,
+             name: true
+           }
+         },
+         _count: {
+           select: {
+             Class: true,
+             Staff: true,
+             Student: true
+           }
+         }
+       }
+     })
+
+Unknown argument `mode`. Did you mean `lte`? Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.campus.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/campusController.js:91:47
+
+  88   }),
+  89 };
+  90      
+→ 91 const campuses = await prisma.campus.findMany({
+       where: {
+         schoolId: 1,
+         name: {
+           contains: "Grade 1",
+           mode: "insensitive",
+           ~~~~
+     ?     equals?: String | StringFieldRefInput,
+     ?     in?: String[],
+     ?     notIn?: String[],
+     ?     lt?: String | StringFieldRefInput,
+     ?     lte?: String | StringFieldRefInput,
+     ?     gt?: String | StringFieldRefInput,
+     ?     gte?: String | StringFieldRefInput,
+     ?     startsWith?: String | StringFieldRefInput,
+     ?     endsWith?: String | StringFieldRefInput,
+     ?     not?: String | NestedStringFilter
+         }
+       },
+       skip: 0,
+       take: 10,
+       orderBy: {
+         createdAt: "desc"
+       },
+       include: {
+         school: {
+           select: {
+             id: true,
+             name: true
+           }
+         },
+         _count: {
+           select: {
+             Class: true,
+             Staff: true,
+             Student: true
+           }
+         }
+       }
+     })
+
+Unknown argument `mode`. Did you mean `lte`? Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.getCampuses (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/campusController.js:91:27)
+[2025-09-11T11:01:42.467Z] ERROR: GET /api/admin/classes/ - 
+Invalid `prisma.class.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:48:45
+
+  45 const { campusId, name } = req.query;
+  46 const schoolId = req.schoolId;
+  47      
+→ 48 const classes = await prisma.class.findMany(
+The column `ecolex.Student.classGroupId` does not exist in the current database.
+PrismaClientKnownRequestError: 
+Invalid `prisma.class.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:48:45
+
+  45 const { campusId, name } = req.query;
+  46 const schoolId = req.schoolId;
+  47      
+→ 48 const classes = await prisma.class.findMany(
+The column `ecolex.Student.classGroupId` does not exist in the current database.
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:7315)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.getAllClasses (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:48:26)
+[2025-09-11T11:02:50.570Z] ERROR: GET /api/admin/classes/ - 
+Invalid `prisma.class.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:48:45
+
+  45 const { campusId, name } = req.query;
+  46 const schoolId = req.schoolId;
+  47      
+→ 48 const classes = await prisma.class.findMany({
+       where: {
+         schoolId: 1
+       },
+       include: {
+         campus: true,
+         staff: true,
+         students: true,
+         classGroup: true,
+         ~~~~~~~~~~
+     ?   school?: true,
+     ?   classGroups?: true,
+     ?   assignments?: true,
+     ?   ContinuousAssessment?: true,
+     ?   Exam?: true
+       }
+     })
+
+Unknown field `classGroup` for include statement on model `Class`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.class.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:48:45
+
+  45 const { campusId, name } = req.query;
+  46 const schoolId = req.schoolId;
+  47      
+→ 48 const classes = await prisma.class.findMany({
+       where: {
+         schoolId: 1
+       },
+       include: {
+         campus: true,
+         staff: true,
+         students: true,
+         classGroup: true,
+         ~~~~~~~~~~
+     ?   school?: true,
+     ?   classGroups?: true,
+     ?   assignments?: true,
+     ?   ContinuousAssessment?: true,
+     ?   Exam?: true
+       }
+     })
+
+Unknown field `classGroup` for include statement on model `Class`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.getAllClasses (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:48:26)
+[2025-09-11T11:03:37.997Z] ERROR: GET /api/admin/classes/ - 
+Invalid `prisma.class.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:48:45
+
+  45 const { campusId, name } = req.query;
+  46 const schoolId = req.schoolId;
+  47      
+→ 48 const classes = await prisma.class.findMany(
+The column `ecolex.Student.classGroupId` does not exist in the current database.
+PrismaClientKnownRequestError: 
+Invalid `prisma.class.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:48:45
+
+  45 const { campusId, name } = req.query;
+  46 const schoolId = req.schoolId;
+  47      
+→ 48 const classes = await prisma.class.findMany(
+The column `ecolex.Student.classGroupId` does not exist in the current database.
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:7315)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.getAllClasses (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:48:26)

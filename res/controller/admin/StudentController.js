@@ -51,7 +51,7 @@ exports.createStudent = async (req, res, next) => {
        try {
               const{
                      name, campusId, classId,
-                     surname,otherNames,gender,dataOfBirth,
+                     surname,otherNames,gender,dateOfBirth,
                      guardianName,guardianNumber,lifestyle,session,
                      email,
               } = req.body;
@@ -67,7 +67,7 @@ exports.createStudent = async (req, res, next) => {
                             surname,
                             otherNames,
                             gender,
-                            dataOfBirth,
+                            dateOfBirth,
                             guardianName,
                             guardianNumber,
                             lifestyle,
@@ -116,45 +116,111 @@ exports.updateStudent = async (req, res, next) => {
        }
 }
 
-exports.changeStudentClass = async (req,res,next) => {
-       try {
-              const {studentId} = req.params;
-              const {classId} = req.body;
+exports.getSingleStudent = async (req, res, next) => {
+       try{
+              const { id } = req.params;
 
-              if(!classId) return res.status(400).json({ message: "Class ID is required" });
-
-              const classExist = await prisma.class.findUnique({
-                     where: { id: parseInt(classId) },
+              const studentExist = await prisma.student.findUnique({
+                     where: { id: parseInt(id) },
               });
-              if (!classExist) {
-                     return res.status(404).json({ message: "Class not found" });
-              }
 
-              const student = await prisma.student.findUnique({
-                     where: { id: parseInt(studentId) },
-              });
-              if (!student) {
+              if (!studentExist) {
                      return res.status(404).json({ message: "Student not found" });
               }
 
-              const updatedStudent = await prisma.student.update({
-                     where: { id: parseInt(studentId) },
-                     data: { classId: parseInt(classId) },
-                     include: {
-                           class: {
-                                 include: { classGroups: true }
-                           },
-                     },
-              });
-
               res.status(200).json({
                      success: true,
-                     message: "Student class updated successfully",
-                     student: updatedStudent,
+                     message: "Student updated successfully",
+                     data: studentExist,
               });
-
-
-       } catch (error) {
-              next(error);        
+       }catch(error){
+              next(error);
        }
 }
+
+exports.changeStudentClass = async (req, res, next) => {
+       try {
+         const { studentId } = req.params;
+         const { classId, groupId, campusId } = req.body;
+     
+         if (!classId)
+           return res.status(400).json({ message: "Class ID is required" });
+     
+         // 1️⃣ Validate class existence
+         const classExist = await prisma.class.findUnique({
+           where: { id: parseInt(classId) },
+           include: { classGroups: true },
+         });
+     
+         if (!classExist) {
+           return res.status(404).json({ message: "Class not found" });
+         }
+     
+         // ✅ Optional: Validate campus if provided
+         if (campusId) {
+           const campusExist = await prisma.campus.findUnique({
+             where: { id: parseInt(campusId) },
+           });
+           if (!campusExist) {
+             return res.status(404).json({ message: "Campus not found" });
+           }
+           if (campusExist.schoolId !== classExist.schoolId) {
+             return res.status(400).json({
+               message: "This campus does not belong to the same school as the class",
+             });
+           }
+         }
+     
+         // 2️⃣ Validate student existence
+         const student = await prisma.student.findUnique({
+           where: { id: parseInt(studentId) },
+         });
+     
+         if (!student) {
+           return res.status(404).json({ message: "Student not found" });
+         }
+     
+         // 3️⃣ Validate group if provided
+         let groupData = {};
+         if (groupId) {
+           const groupExist = await prisma.classGroup.findUnique({
+             where: { id: parseInt(groupId) },
+           });
+           if (!groupExist) {
+             return res.status(404).json({ message: "Class group not found" });
+           }
+           if (groupExist.classId !== classExist.id) {
+             return res.status(400).json({
+               message: "This group does not belong to the specified class",
+             });
+           }
+     
+           groupData = { classGroupId: parseInt(groupId) };
+         }
+     
+         // 4️⃣ Update student (class + optional group + optional campus)
+         const updatedStudent = await prisma.student.update({
+           where: { id: parseInt(studentId) },
+           data: {
+             classId: parseInt(classId),
+             ...(campusId && { campusId: parseInt(campusId) }),
+             ...groupData,
+           },
+           include: {
+             class: { include: { classGroups: true, campus: true } },
+             campus: true,
+           },
+         });
+     
+         res.status(200).json({
+           success: true,
+           message: `Student moved to class ${classExist.name}${
+             groupId ? " and added to group" : ""
+           }${campusId ? " in the selected campus" : ""} successfully`,
+           student: updatedStudent,
+         });
+       } catch (error) {
+         next(error);
+       }
+};
+     

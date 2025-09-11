@@ -93,6 +93,7 @@ model Class {
   schoolId    Int
   campusId    Int?
   name        String
+  customName  String?
   staffId   Int? // Optional, in case a class is created without a teacher assigned
   createdAt   DateTime     @default(now())
   school      School       @relation(fields: [schoolId], references: [id])
@@ -117,6 +118,8 @@ model ClassGroup {
   name      String
   createdAt DateTime @default(now())
   class     Class    @relation(fields: [classId], references: [id])
+
+  students  Student[] // ✅ back-relation (one group -> many students)
 }
 
 model Staff {
@@ -157,6 +160,9 @@ model Student {
   lifestyle      String?
   session        String
   email          String? 
+
+  classGroupId Int? // ✅ optional since not all students must have a group
+  classGroup   ClassGroup? @relation(fields: [classGroupId], references: [id])
 
   createdAt   DateTime     @default(now())
   school      School       @relation(fields: [schoolId], references: [id])

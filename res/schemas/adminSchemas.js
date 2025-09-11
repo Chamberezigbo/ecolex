@@ -89,8 +89,22 @@ exports.editStaffSchema = Joi.object({
   // schoolId will come from middleware, so no need to pass here
 });
 
-const assignTeacherSchema = Joi.object({
+exports.assignTeacherSchema = Joi.object({
   staffId: Joi.number().integer().required(),
   classId: Joi.number().integer().required(),
   subjectId: Joi.number().integer().required(),
+});
+
+// ✅ Validation schema for creating/updating classes
+exports.classSchema = Joi.object({
+  name: Joi.string().max(100).required(),
+  campusId: Joi.number().integer().optional(), // optional since not all schools have campuses
+  customName: Joi.string().max(255).optional(), // custom class name (if school uses custom naming)
+  staffId: Joi.number().integer().optional(), // optional, assign class teacher at creation
+});
+
+// ✅ Validation schema for class groups
+exports.classGroupSchema = Joi.object({
+  classId: Joi.number().integer().required(),
+  name: Joi.string().max(100).required(), // e.g., "JS1A", "SS2B"
 });
