@@ -1,8 +1,9 @@
 {
   "name": "ecolex",
   "version": "1.0.0",
-  "description": "school CMS ",
-  "main": "app.js",
+  "prisma": {
+    "schema": "prisma/schema.prisma"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
