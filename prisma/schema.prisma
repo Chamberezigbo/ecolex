@@ -135,13 +135,15 @@ model Staff {
   dateEmployed DateTime?
   payroll     Decimal?  // salary or payroll reference
   createdAt   DateTime  @default(now())
+  registrationNumber  String    @unique @db.VarChar(50)
 
   school  School  @relation(fields: [schoolId], references: [id])
   campus  Campus? @relation(fields: [campusId], references: [id])
   classes Class[] // if staff is a teacher, they can have classes
-   assignments   TeacherAssignment[] // All class+subject+campus teaching assignments
+  assignments   TeacherAssignment[] // All class+subject+campus teaching assignments
 
-  @@map("staff")
+  @@unique([schoolId, registrationNumber])
+  @@map("staffs")
 }
 
 model Student {
@@ -154,7 +156,7 @@ model Student {
   surname        String
   otherNames     String
   gender         String?      @db.VarChar(10)
-  dateOfBirth    DateTime?
+  dateOfBirth    String?
   guardianName   String?
   guardianNumber String?
   lifestyle      String?
@@ -163,6 +165,12 @@ model Student {
 
   classGroupId Int? // ✅ optional since not all students must have a group
   classGroup   ClassGroup? @relation(fields: [classGroupId], references: [id])
+  // ✅ NEW: Registration Number Field
+  registrationNumber String   @unique @db.VarChar(50)
+
+  // ✅ NEW: Unique constraint for registration number per school
+  @@unique([schoolId, registrationNumber])
+  @@map("students")
 
   createdAt   DateTime     @default(now())
   school      School       @relation(fields: [schoolId], references: [id])
@@ -193,17 +201,17 @@ model Subject {
 model TeacherAssignment {
   id        Int      @id @default(autoincrement())
   staffId   Int
-  classId   Int
-  subjectId Int
-  campusId  Int?
+  classId   Int?     // Optional classId
+  subjectId Int?     // Optional subjectId
+  campusId  Int?     // Optional campusId
   assignedAt DateTime @default(now())
 
   staff   Staff   @relation(fields: [staffId], references: [id])
-  class   Class   @relation(fields: [classId], references: [id])
-  subject Subject @relation(fields: [subjectId], references: [id])
+  class   Class?  @relation(fields: [classId], references: [id])
+  subject Subject? @relation(fields: [subjectId], references: [id])
   campus  Campus? @relation(fields: [campusId], references: [id])
 
-  @@unique([staffId, classId, subjectId, campusId]) // Prevent duplicate assignment per campus
+  @@index([staffId, classId, subjectId, campusId], name: "TeacherAssignment_unique") // Unique index
   @@map("teacher_assignments")
 }
 

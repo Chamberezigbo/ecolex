@@ -950,3 +950,2948 @@ The column `ecolex.Student.classGroupId` does not exist in the current database.
     at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
     at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
     at async exports.getAllClasses (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:48:26)
+[2025-10-06T13:35:18.469Z] ERROR: POST /api/admin/student/create - 
+Invalid `prisma.student.create()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:110:49
+
+  107 }
+  108 
+  109 // 3️⃣ Create student
+→ 110 const createdStudent = await prisma.student.create({
+        data: {
+          name: "Darlinton",
+          schoolId: 1,
+          campusId: 2,
+          classId: 1,
+          surname: "Ezigbo",
+          otherNames: "Abuchi",
+          gender: "Male",
+          dateOfBirth: "2000-06-15",
+          guardianName: "John Doe",
+          guardianNumber: "08012345678",
+          lifestyle: "Calm, focused",
+          session: "2025/2026",
+          email: "student@example.com",
+          registrationId: "DCS-1759757718426-1698-0STD",
+      +   registrationNumber: String
+        },
+        include: {
+          class: {
+            include: {
+              classGroups: true
+            }
+          },
+          classGroup: true
+        }
+      })
+
+Argument `registrationNumber` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.create()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:110:49
+
+  107 }
+  108 
+  109 // 3️⃣ Create student
+→ 110 const createdStudent = await prisma.student.create({
+        data: {
+          name: "Darlinton",
+          schoolId: 1,
+          campusId: 2,
+          classId: 1,
+          surname: "Ezigbo",
+          otherNames: "Abuchi",
+          gender: "Male",
+          dateOfBirth: "2000-06-15",
+          guardianName: "John Doe",
+          guardianNumber: "08012345678",
+          lifestyle: "Calm, focused",
+          session: "2025/2026",
+          email: "student@example.com",
+          registrationId: "DCS-1759757718426-1698-0STD",
+      +   registrationNumber: String
+        },
+        include: {
+          class: {
+            include: {
+              classGroups: true
+            }
+          },
+          classGroup: true
+        }
+      })
+
+Argument `registrationNumber` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.createStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:110:28)
+[2025-10-06T13:46:22.156Z] ERROR: POST /api/admin/student/create - timestamp is not defined
+ReferenceError: timestamp is not defined
+    at generateUniqueIdentifier (/Users/Chambs/Documents/Backed servers /ecolex/res/Models/generateUniqueIdentifier.js:9:41)
+    at exports.createStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:80:22)
+[2025-10-06T14:00:18.168Z] ERROR: POST /api/admin/staff/create - generateUniqueIdentifier is not defined
+ReferenceError: generateUniqueIdentifier is not defined
+    at exports.createStaff (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:31:22)
+[2025-10-06T14:02:55.071Z] ERROR: POST /api/admin/staff/create - 
+Invalid `prisma.staff.create()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:47:41
+
+  44 }
+  45 
+  46 // ✅ Create staff
+→ 47 const newStaff = await prisma.staff.create({
+       data: {
+         schoolId: 1,
+         campusId: undefined,
+         name: "John Doe",
+         email: "john.doe@school.com",
+         phoneNumber: "08012345678",
+         address: "School quarters",
+         duty: "Teacher",
+         nextOfKin: "Jane Doe",
+         registrationId: "DCS-7408-STA",
+         dateEmployed: new Date("2025-09-01T00:00:00.000Z"),
+         payroll: 150000,
+     +   registrationNumber: String
+       }
+     })
+
+Argument `registrationNumber` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.staff.create()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:47:41
+
+  44 }
+  45 
+  46 // ✅ Create staff
+→ 47 const newStaff = await prisma.staff.create({
+       data: {
+         schoolId: 1,
+         campusId: undefined,
+         name: "John Doe",
+         email: "john.doe@school.com",
+         phoneNumber: "08012345678",
+         address: "School quarters",
+         duty: "Teacher",
+         nextOfKin: "Jane Doe",
+         registrationId: "DCS-7408-STA",
+         dateEmployed: new Date("2025-09-01T00:00:00.000Z"),
+         payroll: 150000,
+     +   registrationNumber: String
+       }
+     })
+
+Argument `registrationNumber` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.createStaff (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:47:22)
+[2025-10-06T15:55:10.053Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:47
+
+  147 const { id } = req.params;
+  148 const data = req.body;
+  149 
+→ 150 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:47
+
+  147 const { id } = req.params;
+  148 const data = req.body;
+  149 
+→ 150 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:26)
+[2025-10-06T15:58:53.338Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:47
+
+  147 const { id } = req.params;
+  148 const data = req.body;
+  149 
+→ 150 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:47
+
+  147 const { id } = req.params;
+  148 const data = req.body;
+  149 
+→ 150 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:26)
+[2025-10-06T16:13:02.651Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:47
+
+  147 const { id } = req.params;
+  148 const data = req.body;
+  149 
+→ 150 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:47
+
+  147 const { id } = req.params;
+  148 const data = req.body;
+  149 
+→ 150 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:26)
+[2025-10-06T16:13:27.897Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:47
+
+  147 const { id } = req.params;
+  148 const data = req.body;
+  149 
+→ 150 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:47
+
+  147 const { id } = req.params;
+  148 const data = req.body;
+  149 
+→ 150 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:26)
+[2025-10-06T16:14:17.964Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:47
+
+  147 const { id } = req.params;
+  148 const data = req.body;
+  149 
+→ 150 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:47
+
+  147 const { id } = req.params;
+  148 const data = req.body;
+  149 
+→ 150 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:150:26)
+[2025-10-06T16:16:33.473Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:17:22.075Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:21:38.499Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:22:49.851Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:24:36.609Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:25:16.509Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:25:44.827Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:26:55.743Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:28:32.201Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:28:34.319Z] ERROR: PUT /api/admin/student/change-class/ - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:30:17.789Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:30:58.609Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:31:15.511Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:33:39.517Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:33:58.221Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:34:09.714Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:45:13.282Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:47:20.038Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-06T16:47:37.848Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-07T11:18:01.790Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-07T11:19:15.413Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-07T11:19:57.095Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-07T11:20:20.596Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-07T11:20:45.655Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-07T11:21:20.167Z] ERROR: PUT /api/admin/student/change-class - 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.student.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:47
+
+  148 const { id } = req.params;
+  149 const data = req.body;
+  150 
+→ 151 const studentExist = await prisma.student.findUnique({
+        where: {
+      +   id: Int
+        }
+      })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.updateStudent (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StudentController.js:151:26)
+[2025-10-07T14:00:34.223Z] ERROR: GET /api/admin/staff/assign-teacher - 
+Invalid `prisma.staff.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:126:48
+
+  123 exports.getStaffDetails = async (req, res, next) => {
+  124        try {
+  125               const { staffId } = req.params;
+→ 126               const staff = await prisma.staff.findUnique({
+                      where: {
+                    +   id: Int
+                      }
+                    })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.staff.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:126:48
+
+  123 exports.getStaffDetails = async (req, res, next) => {
+  124        try {
+  125               const { staffId } = req.params;
+→ 126               const staff = await prisma.staff.findUnique({
+                      where: {
+                    +   id: Int
+                      }
+                    })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.getStaffDetails (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:126:29)
+[2025-10-07T14:36:04.202Z] ERROR: GET /api/admin/staff/assign-teacher - 
+Invalid `prisma.staff.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:126:48
+
+  123 exports.getStaffDetails = async (req, res, next) => {
+  124        try {
+  125               const { staffId } = req.params;
+→ 126               const staff = await prisma.staff.findUnique({
+                      where: {
+                    +   id: Int
+                      }
+                    })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.staff.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:126:48
+
+  123 exports.getStaffDetails = async (req, res, next) => {
+  124        try {
+  125               const { staffId } = req.params;
+→ 126               const staff = await prisma.staff.findUnique({
+                      where: {
+                    +   id: Int
+                      }
+                    })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.getStaffDetails (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:126:29)
+[2025-10-07T15:12:15.826Z] ERROR: GET /api/admin/staff/assign-teacher - 
+Invalid `prisma.staff.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:126:48
+
+  123 exports.getStaffDetails = async (req, res, next) => {
+  124        try {
+  125               const { staffId } = req.params;
+→ 126               const staff = await prisma.staff.findUnique({
+                      where: {
+                    +   id: Int
+                      }
+                    })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `prisma.staff.findUnique()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:126:48
+
+  123 exports.getStaffDetails = async (req, res, next) => {
+  124        try {
+  125               const { staffId } = req.params;
+→ 126               const staff = await prisma.staff.findUnique({
+                      where: {
+                    +   id: Int
+                      }
+                    })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.getStaffDetails (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:126:29)
+[2025-10-07T15:24:16.792Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:165:55
+
+  162 if (!subject) return res.status(404).json({ success: false, message: "Subject not found" });
+  163 
+  164 // Create assignment (prevent duplicates)
+→ 165 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2
+          },
+      ?   id?: Int,
+      ?   staffId_classId_subjectId_campusId?: TeacherAssignmentStaffIdClassIdSubjectIdCampusIdCompoundUniqueInput,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntFilter | Int,
+      ?   subjectId?: IntFilter | Int,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassRelationFilter | ClassWhereInput,
+      ?   subject?: SubjectRelationFilter | SubjectWhereInput,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:165:55
+
+  162 if (!subject) return res.status(404).json({ success: false, message: "Subject not found" });
+  163 
+  164 // Create assignment (prevent duplicates)
+→ 165 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2
+          },
+      ?   id?: Int,
+      ?   staffId_classId_subjectId_campusId?: TeacherAssignmentStaffIdClassIdSubjectIdCampusIdCompoundUniqueInput,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntFilter | Int,
+      ?   subjectId?: IntFilter | Int,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassRelationFilter | ClassWhereInput,
+      ?   subject?: SubjectRelationFilter | SubjectWhereInput,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:165:24)
+[2025-10-07T16:25:29.981Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:165:55
+
+  162 if (!subject) return res.status(404).json({ success: false, message: "Subject not found" });
+  163 
+  164 // Create assignment (prevent duplicates)
+→ 165 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2
+          },
+      ?   id?: Int,
+      ?   staffId_classId_subjectId_campusId?: TeacherAssignmentStaffIdClassIdSubjectIdCampusIdCompoundUniqueInput,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntFilter | Int,
+      ?   subjectId?: IntFilter | Int,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassRelationFilter | ClassWhereInput,
+      ?   subject?: SubjectRelationFilter | SubjectWhereInput,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:165:55
+
+  162 if (!subject) return res.status(404).json({ success: false, message: "Subject not found" });
+  163 
+  164 // Create assignment (prevent duplicates)
+→ 165 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2
+          },
+      ?   id?: Int,
+      ?   staffId_classId_subjectId_campusId?: TeacherAssignmentStaffIdClassIdSubjectIdCampusIdCompoundUniqueInput,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntFilter | Int,
+      ?   subjectId?: IntFilter | Int,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassRelationFilter | ClassWhereInput,
+      ?   subject?: SubjectRelationFilter | SubjectWhereInput,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:165:24)
+[2025-10-07T16:31:02.389Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:172:55
+
+  169 }
+  170 
+  171 // Create assignment (prevent duplicates)
+→ 172 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+      +     campusId: Int
+          }
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Argument `campusId` must not be null.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:172:55
+
+  169 }
+  170 
+  171 // Create assignment (prevent duplicates)
+→ 172 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+      +     campusId: Int
+          }
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Argument `campusId` must not be null.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:172:24)
+[2025-10-07T16:47:31.091Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:55
+
+  175 }
+  176 
+  177 // Create assignment (prevent duplicates)
+→ 178 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+      +     campusId: Int
+          }
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Argument `campusId` must not be null.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:55
+
+  175 }
+  176 
+  177 // Create assignment (prevent duplicates)
+→ 178 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+      +     campusId: Int
+          }
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Argument `campusId` must not be null.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:24)
+[2025-10-07T16:52:01.314Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:55
+
+  175 }
+  176 
+  177 // Create assignment (prevent duplicates)
+→ 178 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+      +     campusId: Int
+          }
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Argument `campusId` must not be null.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:55
+
+  175 }
+  176 
+  177 // Create assignment (prevent duplicates)
+→ 178 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+      +     campusId: Int
+          }
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Argument `campusId` must not be null.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:24)
+[2025-10-07T16:53:20.799Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:55
+
+  175 }
+  176 
+  177 // Create assignment (prevent duplicates)
+→ 178 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+      +     campusId: Int
+          }
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Argument `campusId` must not be null.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:55
+
+  175 }
+  176 
+  177 // Create assignment (prevent duplicates)
+→ 178 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+      +     campusId: Int
+          }
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Argument `campusId` must not be null.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:24)
+[2025-10-07T16:53:35.712Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:55
+
+  175 }
+  176 
+  177 // Create assignment (prevent duplicates)
+→ 178 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:55
+
+  175 }
+  176 
+  177 // Create assignment (prevent duplicates)
+→ 178 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:24)
+[2025-10-07T17:01:45.079Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:55
+
+  175 }
+  176 
+  177 // Create assignment (prevent duplicates)
+→ 178 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:55
+
+  175 }
+  176 
+  177 // Create assignment (prevent duplicates)
+→ 178 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:24)
+[2025-10-07T17:02:21.363Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:55
+
+  175 }
+  176 
+  177 // Create assignment (prevent duplicates)
+→ 178 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:55
+
+  175 }
+  176 
+  177 // Create assignment (prevent duplicates)
+→ 178 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:178:24)
+[2025-10-07T17:03:12.427Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:24)
+[2025-10-07T17:04:43.761Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:24)
+[2025-10-07T17:04:47.741Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:24)
+[2025-10-07T17:08:42.892Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:24)
+[2025-10-07T17:09:06.976Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:24)
+[2025-10-07T17:13:53.461Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId_classId_subjectId_campusId: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `staffId_classId_subjectId_campusId`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:24)
+[2025-10-07T17:28:20.598Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          unique_teacher_assignment: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   staffId_classId_subjectId_campusId?: TeacherAssignmentStaffIdClassIdSubjectIdCampusIdCompoundUniqueInput,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `unique_teacher_assignment`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          unique_teacher_assignment: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   staffId_classId_subjectId_campusId?: TeacherAssignmentStaffIdClassIdSubjectIdCampusIdCompoundUniqueInput,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `unique_teacher_assignment`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:24)
+[2025-10-07T17:30:17.816Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          unique_teacher_assignment: {
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+      +     campusId: Int
+          }
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Argument `campusId` must not be null.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          unique_teacher_assignment: {
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+      +     campusId: Int
+          }
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Argument `campusId` must not be null.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:24)
+[2025-10-08T10:10:24.096Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          unique_teacher_assignment: {
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+            ~~~~~~~~
+          }
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `campusId`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          unique_teacher_assignment: {
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+            ~~~~~~~~
+          }
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `campusId`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:24)
+[2025-10-08T10:18:23.859Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          unique_teacher_assignment: {
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: NaN
+            ~~~~~~~~
+          }
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: NaN
+        }
+      })
+
+Unknown argument `campusId`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          unique_teacher_assignment: {
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: NaN
+            ~~~~~~~~
+          }
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: NaN
+        }
+      })
+
+Unknown argument `campusId`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:24)
+[2025-10-08T11:00:20.719Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:194:55
+
+  191 }
+  192 
+  193 // Create assignment (prevent duplicates)
+→ 194 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Argument `where` of type TeacherAssignmentWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:194:55
+
+  191 }
+  192 
+  193 // Create assignment (prevent duplicates)
+→ 194 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Argument `where` of type TeacherAssignmentWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:194:24)
+[2025-10-08T11:03:37.432Z] ERROR: POST /api/admin/staff/assign-teacher - 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          TeacherAssignment_unique: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `TeacherAssignment_unique`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.teacherAssignment.upsert()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:55
+
+  174 }
+  175 
+  176 // Create assignment (prevent duplicates)
+→ 177 const assignment = await prisma.teacherAssignment.upsert({
+        where: {
+          TeacherAssignment_unique: {
+          ~~~~~~~~~~~~~~~~~~~~~~~~
+            staffId: 1,
+            classId: 2,
+            subjectId: 2,
+            campusId: null
+          },
+      ?   id?: Int,
+      ?   AND?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   OR?: TeacherAssignmentWhereInput[],
+      ?   NOT?: TeacherAssignmentWhereInput | TeacherAssignmentWhereInput[],
+      ?   staffId?: IntFilter | Int,
+      ?   classId?: IntNullableFilter | Int | Null,
+      ?   subjectId?: IntNullableFilter | Int | Null,
+      ?   campusId?: IntNullableFilter | Int | Null,
+      ?   assignedAt?: DateTimeFilter | DateTime,
+      ?   staff?: StaffRelationFilter | StaffWhereInput,
+      ?   class?: ClassNullableRelationFilter | ClassWhereInput | Null,
+      ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+      ?   campus?: CampusNullableRelationFilter | CampusWhereInput | Null
+        },
+        update: {},
+        create: {
+          staffId: 1,
+          classId: 2,
+          subjectId: 2,
+          campusId: null
+        }
+      })
+
+Unknown argument `TeacherAssignment_unique`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.assignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:177:24)
+[2025-10-17T17:26:17.629Z] ERROR: GET /api/admin/class-groups/?limit=7 - 
+Invalid `prisma.classGroup.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:176:49
+
+  173 const totalCount = await prisma.classGroup.count({ where: filters });
+  174      
+  175 // ✅ Fetch groups with pagination
+→ 176 const groups = await prisma.classGroup.findMany({
+        where: {
+          filters: {},
+          ~~~~~~~
+          class: {
+            schoolId: 1
+          },
+      ?   AND?: ClassGroupWhereInput | ClassGroupWhereInput[],
+      ?   OR?: ClassGroupWhereInput[],
+      ?   NOT?: ClassGroupWhereInput | ClassGroupWhereInput[],
+      ?   id?: IntFilter | Int,
+      ?   classId?: IntFilter | Int,
+      ?   name?: StringFilter | String,
+      ?   createdAt?: DateTimeFilter | DateTime,
+      ?   students?: StudentListRelationFilter
+        },
+        skip: 0,
+        take: 7,
+        orderBy: {
+          createdAt: "desc"
+        },
+        include: {
+          class: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        }
+      })
+
+Unknown argument `filters`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.classGroup.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:176:49
+
+  173 const totalCount = await prisma.classGroup.count({ where: filters });
+  174      
+  175 // ✅ Fetch groups with pagination
+→ 176 const groups = await prisma.classGroup.findMany({
+        where: {
+          filters: {},
+          ~~~~~~~
+          class: {
+            schoolId: 1
+          },
+      ?   AND?: ClassGroupWhereInput | ClassGroupWhereInput[],
+      ?   OR?: ClassGroupWhereInput[],
+      ?   NOT?: ClassGroupWhereInput | ClassGroupWhereInput[],
+      ?   id?: IntFilter | Int,
+      ?   classId?: IntFilter | Int,
+      ?   name?: StringFilter | String,
+      ?   createdAt?: DateTimeFilter | DateTime,
+      ?   students?: StudentListRelationFilter
+        },
+        skip: 0,
+        take: 7,
+        orderBy: {
+          createdAt: "desc"
+        },
+        include: {
+          class: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        }
+      })
+
+Unknown argument `filters`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async exports.getClassGroups (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:176:25)

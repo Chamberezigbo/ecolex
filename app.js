@@ -12,6 +12,7 @@ const studentRoutes = require("./res/routes/student");
 const teacherRoutes = require("./res/routes/teacher");
 const setupRoutes = require("./res/routes/setup");
 const errorMiddleware = require("./res/middleware/error");
+const { notFound } = require("./res/middleware/404");
 
 const app = express();
 
@@ -31,6 +32,9 @@ app.use("/api/system-admin", systemAdmin);
 app.use("/api/student", studentRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/setup", setupRoutes);
+
+// 404 Middleware
+app.use(notFound);
 
 // Always at the end, after all routes
 app.use(errorMiddleware);

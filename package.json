@@ -6,7 +6,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "build": "npm run prisma:generate && npm run prisma:deploy",
+    "build:full": "npm install && npm run prisma:generate && npm run prisma:deploy",
+    "prisma:generate": "prisma generate",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:migrate": "prisma migrate dev --name",
+    "prisma:studio": "prisma studio",
+    "prisma:reset": "prisma migrate reset",
+    "postinstall": "prisma generate"
   },
   "author": "chamberezigbo",
   "license": "ISC",

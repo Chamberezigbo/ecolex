@@ -47,6 +47,7 @@ exports.studentSchema = Joi.object({
   // schoolId: Joi.number().integer().required(),
   campusId: Joi.number().integer().optional(),
   classId: Joi.number().integer().required(),
+  groupId: Joi.number().integer().optional(),
 
   // Optional contact info
   email: Joi.string().email().max(255).optional(),

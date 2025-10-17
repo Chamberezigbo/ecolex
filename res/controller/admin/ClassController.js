@@ -41,32 +41,32 @@ exports.createClass = async (req, res, next) => {
 
 // ✅ Get all classes with optional filters
 exports.getAllClasses = async (req, res, next) => {
-       try {
-         const { campusId, name } = req.query;
-         const schoolId = req.schoolId;
-     
-         const classes = await prisma.class.findMany({
-           where: {
-             schoolId,
-             ...(campusId && { campusId: Number(campusId) }),
-             ...(name && { name: { contains: name,} }),
-           },
-           include: {
-             campus: true,
-             staff: true,
-             students: true,
-             classGroups: true,
-           },
-         });
-     
-         res.status(200).json({
-           success: true,
-           count: classes.length,
-           classes,
-         });
-       } catch (err) {
-         next(err);
-       }
+  try {
+    const { campusId, name } = req.query;
+    const schoolId = req.schoolId;
+
+    const classes = await prisma.class.findMany({
+      where: {
+        schoolId,
+        ...(campusId && { campusId: Number(campusId) }),
+        ...(name && { name: { contains: name,} }),
+      },
+      include: {
+        campus: true,
+        staff: true,
+        students: true,
+        classGroups: true,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      count: classes.length,
+      classes,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.deleteClass = async (req, res, next) => {
@@ -163,6 +163,7 @@ exports.createClassGroup = async (req, res, next) => {
 exports.getClassGroups = async (req, res, next) => {
        try {
          const { page = 1, limit = 10, classId } = req.query;
+         const schoolId = req.schoolId;
      
          // ✅ Build filter dynamically
          const filters = {};
@@ -173,7 +174,12 @@ exports.getClassGroups = async (req, res, next) => {
      
          // ✅ Fetch groups with pagination
          const groups = await prisma.classGroup.findMany({
-           where: filters,
+           where: {
+            ...filters, class: {
+              schoolId:schoolId
+            }
+
+           },
            skip: (page - 1) * limit,
            take: Number(limit),
            orderBy: { createdAt: "desc" },

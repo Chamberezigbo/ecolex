@@ -12,7 +12,7 @@ const {
 const {
   getStudentDetails,createStudent,
   updateStudent,changeStudentClass,
-  getSingleStudent
+  getSingleStudent,
 } = require("../../controller/admin/StudentController");
 
 const{
@@ -28,7 +28,7 @@ const{
 const{
   createCampus,
   updateCampus,
-  getCampuses
+  getCampuses,
 } = require("../../controller/admin/campusController")
 
 const {
@@ -83,7 +83,7 @@ router.get("/", checkHealth);
 router.get("/students", auth.authenticateSuperAdmin, auth.attachSchoolId, getStudentDetails);
 router.post("/student/create", validate(studentSchema), auth.authenticateSuperAdmin, auth.attachSchoolId, createStudent);
 router.put("/student/:id", auth.authenticateSuperAdmin, updateStudent);
-router.put("/student/change-class/:studentId", auth.authenticateSuperAdmin, changeStudentClass);
+router.patch("/student/change-class", auth.authenticateSuperAdmin, changeStudentClass);
 router.get("/student/:id", auth.authenticateSuperAdmin, getSingleStudent);
 
 // routes/admin/staffRoutes.js
