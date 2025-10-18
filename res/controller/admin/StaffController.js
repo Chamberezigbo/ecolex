@@ -121,27 +121,31 @@ exports.updateStaff = async (req, res, next) => {
 };
 
 exports.getStaffDetails = async (req, res, next) => {
-       try {
-              const { staffId } = req.params;
-              const staff = await prisma.staff.findUnique({
-                     where: { id: Number(staffId) },
-              });
+  try {
+        const { staffId } = req.params;
+        const staff = await prisma.staff.findUnique({
+          where: { id: Number(staffId) },
+          include: {
+            campus: {
+              select: { id: true, name: true },
+            }}
+        });
 
-              if (!staff) {
-                     return res.status(404).json({
-                            success: false,
-                            message: "Staff not found",
-                     });
-              }
+        if (!staff) {
+          return res.status(404).json({
+                success: false,
+                message: "Staff not found",
+          });
+        }
 
-              res.status(200).json({
-                     success: true,
-                     staff,
-              });
+        res.status(200).json({
+          success: true,
+          staff,
+        });
 
-       } catch (error) {
-              next(error);
-       }
+  } catch (error) {
+        next(error);
+  }
 }
 
 exports.assignTeacher = async (req, res, next) => {
