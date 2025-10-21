@@ -3895,3 +3895,9 @@ Unknown argument `filters`. Available options are marked with ?.
     at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
     at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
     at async exports.getClassGroups (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/ClassController.js:176:25)
+[2025-10-21T16:22:46.528Z] ERROR: PATCH /api/admin/staff/reassign-teacher/1 - staffId is not defined
+ReferenceError: staffId is not defined
+    at exports.reassignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:367:27)
+[2025-10-21T16:23:05.392Z] ERROR: PATCH /api/admin/staff/reassign-teacher/1 - staffId is not defined
+ReferenceError: staffId is not defined
+    at exports.reassignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:367:27)

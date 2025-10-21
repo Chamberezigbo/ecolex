@@ -150,6 +150,10 @@ exports.updateStudent = async (req, res, next) => {
 
     const studentExist = await prisma.student.findUnique({
       where: { id: parseInt(id) },
+            include: {campus: 
+        {select: 
+          {id:true, name: true}
+        }},
     });
 
     if (!studentExist) {
@@ -172,25 +176,31 @@ exports.updateStudent = async (req, res, next) => {
 }
 
 exports.getSingleStudent = async (req, res, next) => {
-       try{
-              const { id } = req.params;
+  try{
+    const { id } = req.params;
 
-              const studentExist = await prisma.student.findUnique({
-                     where: { id: parseInt(id) },
-              });
+    const studentExist = await prisma.student.findUnique({
+            where: { id: parseInt(id), },
+            include: {
+            campus: 
+            {select: 
+              {id:true, name: true}
+            },
+          }
+    });
 
-              if (!studentExist) {
-                     return res.status(404).json({ message: "Student not found" });
-              }
+    if (!studentExist) {
+            return res.status(404).json({ message: "Student not found" });
+    }
 
-              res.status(200).json({
-                     success: true,
-                     message: "Student updated successfully",
-                     data: studentExist,
-              });
-       }catch(error){
-              next(error);
-       }
+    res.status(200).json({
+            success: true,
+            message: "Student updated successfully",
+            data: studentExist,
+    });
+  }catch(error){
+        next(error);
+  }
 }
 
 exports.changeStudentClass = async (req, res, next) => {

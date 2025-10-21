@@ -34,7 +34,8 @@ const{
 const {
   createStaff,updateStaff,
   getStaffDetails,assignTeacher,
-  getAllStaff,deleteStaff
+  getAllStaff,deleteStaff,
+  reassignTeacher
 } = require("../../controller/admin/StaffController")
 
 const {
@@ -93,6 +94,7 @@ router.get("/staff/:staffId", auth.authenticateSuperAdmin, getStaffDetails);
 router.post('/staff/assign-teacher', validate(assignTeacherSchema), auth.authenticateSuperAdmin, assignTeacher);
 router.get("/staff", auth.authenticateSuperAdmin, auth.attachSchoolId, getAllStaff);
 router.delete("/staff/:staffId", auth.authenticateSuperAdmin, deleteStaff);
+router.patch("/staff/reassign-teacher/:assignmentId", auth.authenticateSuperAdmin,auth.attachSchoolId, reassignTeacher);
 
 // routes/admin/classRoutes.js
 router.post("/classes/create", validate(classSchema), auth.authenticateSuperAdmin,auth.attachSchoolId, createClass);

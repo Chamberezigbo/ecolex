@@ -350,4 +350,90 @@ exports.deleteStaff = async (req, res, next) => {
          next(err);
        }
 };
+
+exports.reassignTeacher = async (req, res, next) => {
+  try {
+    const schoolId = req.schoolId; // from auth middleware
+    const {assignmentId} = req.params;
+    const {staffId,newClassId, newSubjectId, newCampusId} = req.body;
+    const assignment = await prisma.teacherAssignment.findUnique({
+      where: {id: parseInt(assignmentId)},
+    });
+
+    if (!assignment) {
+      return res.status(404).json({success: false, message: "Assignment not found"});
+    }
+
+    const targetStaffId = staffId ? Number(staffId) : assignment.staffId;
+    const targetClassId = newClassId !==  undefined ? Number(newClassId) : assignment.classId;
+    const targetSubjectId = newSubjectId !==  undefined ? Number(newSubjectId) : assignment.subjectId;
+    const targetCampusId = newCampusId !==  undefined ? Number(newCampusId) : assignment.campusId;
+    const staff = await prisma.staff.findUnique({
+      where: {id: targetStaffId, schoolId},
+    });
+    if (!staff) {
+      return res.status(404).json({success: false, message: "Staff not found in your school"});
+    }
+
+    if (targetClassId) {
+      const cls = await prisma.class.findUnique({
+        where: {id: targetClassId, schoolId},
+      });
+      if (!cls) {
+        return res.status(404).json({success: false, message: "Class not found in your school"});
+      }
+    }
+
+    if (targetSubjectId) {
+      const subject = await prisma.subject.findUnique({
+        where: {id: targetSubjectId, schoolId},
+      });
+      if (!subject) {
+        return res.status(404).json({success: false, message: "Subject not found in your school"});
+      }
+    }
+
+    if (targetCampusId) {
+      const campus = await prisma.campus.findUnique({
+        where: {id: targetCampusId, schoolId},
+      });
+      if (!campus) {
+        return res.status(404).json({success: false, message: "Campus not found in your school"});
+      }
+    }
+
+    const duplicate = await prisma.teacherAssignment.findFirst({
+      where: {
+        staffId: targetStaffId,
+        classId: targetClassId,
+        subjectId: targetSubjectId,
+        campusId: targetCampusId,
+        NOT: {id: assignment.id},
+      },
+    });
+    if (duplicate) {
+      return res.status(400).json({success: false, message: "An identical assignment already exists"});
+    }
+
+   const updated = await prisma.teacherAssignment.update({
+      where: {id: assignment.id},
+      data: {    
+        staffId: targetStaffId,
+        classId: targetClassId,
+        subjectId: targetSubjectId,
+        campusId: targetCampusId,
+      },
+      include: {
+        staff:{select: {id: true, name: true}},
+        class:{select: {id: true, name: true}},
+        subject:{select: {id: true, name: true}},
+        campus:{select: {id: true, name: true}},
+      },
+    });
+
+    res.status(200).json({success: true, message: "Teacher reassigned successfully", assignment: updated});
+  } catch (error) {
+    next(error);
+  }
+}
      

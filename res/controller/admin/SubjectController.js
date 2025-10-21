@@ -53,23 +53,26 @@ exports.createSubject = async (req, res, next) => {
 
 // ✅ View All Subjects (with optional filters)
 exports.getAllSubjects = async (req, res, next) => {
-       try {
-         const { schoolId, campusId, name } = req.query;
-     
-         const filters = {};
-         if (schoolId) filters.schoolId = parseInt(schoolId);
-         if (campusId) filters.campusId = parseInt(campusId);
-         if (name) filters.name = { contains: name};
-     
-         const subjects = await prisma.subject.findMany({
-           where: filters,
-           orderBy: { createdAt: "desc" },
-         });
-     
-         res.json({ success: true, count: subjects.length, subjects });
-       } catch (err) {
-         next(err);
-       }
+  try {
+    const { campusId, name } = req.query;
+
+  // schoolId from auth middleware
+  const schoolId = req.schoolId;
+
+    const filters = {};
+    if (schoolId) filters.schoolId = parseInt(schoolId);
+    if (campusId) filters.campusId = parseInt(campusId);
+    if (name) filters.name = { contains: name};
+
+    const subjects = await prisma.subject.findMany({
+      where: filters,
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json({ success: true, count: subjects.length, subjects });
+  } catch (err) {
+    next(err);
+  }
 };
 
 // ✅ Edit Subject
