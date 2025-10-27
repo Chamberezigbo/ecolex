@@ -52,10 +52,20 @@ exports.getAllClasses = async (req, res, next) => {
         ...(name && { name: { contains: name,} }),
       },
       include: {
-        campus: true,
+        campus: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         staff: true,
         students: true,
-        classGroups: true,
+        classGroups: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 

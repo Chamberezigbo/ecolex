@@ -1,27 +1,42 @@
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient, Prisma } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
-// Convert Date -> 'YYYY-MM-DD' for createdAt fields in all results
 const toDateOnly = (d) => (d instanceof Date ? d.toISOString().slice(0, 10) : d);
+const isDecimal = (v) => Prisma?.Decimal && v instanceof Prisma.Decimal;
 
-const transformDates = (data) => {
-  if (!data) return data;
-  if (Array.isArray(data)) return data.map(transformDates);
-  if (data && typeof data === "object") {
-    const out = Array.isArray(data) ? [] : {};
-    for (const [k, v] of Object.entries(data)) {
-      if (k === "createdAt" && v instanceof Date) out[k] = toDateOnly(v);
-      else out[k] = transformDates(v);
+function transform(value) {
+  if (value == null) return value;
+
+  // Preserve primitives
+  if (typeof value !== "object") return value;
+
+  // Convert Decimal globally
+  if (isDecimal(value)) return value.toNumber();
+
+  // Preserve Date instances (handled key-aware below)
+  if (value instanceof Date) return value;
+
+  // Arrays
+  if (Array.isArray(value)) return value.map(transform);
+
+  // Plain object: transform entries
+  const out = {};
+  for (const [k, v] of Object.entries(value)) {
+    if (k === "createdAt" && v instanceof Date) {
+      out[k] = toDateOnly(v);
+    } else if (isDecimal(v)) {
+      out[k] = v.toNumber();
+    } else {
+      out[k] = transform(v);
     }
-    return out;
   }
-  return data;
-};
+  return out;
+}
 
 prisma.$use(async (params, next) => {
   const result = await next(params);
-  return transformDates(result);
+  return transform(result);
 });
 
 module.exports = prisma;
