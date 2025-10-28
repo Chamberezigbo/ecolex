@@ -5,44 +5,47 @@ const { response } = require("express");
 const { generateUniqueIdentifier } = require("../../Models/generateUniqueIdentifier");
 
 exports.getStudentDetails = async (req, res, next) => {
-       try {
-              const {page =1,campusId, name, gender, classId, classGroupId } = req.query;
-              const take = 9;
-              const skip = (page - 1) * take;
-       
+  try {
+    const { page = 1, campusId, name, gender, classId, classGroupId } = req.query;
+    const take = 9;
+    const skip = (page - 1) * take;
 
-              if(!req.schoolId) {
-                     return res.status(400).json({ message: "School ID is required" });
-              }
-               
-               
+    if (!req.schoolId) {
+      return res.status(400).json({ message: "School ID is required" });
+    }
 
-              const filter ={schoolId: req.schoolId};
+    const filter = { schoolId: req.schoolId };
 
-              if (campusId) filter.campusId = parseInt(campusId);
-              if (name) filter.name = { contains: name,};
-              if(gender) filter.gender=gender;
-              if(classId) filter.classId = parseInt(classId);
-              if(classGroupId) filter.classGroupId = parseInt(classGroupId);
+    if (campusId) filter.campusId = parseInt(campusId);
+    if (name) filter.name = { contains: name };
+    if (gender) filter.gender = gender;
+    if (classId) filter.classId = parseInt(classId);
+    if  (classGroupId) filter.classGroupId = parseInt(classGroupId);
 
-              const students = await prisma.student.findMany({
-                     where: filter,
-                     take,
-                     skip,
-                     orderBy: { createdAt: "desc" },
-                     include: {class: {include: {classGroups: true}}, campus: true},
-              })
+    const students = await prisma.student.findMany({
+            where: filter,
+            take,
+            skip,
+            orderBy: { createdAt: "desc" },
+            include: {
+            class: {
+              include: {classGroups: {
+                select: {id:true, name:true}
+              }}
+            }, campus: {select: {id:true, name: true} },
+          },
+    })
 
-              const total = await prisma.student.count({where: filter});
+    const total = await prisma.student.count({where: filter});
 
-              res.status(200).json({
-                     students,meta: {
-                            total,
-                            page: parseInt(page),
-                            pageSize: take,
-                            totalPages: Math.ceil(total / take),
-                     },
-              });
+    res.status(200).json({
+            students,meta: {
+                  total,
+                  page: parseInt(page),
+                  pageSize: take,
+                  totalPages: Math.ceil(total / take),
+            },
+    });
 
        } catch (error) {
               next(error);
