@@ -15,7 +15,6 @@ const continuousAssessmentSchema = Joi.array().items(
   Joi.object({
     class_id: Joi.number().required(),
     name: Joi.string().max(50).required(),
-    weightage: Joi.number().precision(2).optional(),
     max_score: Joi.number().integer().positive().required(),
   })
 );
@@ -23,7 +22,6 @@ const continuousAssessmentSchema = Joi.array().items(
 const examSchema = Joi.object({
   class_id: Joi.number().required(),
   name: Joi.string().max(50).required(),
-  weightage: Joi.number().precision(2).optional(),
   max_score: Joi.number().required(),
 });
 

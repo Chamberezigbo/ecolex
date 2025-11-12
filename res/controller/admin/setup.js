@@ -9,16 +9,7 @@ const {
 const validate = require("../../middleware/validator");
 const { date } = require("joi");
 
-const updateStep = async (adminId) => {
-  try {
-     await prisma.admin.update({
-       where: { id: adminId },
-       data: { steps: {increment:1} },
-     });
-  } catch (error) {
-   throw error;
-  }
-}
+const { incrementAdminStep } = require("../../util/adminStep");
 
 exports.createClasses = async (req, res, next) => {
 
@@ -101,12 +92,13 @@ exports.createClasses = async (req, res, next) => {
       where: { schoolId: school_id },
     });
 
-    await updateStep(adminId);
+    const step = await incrementAdminStep(adminId);
 
     res.status(201).json({
       message: `${result.count} classes created successfully across campuses.`,
       count: result.count,
-      data: {savedClasses}
+      data: {savedClasses},
+      step,
     });
   } catch (error) {
     next(error);
@@ -197,12 +189,13 @@ exports.createCampuses = async (req, res, next) => {
       where: { schoolId: school_id },
     });
 
-    await updateStep(adminId);
+    const step = await incrementAdminStep(adminId);
 
     res.status(201).json({
       message: `${result.count} campuses created successfully.`,
       count: result.count,
-      date:{savedCampuses}
+      date:{savedCampuses},
+      step,
     });
   } catch (err) {
     next(err);
@@ -221,15 +214,13 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
         .json({ message: "Expected a non-empty array of assessments (CAs)." });
     }
 
-    // Validate each assessment item
+    // Validate each assessment item (without weightage)
     for (const ca of assessments) {
       if (
         !ca.class_id ||
         typeof ca.class_id !== "number" ||
         !ca.name ||
         typeof ca.name !== "string" ||
-        !ca.weightage ||
-        typeof ca.weightage !== "number" ||
         !ca.max_score ||
         typeof ca.max_score !== "number"
       ) {
@@ -250,7 +241,7 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
       }
     }
 
-    // Validate exam if provided
+    // Validate exam if provided (without weightage)
     if (exam) {
       // Allow single number or array
       if (Array.isArray(exam.class_id)) {
@@ -267,8 +258,6 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
       if (
         !exam.name ||
         typeof exam.name !== "string" ||
-        !exam.weightage ||
-        typeof exam.weightage !== "number" ||
         !exam.max_score ||
         typeof exam.max_score !== "number"
       ) {
@@ -303,7 +292,6 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
     const assessmentsData = assessments.map((ca) => ({
       classId: ca.class_id,
       name: ca.name,
-      weightage: ca.weightage,
       maxScore: ca.max_score,
     }));
 
@@ -316,7 +304,6 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
       const examDataArray = examClassIds.map((classId) => ({
         classId,
         name: exam.name,
-        weightage: exam.weightage,
         maxScore: exam.max_score,
       }));
 
@@ -327,10 +314,12 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
     }
 
     // Update the admin step after successful creation
-    await updateStep(adminId);
+    const step = await incrementAdminStep(adminId);
 
+    // add it to the response best practice
     res.status(201).json({
       message: "Assessments and exam created successfully.",
+      step,
     });
   } catch (error) {
     next(error);

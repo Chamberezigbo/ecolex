@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "preflight: backup schoolController",
+			"type": "shell",
+			"command": "cp \"res/controller/school/schoolController.js\" \"res/controller/school/schoolController.js.bak\" && cp \"res/schemas/index.js\" \"res/schemas/index.js.bak\"",
+			"isBackground": false
+		},
+		{
+			"label": "Note",
+			"type": "shell",
+			"command": "echo Patching files for optional prefix...",
+			"isBackground": false
+		}
+	]
+}

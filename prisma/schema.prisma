@@ -221,7 +221,7 @@ model ContinuousAssessment {
   classId   Int
   subjectId Int?
   name      String   @db.VarChar(50) // e.g., "CA1", "CA2"
-  weightage Decimal? // Weightage of this CA towards the final grade
+  // weightage Decimal? Weightage of this CA towards the final grade
   maxScore  Int
   createdAt DateTime @default(now())
 

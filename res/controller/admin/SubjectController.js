@@ -67,6 +67,11 @@ exports.getAllSubjects = async (req, res, next) => {
     const subjects = await prisma.subject.findMany({
       where: filters,
       orderBy: { createdAt: "desc" },
+      include: {
+        campus: {
+          select: { id: true, name: true },
+        },
+      },
     });
 
     res.json({ success: true, count: subjects.length, subjects });

@@ -39,17 +39,17 @@ exports.getStudentDetails = async (req, res, next) => {
     const total = await prisma.student.count({where: filter});
 
     res.status(200).json({
-            students,meta: {
-                  total,
-                  page: parseInt(page),
-                  pageSize: take,
-                  totalPages: Math.ceil(total / take),
-            },
+      students,meta: {
+        total,
+        page: parseInt(page),
+        pageSize: take,
+        totalPages: Math.ceil(total / take),
+      },
     });
 
-       } catch (error) {
-              next(error);
-       }
+  } catch (error) {
+    next(error);
+  }
 }
 
 exports.createStudent = async (req, res, next) => {

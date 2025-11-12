@@ -2,16 +2,55 @@
 const processImage = require("../../config/compress");
 const prisma = require("../../util/prisma");
 
-const updateStep = async (adminId) => {
-  try {
-     await prisma.admin.update({
-       where: { id: adminId },
-       data: { steps: {increment:1} },
-     });
-  } catch (error) {
-   throw error;
+const { incrementAdminStep } = require("../../util/adminStep");
+
+// Normalize to 4 uppercase alphanumeric chars
+const normalizePrefix = (value) =>
+  (value || "")
+    .toString()
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "")
+    .slice(0, 4);
+
+/** Generate from school name (first letters) then random fallback */
+const generatePrefixFromName = (name) => {
+  if (!name) return "SCHL";
+  const parts = name
+    .toUpperCase()
+    .replace(/[^A-Z0-9 ]/g, "")
+    .split(/\s+/)
+    .filter(Boolean);
+  const initials = parts.map((p) => p[0]).join("").slice(0, 4);
+  if (initials.length === 4) return initials;
+  const base = (initials + parts.join("")).slice(0, 4);
+  return base.padEnd(4, "X"); // pad if too short
+};
+
+const ensureUniquePrefix = async (base) => {
+  let candidate = normalizePrefix(base);
+  if (candidate.length < 4) {
+    candidate = (candidate + "XXXX").slice(0, 4);
   }
-}
+
+  // If exists, try random variations
+  const exists = await prisma.school.findFirst({
+    where: { prefix: candidate },
+    select: { id: true },
+  });
+  if (!exists) return candidate;
+
+  for (let i = 0; i < 25; i++) {
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000).toString(); // 4 digits
+    candidate = randomSuffix; // purely numeric 4-digit fallback
+    const taken = await prisma.school.findFirst({
+      where: { prefix: candidate },
+      select: { id: true },
+    });
+    if (!taken) return candidate;
+  }
+  throw new Error("Unable to generate unique prefix after multiple attempts.");
+};
 
 exports.setupSchool = async (req, res, next) => {
   const adminId = req.user.id;
@@ -19,6 +58,7 @@ exports.setupSchool = async (req, res, next) => {
   const { name, prefix, email, phoneNumber, address } = req.body;
 
   try {
+    // Ensure school name uniqueness
     const existingSchool = await prisma.school.findUnique({ where: { name } });
     if (existingSchool) {
       return res.status(409).json({ message: "School already exists" });
@@ -31,22 +71,43 @@ exports.setupSchool = async (req, res, next) => {
         .json({ message: "Please upload both logo and stamp" });
     }
 
+    // Decide prefix
+    let finalPrefix;
+    if (prefix) {
+      const normalized = normalizePrefix(prefix);
+      if (normalized.length !== 4) {
+        return res
+          .status(400)
+          .json({ message: "Provided prefix must resolve to 4 characters." });
+      }
+      const taken = await prisma.school.findFirst({
+        where: { prefix: normalized },
+        select: { id: true },
+      });
+      if (taken) {
+        return res.status(409).json({ message: "Prefix already exists." });
+      }
+      finalPrefix = normalized;
+    } else {
+      const derived = generatePrefixFromName(name);
+      finalPrefix = await ensureUniquePrefix(derived);
+    }
+     // Process images with finalPrefix
     const processedLogoUrl = await processImage(
       files.logoUrl[0].buffer,
       "logos",
-      `${prefix}-logo.jpeg`
+      `${finalPrefix}-logo.jpeg`
     );
-
     const processedStampUrl = await processImage(
       files.stampUrl[0].buffer,
       "stamps",
-      `${prefix}-stamp.jpeg`
+      `${finalPrefix}-stamp.jpeg`
     );
 
     const newSchool = await prisma.school.create({
       data: {
         name,
-        prefix,
+        prefix: finalPrefix,
         logoUrl: processedLogoUrl,
         stampUrl: processedStampUrl,
         email,
@@ -57,12 +118,10 @@ exports.setupSchool = async (req, res, next) => {
 
     await prisma.admin.update({
       where: { id: req.user.id },
-      data: {
-        schoolId: newSchool.id,
-      },
+      data: { schoolId: newSchool.id },
     });
 
-    await updateStep(adminId);
+    await incrementAdminStep(adminId);
 
     res.status(201).json({
       message: "School created successfully",
@@ -71,4 +130,5 @@ exports.setupSchool = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+
 };
