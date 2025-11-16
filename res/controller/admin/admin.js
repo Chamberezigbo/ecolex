@@ -129,16 +129,18 @@ exports.loginAdmin = async (req, res, next) => {
 };
 
 exports.getSchoolAdmins = async (req, res, next) => {
-  const { schoolId } = req.params;
+  // schoolId now comes from auth middleware (attachSchoolId)
+  const schoolId = req.schoolId;
   if (!schoolId) {
-    return res.status(400).json({ message: "School ID is required" });
+    return res.status(403).json({ message: "Authenticated admin does not have a school assigned" });
   }
-
   try {
     const admins = await prisma.admin.findMany({
       where: { schoolId: parseInt(schoolId) },
+      orderBy: { createdAt: "desc" },
+      select: { id: true, name: true, email: true, role: true, steps: true, createdAt: true }
     });
-    res.status(200).json({ message: "Admins fetched successfully", admins });
+    res.status(200).json({ message: "Admins fetched successfully", count: admins.length, admins });
   } catch (error) {
     next(error);
   }

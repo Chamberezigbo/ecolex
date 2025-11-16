@@ -69,7 +69,8 @@ router.post("/create", validate(createAdminSchema), createAdmin);
 router.post("/login", validate(loginSchema), loginAdmin);
 
 // Get all admins for a school
-router.get("/school-admins/:schoolId", auth.authenticateSuperAdmin, getSchoolAdmins);
+// Fetch admins for the authenticated admin's school (schoolId from attachSchoolId)
+router.get("/school-admins", auth.authenticateSuperAdmin, auth.attachSchoolId, getSchoolAdmins);
 
 // Update admin//
 router.put("/:id", validate(updateAdminSchema), updateAdmin);
