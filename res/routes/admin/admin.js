@@ -7,6 +7,8 @@ const {
   updateAdmin,
   deleteAdmin,
   checkHealth,
+  getMySchool,
+  getSchoolAssessments
 } = require("../../controller/admin/admin");
 
 const {
@@ -64,31 +66,23 @@ const auth = require("../../middleware/authenticateSuperAdmin");
 const router = express.Router();
 
 router.post("/create", validate(createAdminSchema), createAdmin);
-
-// login route
 router.post("/login", validate(loginSchema), loginAdmin);
 
-// Get all admins for a school
-// Fetch admins for the authenticated admin's school (schoolId from attachSchoolId)
 router.get("/school-admins", auth.authenticateSuperAdmin, auth.attachSchoolId, getSchoolAdmins);
-
-// Update admin//
 router.put("/:id", validate(updateAdminSchema), updateAdmin);
-
-// Delete admin//
 router.delete("/:id", auth.authenticateSuperAdmin, deleteAdmin);
-
-// check health
 router.get("/", checkHealth);
 
-// Get student details
+// My school info for any authenticated admin
+router.get("/my-school", auth.authenticateAdmin, getMySchool);
+
+// Student routes
 router.get("/students", auth.authenticateSuperAdmin, auth.attachSchoolId, getStudentDetails);
 router.post("/student/create", validate(studentSchema), auth.authenticateSuperAdmin, auth.attachSchoolId, createStudent);
 router.put("/student/:id", auth.authenticateSuperAdmin, updateStudent);
 router.patch("/student/change-class", auth.authenticateSuperAdmin, changeStudentClass);
 router.get("/student/:id", auth.authenticateSuperAdmin, getSingleStudent);
-
-// routes/admin/staffRoutes.js
+// Staff routes
 router.post("/staff/create",validate(staffSchema), auth.authenticateSuperAdmin, auth.attachSchoolId, createStaff);
 router.patch("/staff/:staffId",validate(editStaffSchema), auth.authenticateSuperAdmin, updateStaff); 
 router.get("/staff/:staffId", auth.authenticateSuperAdmin, getStaffDetails);
@@ -97,7 +91,7 @@ router.get("/staff", auth.authenticateSuperAdmin, auth.attachSchoolId, getAllSta
 router.delete("/staff/:staffId", auth.authenticateSuperAdmin, deleteStaff);
 router.patch("/staff/reassign-teacher/:assignmentId", auth.authenticateSuperAdmin,auth.attachSchoolId, reassignTeacher);
 
-// routes/admin/classRoutes.js
+// Class routes
 router.post("/classes/create", validate(classSchema), auth.authenticateSuperAdmin,auth.attachSchoolId, createClass);
 router.get("/classes", auth.authenticateSuperAdmin, auth.attachSchoolId, getAllClasses);
 router.delete("/classes/:classId", auth.authenticateSuperAdmin, deleteClass);
@@ -106,15 +100,20 @@ router.get("/class-groups", auth.authenticateSuperAdmin, auth.attachSchoolId, ge
 router.patch("/class/update/:classId", auth.authenticateSuperAdmin, updateClass);
 router.patch("/class-group/update/:groupId", auth.authenticateSuperAdmin, updateClassGroup);
 
-// routes/admin/campus.js//
+// Campus routes
 router.post("/campus/create", auth.authenticateSuperAdmin,auth.attachSchoolId,createCampus);
 router.patch("/campus/update/:campusId", auth.authenticateSuperAdmin,updateCampus);
 router.get("/campuses", auth.authenticateSuperAdmin,auth.attachSchoolId,getCampuses);
 
-// routes/admin/subject.js//
+// Subject routes
 router.post("/subject/create", auth.authenticateSuperAdmin,auth.attachSchoolId,createSubject);
 router.get("/subjects", auth.authenticateSuperAdmin,auth.attachSchoolId,getAllSubjects);
 router.put("/subject/:subjectId", auth.authenticateSuperAdmin,auth.attachSchoolId,editSubject);
 router.delete("/subject/:subjectId", auth.authenticateSuperAdmin,deleteSubject);
+
+
+// List all CA for the authenticated admin’s school
+// Optional filters: classId, subjectId, campusId, name; pagination: page, pageSize
+router.get('/assessments', auth.authenticateAdmin, auth.attachSchoolId, getSchoolAssessments);
 
 module.exports = router;

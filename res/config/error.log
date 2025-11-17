@@ -3901,3 +3901,133 @@ ReferenceError: staffId is not defined
 [2025-10-21T16:23:05.392Z] ERROR: PATCH /api/admin/staff/reassign-teacher/1 - staffId is not defined
 ReferenceError: staffId is not defined
     at exports.reassignTeacher (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/StaffController.js:367:27)
+[2025-11-17T23:45:26.950Z] ERROR: GET /api/admin/assessments - 
+Invalid `prisma.continuousAssessment.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/admin.js:277:35
+
+  274 
+  275 const [total, assessments] = await Promise.all([
+  276   prisma.continuousAssessment.count({ where }),
+→ 277   prisma.continuousAssessment.findMany({
+          where: {
+            schoolId: 1,
+            ~~~~~~~~
+        ?   AND?: ContinuousAssessmentWhereInput | ContinuousAssessmentWhereInput[],
+        ?   OR?: ContinuousAssessmentWhereInput[],
+        ?   NOT?: ContinuousAssessmentWhereInput | ContinuousAssessmentWhereInput[],
+        ?   id?: IntFilter | Int,
+        ?   classId?: IntFilter | Int,
+        ?   subjectId?: IntNullableFilter | Int | Null,
+        ?   name?: StringFilter | String,
+        ?   maxScore?: IntFilter | Int,
+        ?   createdAt?: DateTimeFilter | DateTime,
+        ?   class?: ClassRelationFilter | ClassWhereInput,
+        ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+        ?   caResults?: CAResultListRelationFilter
+          },
+          orderBy: {
+            createdAt: "desc"
+          },
+          skip: 0,
+          take: 50,
+          select: {
+            id: true,
+            schoolId: true,
+            classId: true,
+            subjectId: true,
+            name: true,
+            maxScore: true,
+            createdAt: true,
+            class: {
+              select: {
+                id: true,
+                name: true,
+                campusId: true,
+                campus: {
+                  select: {
+                    id: true,
+                    name: true
+                  }
+                }
+              }
+            },
+            subject: {
+              select: {
+                id: true,
+                name: true,
+                code: true
+              }
+            }
+          }
+        })
+
+Unknown argument `schoolId`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `prisma.continuousAssessment.findMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/admin.js:277:35
+
+  274 
+  275 const [total, assessments] = await Promise.all([
+  276   prisma.continuousAssessment.count({ where }),
+→ 277   prisma.continuousAssessment.findMany({
+          where: {
+            schoolId: 1,
+            ~~~~~~~~
+        ?   AND?: ContinuousAssessmentWhereInput | ContinuousAssessmentWhereInput[],
+        ?   OR?: ContinuousAssessmentWhereInput[],
+        ?   NOT?: ContinuousAssessmentWhereInput | ContinuousAssessmentWhereInput[],
+        ?   id?: IntFilter | Int,
+        ?   classId?: IntFilter | Int,
+        ?   subjectId?: IntNullableFilter | Int | Null,
+        ?   name?: StringFilter | String,
+        ?   maxScore?: IntFilter | Int,
+        ?   createdAt?: DateTimeFilter | DateTime,
+        ?   class?: ClassRelationFilter | ClassWhereInput,
+        ?   subject?: SubjectNullableRelationFilter | SubjectWhereInput | Null,
+        ?   caResults?: CAResultListRelationFilter
+          },
+          orderBy: {
+            createdAt: "desc"
+          },
+          skip: 0,
+          take: 50,
+          select: {
+            id: true,
+            schoolId: true,
+            classId: true,
+            subjectId: true,
+            name: true,
+            maxScore: true,
+            createdAt: true,
+            class: {
+              select: {
+                id: true,
+                name: true,
+                campusId: true,
+                campus: {
+                  select: {
+                    id: true,
+                    name: true
+                  }
+                }
+              }
+            },
+            subject: {
+              select: {
+                id: true,
+                name: true,
+                code: true
+              }
+            }
+          }
+        })
+
+Unknown argument `schoolId`. Available options are marked with ?.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async /Users/Chambs/Documents/Backed servers /ecolex/res/util/prisma.js:38:18
+    at async Promise.all (index 1)
+    at async exports.getSchoolAssessments (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/admin.js:275:34)

@@ -210,4 +210,87 @@ exports.checkHealth = async (req, res, next) => {
   }
 };
 
+// Return the authenticated admin's schoolId and basic school info
+exports.getMySchool = async (req, res, next) => {
+  try {
+    const adminId = req.user.id; // set by authenticateAdmin middleware
+    const admin = await prisma.admin.findUnique({
+      where: { id: adminId },
+      include: {
+        school: { select: { id: true, name: true, email: true, prefix: true } }
+      }
+    });
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+    if (!admin.schoolId || !admin.school) {
+      return res.status(200).json({ 
+        message: "No school assigned to this admin", 
+        data: { schoolId: null, school: null } 
+      });
+    }
+    return res.status(200).json({ 
+      message: "School fetched successfully", 
+      data: { schoolId: admin.schoolId, school: admin.school } 
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
+// GET /api/admin/assessments?page=1&pageSize=50
+exports.getSchoolAssessments = async (req, res, next) => {
+  try {
+    const schoolId = req.schoolId;
+    if (!schoolId) {
+      return res.status(400).json({ success: false, message: 'School not resolved from token' });
+    }
+
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const pageSize = Math.min(parseInt(req.query.pageSize, 10) || 50, 100);
+    const skip = (page - 1) * pageSize;
+
+    // Only scope by school through class relation
+    const where = {
+      class: { schoolId: Number(schoolId) }
+    };
+
+    const [total, assessments] = await Promise.all([
+      prisma.continuousAssessment.count({ where }),
+      prisma.continuousAssessment.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: pageSize,
+        select: {
+          id: true,
+          classId: true,
+          subjectId: true,
+          name: true,
+          maxScore: true,
+          createdAt: true,
+          class: {
+            select: {
+              id: true,
+              name: true,
+              campusId: true,
+              campus: { select: { id: true, name: true } }
+            }
+          },
+          subject: { select: { id: true, name: true, code: true } }
+        }
+      })
+    ]);
+
+    return res.json({
+      success: true,
+      total,
+      page,
+      pageSize,
+      count: assessments.length,
+      assessments
+    });
+  } catch (err) {
+    next(err);
+  }
+};
