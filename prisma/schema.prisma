@@ -21,6 +21,7 @@ model Admin {
   steps     Int      @default(0) // Tracks the steps for the admin
   role      Role
   createdAt DateTime @default(now()) @db.Timestamp
+  hasLoggedIn Boolean @default(false)
 
   // Relationships
   school School? @relation(fields: [schoolId], references: [id])

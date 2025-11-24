@@ -113,15 +113,31 @@ exports.loginAdmin = async (req, res, next) => {
     if (!isPasswordValid)
       return res.status(401).json({ message: "Invalid password" });
 
+    const firstLogin = !admin.hasLoggedIn;
+
+    // If first time, flip the flag before issuing token (low contention; acceptable)
+    if (firstLogin) {
+      await prisma.admin.update({
+        where: { id: admin.id },
+        data: { hasLoggedIn: true }
+      });
+    }
+
     // Generate JWT token//
     const token = jwt.sign(
       { id: admin.id, role: admin.role }, // { id: admin.id, role: admin.role, schoolId: admin.schoolId },
       JWT_SECRET,
       { expiresIn: "1d" }
     );
+
+    // Optionally re-fetch updated admin if you want hasLoggedIn true reflected immediately
+    const responseAdmin = firstLogin
+      ? { ...admin, hasLoggedIn: true }
+      : admin;
+
     res.status(200).json({
       message: "Admin logged in successfully",
-      data: { token, admin },
+      data: { token, admin: responseAdmin, firstLogin },
     });
   } catch (error) {
     next(error);
