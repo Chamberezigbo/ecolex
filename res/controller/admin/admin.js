@@ -92,7 +92,7 @@ exports.createAdmin = async (req, res, next) => {
       JWT_SECRET,
       { expiresIn: "1d" }
     );
-    
+
 
     res.status(201).json({ message: "Admin created successfully", data: { token, admin } });
   } catch (error) {
@@ -240,14 +240,14 @@ exports.getMySchool = async (req, res, next) => {
       return res.status(404).json({ message: "Admin not found" });
     }
     if (!admin.schoolId || !admin.school) {
-      return res.status(200).json({ 
-        message: "No school assigned to this admin", 
-        data: { schoolId: null, school: null } 
+      return res.status(200).json({
+        message: "No school assigned to this admin",
+        data: { schoolId: null, school: null }
       });
     }
-    return res.status(200).json({ 
-      message: "School fetched successfully", 
-      data: { schoolId: admin.schoolId, school: admin.school } 
+    return res.status(200).json({
+      message: "School fetched successfully",
+      data: { schoolId: admin.schoolId, school: admin.school }
     });
   } catch (error) {
     next(error);
@@ -268,7 +268,7 @@ exports.getSchoolAssessments = async (req, res, next) => {
 
     // Only scope by school through class relation
     const where = {
-      class: { schoolId: Number(schoolId) }
+      class: { is: { schoolId: Number(schoolId) } }
     };
 
     const [total, assessments] = await Promise.all([
