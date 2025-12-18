@@ -97,7 +97,7 @@ exports.createClasses = async (req, res, next) => {
     res.status(201).json({
       message: `${result.count} classes created successfully across campuses.`,
       count: result.count,
-      data: {savedClasses},
+      data: { savedClasses },
       step,
     });
   } catch (error) {
@@ -194,7 +194,7 @@ exports.createCampuses = async (req, res, next) => {
     res.status(201).json({
       message: `${result.count} campuses created successfully.`,
       count: result.count,
-      date:{savedCampuses},
+      date: { savedCampuses },
       step,
     });
   } catch (err) {
@@ -285,7 +285,7 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
             message: `Class with ID ${classId} not found for exam.`,
           });
         }
-    }
+      }
     }
 
     // If all validations pass, prepare data
