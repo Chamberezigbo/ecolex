@@ -4031,3 +4031,166 @@ Unknown argument `schoolId`. Available options are marked with ?.
     at async /Users/Chambs/Documents/Backed servers /ecolex/res/util/prisma.js:38:18
     at async Promise.all (index 1)
     at async exports.getSchoolAssessments (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/admin.js:275:34)
+[2025-12-29T12:57:02.866Z] ERROR: POST /api/admin/grading/create - 
+Invalid `tx.gradingRule.createMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/Services/GradingService.ts:19:34
+
+  16     }
+  17 })
+  18 
+→ 19 await tx.gradingRule.createMany({
+       data: [
+         {
+           schemeId: 1,
+           minScore: 70,
+           maxScore: 100,
+           grade: "A",
+           remark: "Excellent"
+         },
+         {
+           schemeId: 1,
+           minScore: 60,
+           maxScore: 69,
+           grade: "B",
+           remark: "Very Good"
+         },
+         {
+           schemeId: 1,
+           minScore: 50,
+           maxScore: 59,
+           grade: "C",
+           remark: "Good"
+         },
+         {
+           schemeId: 1,
+           minScore: 40,
+           maxScore: 49,
+           grade: "D",
+           remark: "Pass"
+         },
+         {
+           schemeId: 1,
+           minScore: 0,
+           maxScore: 39,
+           grade: "F",
+           remark: "Fail"
+         }
+       ]
+     })
+
+Argument `id` is missing.
+PrismaClientValidationError: 
+Invalid `tx.gradingRule.createMany()` invocation in
+/Users/Chambs/Documents/Backed servers /ecolex/res/Services/GradingService.ts:19:34
+
+  16     }
+  17 })
+  18 
+→ 19 await tx.gradingRule.createMany({
+       data: [
+         {
+           schemeId: 1,
+           minScore: 70,
+           maxScore: 100,
+           grade: "A",
+           remark: "Excellent"
+         },
+         {
+           schemeId: 1,
+           minScore: 60,
+           maxScore: 69,
+           grade: "B",
+           remark: "Very Good"
+         },
+         {
+           schemeId: 1,
+           minScore: 50,
+           maxScore: 59,
+           grade: "C",
+           remark: "Good"
+         },
+         {
+           schemeId: 1,
+           minScore: 40,
+           maxScore: 49,
+           grade: "D",
+           remark: "Pass"
+         },
+         {
+           schemeId: 1,
+           minScore: 0,
+           maxScore: 39,
+           grade: "F",
+           remark: "Fail"
+         }
+       ]
+     })
+
+Argument `id` is missing.
+    at wn (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async /Users/Chambs/Documents/Backed servers /ecolex/res/util/prisma.js:38:18
+    at async /Users/Chambs/Documents/Backed servers /ecolex/res/Services/GradingService.ts:19:13
+    at async Proxy._transactionWithCallback (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:8000)
+    at async GradingController.create (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/GradingController.ts:21:28)
+[2025-12-29T13:31:18.515Z] ERROR: POST /api/admin/grading/create - 
+Invalid `prisma.gradingSchemeClass.createMany()` invocation:
+
+
+The table `grading_scheme_classes` does not exist in the current database.
+PrismaClientKnownRequestError: 
+Invalid `prisma.gradingSchemeClass.createMany()` invocation:
+
+
+The table `grading_scheme_classes` does not exist in the current database.
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:7315)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async /Users/Chambs/Documents/Backed servers /ecolex/res/util/prisma.js:38:18
+    at async /Users/Chambs/Documents/Backed servers /ecolex/res/Services/GradingService.ts:29:13
+    at async Proxy._transactionWithCallback (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:8000)
+    at async GradingController.create (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/GradingController.ts:21:28)
+[2025-12-29T13:37:08.352Z] ERROR: POST /api/admin/grading/create - 
+Invalid `prisma.gradingSchemeClass.createMany()` invocation:
+
+
+The table `grading_scheme_classes` does not exist in the current database.
+PrismaClientKnownRequestError: 
+Invalid `prisma.gradingSchemeClass.createMany()` invocation:
+
+
+The table `grading_scheme_classes` does not exist in the current database.
+    at $n.handleRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:7315)
+    at $n.handleAndLogRequestError (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async /Users/Chambs/Documents/Backed servers /ecolex/res/util/prisma.js:38:18
+    at async /Users/Chambs/Documents/Backed servers /ecolex/res/Services/GradingService.ts:29:13
+    at async Proxy._transactionWithCallback (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:8000)
+    at async GradingController.create (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/GradingController.ts:21:28)
+[2025-12-29T14:06:48.936Z] ERROR: POST /api/admin/grading/create - One or more classes already have a grading scheme assigned
+Error: One or more classes already have a grading scheme assigned
+    at /Users/Chambs/Documents/Backed servers /ecolex/res/Services/GradingService.ts:45:23
+    at async Proxy._transactionWithCallback (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:8000)
+    at async GradingController.create (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/GradingController.ts:21:28)
+[2025-12-29T14:09:26.458Z] ERROR: POST /api/admin/grading/create - One or more classes already have a grading scheme assigned
+Error: One or more classes already have a grading scheme assigned
+    at /Users/Chambs/Documents/Backed servers /ecolex/res/Services/GradingService.ts:45:23
+    at async Proxy._transactionWithCallback (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/@prisma/client/runtime/library.js:130:8000)
+    at async GradingController.create (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/admin/GradingController.ts:21:28)
+[2025-12-29T14:17:50.387Z] ERROR: POST /api/admin/grading/createe - Route /api/admin/grading/createe not found
+Error: Route /api/admin/grading/createe not found
+    at exports.notFound (/Users/Chambs/Documents/Backed servers /ecolex/res/middleware/404.js:5:8)
+    at Layer.handle [as handle_request] (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:328:13)
+    at /Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:280:10)
+    at /Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:646:15
+    at next (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:265:14)
+    at Function.handle (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:47:12)

@@ -6,22 +6,22 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
 model Admin {
-  id        Int      @id @default(autoincrement())
-  schoolId  Int?
-  campusId  Int? // Optional, since admins might not always belong to a campus
-  name      String   @db.VarChar(255)
-  email     String   @unique @db.VarChar(255) // Ensure unique emails
-  password  String   @db.VarChar(255)
-  steps     Int      @default(0) // Tracks the steps for the admin
-  role      Role
-  createdAt DateTime @default(now()) @db.Timestamp
-  hasLoggedIn Boolean @default(false)
+  id          Int      @id @default(autoincrement())
+  schoolId    Int?
+  campusId    Int? // Optional, since admins might not always belong to a campus
+  name        String   @db.VarChar(255)
+  email       String   @unique @db.VarChar(255) // Ensure unique emails
+  password    String   @db.VarChar(255)
+  steps       Int      @default(0) // Tracks the steps for the admin
+  role        Role
+  createdAt   DateTime @default(now()) @db.Timestamp
+  hasLoggedIn Boolean  @default(false)
 
   // Relationships
   school School? @relation(fields: [schoolId], references: [id])
@@ -46,12 +46,13 @@ model School {
   address     String?  @db.Text
   createdAt   DateTime @default(now()) @db.Timestamp
 
-  campuses Campus[]
-  admins   Admin[]
-  Class    Class[]
-  Staff    Staff[] 
-  Student  Student[]
-  Subject  Subject[]
+  campuses      Campus[]
+  admins        Admin[]
+  Class         Class[]
+  Staff         Staff[]
+  Student       Student[]
+  Subject       Subject[]
+  GradingScheme GradingScheme[]
 
   @@map("schools")
 }
@@ -76,16 +77,15 @@ model Campus {
   email       String?  @db.VarChar(255)
   createdAt   DateTime @default(now()) @db.Timestamp
 
-  @@unique([schoolId, name]) // 🔒 Prevent same campus name for same school
-
-  school  School    @relation(fields: [schoolId], references: [id])
-  admins  Admin[]
-  Class   Class[]
-  Staff   Staff[]
-  Student Student[]
-  Subject Subject[]
+  school             School              @relation(fields: [schoolId], references: [id])
+  admins             Admin[]
+  Class              Class[]
+  Staff              Staff[]
+  Student            Student[]
+  Subject            Subject[]
   TeacherAssignments TeacherAssignment[] // ✅ added
 
+  @@unique([schoolId, name]) // 🔒 Prevent same campus name for same school
   @@map("campuses")
 }
 
@@ -95,11 +95,11 @@ model Class {
   campusId    Int?
   name        String
   customName  String?
-  staffId   Int? // Optional, in case a class is created without a teacher assigned
+  staffId     Int? // Optional, in case a class is created without a teacher assigned
   createdAt   DateTime     @default(now())
   school      School       @relation(fields: [schoolId], references: [id])
   campus      Campus?      @relation(fields: [campusId], references: [id])
-  staff       Staff?     @relation(fields: [staffId], references: [id])
+  staff       Staff?       @relation(fields: [staffId], references: [id])
   classGroups ClassGroup[] // One-to-many relation with ClassGroup
   students    Student[] // One-to-many relation with Student
 
@@ -107,6 +107,7 @@ model Class {
 
   ContinuousAssessment ContinuousAssessment[]
   Exam                 Exam[]
+  GradingSchemeClass   GradingSchemeClass[]
 
   // Optionally, add a unique constraint for name, school, and campus
   @@unique([name, schoolId, campusId])
@@ -120,65 +121,65 @@ model ClassGroup {
   createdAt DateTime @default(now())
   class     Class    @relation(fields: [classId], references: [id])
 
-  students  Student[] // ✅ back-relation (one group -> many students)
+  students Student[] // ✅ back-relation (one group -> many students)
 }
 
 model Staff {
-  id          Int       @id @default(autoincrement())
-  schoolId    Int
-  campusId    Int?
-  name        String
-  email       String?   @unique
-  phoneNumber String?
-  address     String?
-  duty        String?   // e.g., "Teacher", "Accountant", "Cleaner"
-  nextOfKin   String?
-  dateEmployed DateTime?
-  payroll     Decimal?  // salary or payroll reference
-  createdAt   DateTime  @default(now())
-  registrationNumber  String    @unique @db.VarChar(50)
+  id                 Int       @id @default(autoincrement())
+  schoolId           Int
+  campusId           Int?
+  name               String
+  email              String?   @unique
+  phoneNumber        String?
+  address            String?
+  duty               String? // e.g., "Teacher", "Accountant", "Cleaner"
+  nextOfKin          String?
+  dateEmployed       DateTime?
+  payroll            Decimal? // salary or payroll reference
+  createdAt          DateTime  @default(now())
+  registrationNumber String    @unique @db.VarChar(50)
 
-  school  School  @relation(fields: [schoolId], references: [id])
-  campus  Campus? @relation(fields: [campusId], references: [id])
-  classes Class[] // if staff is a teacher, they can have classes
-  assignments   TeacherAssignment[] // All class+subject+campus teaching assignments
+  school      School              @relation(fields: [schoolId], references: [id])
+  campus      Campus?             @relation(fields: [campusId], references: [id])
+  classes     Class[] // if staff is a teacher, they can have classes
+  assignments TeacherAssignment[] // All class+subject+campus teaching assignments
 
   @@unique([schoolId, registrationNumber])
   @@map("staffs")
 }
 
 model Student {
-  id          Int          @id @default(autoincrement())
-  schoolId    Int
-  campusId    Int?
-  classId     Int    
+  id       Int  @id @default(autoincrement())
+  schoolId Int
+  campusId Int?
+  classId  Int
 
   name           String
   surname        String
   otherNames     String
-  gender         String?      @db.VarChar(10)
+  gender         String? @db.VarChar(10)
   dateOfBirth    String?
   guardianName   String?
   guardianNumber String?
   lifestyle      String?
   session        String
-  email          String? 
+  email          String?
 
-  classGroupId Int? // ✅ optional since not all students must have a group
-  classGroup   ClassGroup? @relation(fields: [classGroupId], references: [id])
+  classGroupId       Int? // ✅ optional since not all students must have a group
+  classGroup         ClassGroup? @relation(fields: [classGroupId], references: [id])
   // ✅ NEW: Registration Number Field
-  registrationNumber String   @unique @db.VarChar(50)
+  registrationNumber String      @unique @db.VarChar(50)
+
+  createdAt  DateTime     @default(now())
+  school     School       @relation(fields: [schoolId], references: [id])
+  campus     Campus?      @relation(fields: [campusId], references: [id])
+  class      Class        @relation(fields: [classId], references: [id])
+  CAResult   CAResult[]
+  ExamResult ExamResult[]
 
   // ✅ NEW: Unique constraint for registration number per school
   @@unique([schoolId, registrationNumber])
   @@map("students")
-
-  createdAt   DateTime     @default(now())
-  school      School       @relation(fields: [schoolId], references: [id])
-  campus      Campus?      @relation(fields: [campusId], references: [id])
-  class       Class        @relation(fields: [classId], references: [id])
-  CAResult    CAResult[]
-  ExamResult  ExamResult[]
 }
 
 model Subject {
@@ -198,24 +199,22 @@ model Subject {
   @@map("subjects")
 }
 
-
 model TeacherAssignment {
-  id        Int      @id @default(autoincrement())
-  staffId   Int
-  classId   Int?     // Optional classId
-  subjectId Int?     // Optional subjectId
-  campusId  Int?     // Optional campusId
+  id         Int      @id @default(autoincrement())
+  staffId    Int
+  classId    Int? // Optional classId
+  subjectId  Int? // Optional subjectId
+  campusId   Int? // Optional campusId
   assignedAt DateTime @default(now())
 
-  staff   Staff   @relation(fields: [staffId], references: [id])
-  class   Class?  @relation(fields: [classId], references: [id])
+  staff   Staff    @relation(fields: [staffId], references: [id])
+  class   Class?   @relation(fields: [classId], references: [id])
   subject Subject? @relation(fields: [subjectId], references: [id])
-  campus  Campus? @relation(fields: [campusId], references: [id])
+  campus  Campus?  @relation(fields: [campusId], references: [id])
 
   @@index([staffId, classId, subjectId, campusId], name: "TeacherAssignment_unique") // Unique index
   @@map("teacher_assignments")
 }
-
 
 model ContinuousAssessment {
   id        Int      @id @default(autoincrement())
@@ -227,7 +226,7 @@ model ContinuousAssessment {
   createdAt DateTime @default(now())
 
   class     Class      @relation(fields: [classId], references: [id])
-  subject   Subject?    @relation(fields: [subjectId], references: [id])
+  subject   Subject?   @relation(fields: [subjectId], references: [id])
   caResults CAResult[]
 
   @@unique([classId, name])
@@ -257,11 +256,10 @@ model Exam {
   createdAt DateTime @default(now())
 
   class       Class        @relation(fields: [classId], references: [id])
-  subject     Subject?      @relation(fields: [subjectId], references: [id])
+  subject     Subject?     @relation(fields: [subjectId], references: [id])
   examResults ExamResult[]
 
   @@unique([classId, name]) // ✅ prevents duplicate exams per class
-
   @@map("exams")
 }
 
@@ -277,3 +275,40 @@ model ExamResult {
 
   @@map("exam_results")
 }
+
+model GradingScheme {
+  id          Int      @id @default(autoincrement())
+  schoolId    Int
+  name        String // e.g. "Junior Secondary Grading"
+  usePosition Boolean  @default(true) // rank students or not
+  createdAt   DateTime @default(now())
+
+  school  School               @relation(fields: [schoolId], references: [id])
+  grades  GradingRule[]
+  classes GradingSchemeClass[]
+
+  @@map("grading_schemes")
+}
+
+model GradingRule {
+  id        Int      @id @default(autoincrement())
+  schemeId  Int
+  minScore  Int
+  maxScore  Int
+  grade     String
+  remark    String
+
+  scheme    GradingScheme @relation(fields: [schemeId], references: [id])
+
+  @@map("grading_rules")
+}
+
+model GradingSchemeClass {
+  id        Int @id @default(autoincrement())
+  schemeId  Int
+  classId   Int @unique
+
+  scheme GradingScheme @relation(fields: [schemeId], references: [id])
+  class  Class         @relation(fields: [classId], references: [id])
+}
+

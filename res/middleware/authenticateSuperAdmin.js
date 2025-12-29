@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const prisma = require("../util/prisma");
+const { AppError } = require("../util/AppError");
 
 // Environment variables for JWT
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -8,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const authenticateAdmin = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ message: "Unauthorized: Missing token" });
+    return next(new AppError("Unauthorized: Missing token", 401));
   }
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
@@ -18,12 +19,12 @@ const authenticateAdmin = async (req, res, next) => {
       select: { id: true, role: true, schoolId: true }
     });
     if (!admin) {
-      return res.status(404).json({ message: "Admin not found" });
+      return next(new AppError("Unauthorized: Admin not found", 401));
     }
     req.user = admin; // Attach full admin basics
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Unauthorized: Invalid token" });
+    return next(new AppError("Unauthorized: Invalid token", 401));
   }
 };
 
@@ -31,19 +32,19 @@ const authenticateAdmin = async (req, res, next) => {
 const authenticateSuperAdmin = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return next(new AppError("Unauthorized: Missing token", 401));
   }
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
 
     if (decoded.role !== "super_admin") {
-      return res.status(401).json({ message: "Forbidden: Only super_admins can access this route" });
+      return next(new AppError("Unauthorized: Only super_admins can access this route", 401));
     }
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return next(new AppError("Unauthorized: Invalid token", 401));
   }
 };
 
@@ -58,11 +59,11 @@ const attachSchoolId = async (req, res, next) => {
     });
 
     if (!admin) {
-      return res.status(404).json({ message: "Admin not found" });
+      return next(new AppError("Unauthorized: Admin not found", 401));
     }
 
     if (!admin.schoolId) {
-      return res.status(403).json({ message: "School ID not found for this admin" });
+      return next(new AppError("Unauthorized: School ID not found for this admin", 401));
     }
     req.schoolId = admin.schoolId;
     next();

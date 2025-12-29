@@ -12,12 +12,12 @@ const {
 } = require("../../controller/admin/admin");
 
 const {
-  getStudentDetails,createStudent,
-  updateStudent,changeStudentClass,
+  getStudentDetails, createStudent,
+  updateStudent, changeStudentClass,
   getSingleStudent,
 } = require("../../controller/admin/StudentController");
 
-const{
+const {
   createClass,
   getAllClasses,
   deleteClass,
@@ -27,16 +27,16 @@ const{
   updateClassGroup
 } = require("../../controller/admin/ClassController");
 
-const{
+const {
   createCampus,
   updateCampus,
   getCampuses,
 } = require("../../controller/admin/campusController")
 
 const {
-  createStaff,updateStaff,
-  getStaffDetails,assignTeacher,
-  getAllStaff,deleteStaff,
+  createStaff, updateStaff,
+  getStaffDetails, assignTeacher,
+  getAllStaff, deleteStaff,
   reassignTeacher
 } = require("../../controller/admin/StaffController")
 
@@ -46,6 +46,10 @@ const {
   editSubject,
   deleteSubject
 } = require("../../controller/admin/SubjectController");
+
+const {
+  GradingController
+} = require("../../controller/admin/GradingController");
 
 const validate = require("../../middleware/validator");
 
@@ -83,16 +87,16 @@ router.put("/student/:id", auth.authenticateSuperAdmin, updateStudent);
 router.patch("/student/change-class", auth.authenticateSuperAdmin, changeStudentClass);
 router.get("/student/:id", auth.authenticateSuperAdmin, getSingleStudent);
 // Staff routes
-router.post("/staff/create",validate(staffSchema), auth.authenticateSuperAdmin, auth.attachSchoolId, createStaff);
-router.patch("/staff/:staffId",validate(editStaffSchema), auth.authenticateSuperAdmin, updateStaff); 
+router.post("/staff/create", validate(staffSchema), auth.authenticateSuperAdmin, auth.attachSchoolId, createStaff);
+router.patch("/staff/:staffId", validate(editStaffSchema), auth.authenticateSuperAdmin, updateStaff);
 router.get("/staff/:staffId", auth.authenticateSuperAdmin, getStaffDetails);
 router.post('/staff/assign-teacher', validate(assignTeacherSchema), auth.authenticateSuperAdmin, assignTeacher);
 router.get("/staff", auth.authenticateSuperAdmin, auth.attachSchoolId, getAllStaff);
 router.delete("/staff/:staffId", auth.authenticateSuperAdmin, deleteStaff);
-router.patch("/staff/reassign-teacher/:assignmentId", auth.authenticateSuperAdmin,auth.attachSchoolId, reassignTeacher);
+router.patch("/staff/reassign-teacher/:assignmentId", auth.authenticateSuperAdmin, auth.attachSchoolId, reassignTeacher);
 
 // Class routes
-router.post("/classes/create", validate(classSchema), auth.authenticateSuperAdmin,auth.attachSchoolId, createClass);
+router.post("/classes/create", validate(classSchema), auth.authenticateSuperAdmin, auth.attachSchoolId, createClass);
 router.get("/classes", auth.authenticateSuperAdmin, auth.attachSchoolId, getAllClasses);
 router.delete("/classes/:classId", auth.authenticateSuperAdmin, deleteClass);
 router.post("/class-groups/create", validate(classGroupSchema), auth.authenticateSuperAdmin, auth.attachSchoolId, createClassGroup);
@@ -101,19 +105,24 @@ router.patch("/class/update/:classId", auth.authenticateSuperAdmin, updateClass)
 router.patch("/class-group/update/:groupId", auth.authenticateSuperAdmin, updateClassGroup);
 
 // Campus routes
-router.post("/campus/create", auth.authenticateSuperAdmin,auth.attachSchoolId,createCampus);
-router.patch("/campus/update/:campusId", auth.authenticateSuperAdmin,updateCampus);
-router.get("/campuses", auth.authenticateSuperAdmin,auth.attachSchoolId,getCampuses);
+router.post("/campus/create", auth.authenticateSuperAdmin, auth.attachSchoolId, createCampus);
+router.patch("/campus/update/:campusId", auth.authenticateSuperAdmin, updateCampus);
+router.get("/campuses", auth.authenticateSuperAdmin, auth.attachSchoolId, getCampuses);
 
 // Subject routes
-router.post("/subject/create", auth.authenticateSuperAdmin,auth.attachSchoolId,createSubject);
-router.get("/subjects", auth.authenticateSuperAdmin,auth.attachSchoolId,getAllSubjects);
-router.put("/subject/:subjectId", auth.authenticateSuperAdmin,auth.attachSchoolId,editSubject);
-router.delete("/subject/:subjectId", auth.authenticateSuperAdmin,deleteSubject);
+router.post("/subject/create", auth.authenticateSuperAdmin, auth.attachSchoolId, createSubject);
+router.get("/subjects", auth.authenticateSuperAdmin, auth.attachSchoolId, getAllSubjects);
+router.put("/subject/:subjectId", auth.authenticateSuperAdmin, auth.attachSchoolId, editSubject);
+router.delete("/subject/:subjectId", auth.authenticateSuperAdmin, deleteSubject);
 
 
 // List all CA for the authenticated admin’s school
 // Optional filters: classId, subjectId, campusId, name; pagination: page, pageSize
 router.get('/assessments', auth.authenticateAdmin, auth.attachSchoolId, getSchoolAssessments);
+
+// Grading routes using ts and oop concept 
+const gradingController = new GradingController();
+
+router.post('/grading/create', auth.authenticateSuperAdmin, auth.attachSchoolId, gradingController.create);
 
 module.exports = router;
