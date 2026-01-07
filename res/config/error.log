@@ -4194,3 +4194,36 @@ Error: Route /api/admin/grading/createe not found
     at next (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:265:14)
     at Function.handle (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:175:3)
     at router (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:47:12)
+[2025-12-29T23:39:45.695Z] ERROR: POST /api/teacher/login - Invalid registration number
+Error: Invalid registration number
+    at TeacherAuthService.login (/Users/Chambs/Documents/Backed servers /ecolex/res/Services/auth/TeacherAuthService.ts:29:19)
+    at async TeacherAuthController.login (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/auth/TeacherAuthController.ts:15:28)
+[2025-12-29T23:52:41.689Z] ERROR: POST /api/teacher/login - Internal Server Error
+Error: Invalid registration number
+    at TeacherAuthService.login (/Users/Chambs/Documents/Backed servers /ecolex/res/Services/auth/TeacherAuthService.ts:29:19)
+    at async TeacherAuthController.login (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/auth/TeacherAuthController.ts:15:28)
+[2025-12-29T23:52:50.804Z] ERROR: POST /api/teacher/login - Internal Server Error
+Error: Invalid registration number
+    at TeacherAuthService.login (/Users/Chambs/Documents/Backed servers /ecolex/res/Services/auth/TeacherAuthService.ts:29:19)
+    at async TeacherAuthController.login (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/auth/TeacherAuthController.ts:15:28)
+[2025-12-29T23:53:24.821Z] ERROR: POST /api/teacher/login - Internal Server Error
+Error: Invalid registration number
+    at TeacherAuthService.login (/Users/Chambs/Documents/Backed servers /ecolex/res/Services/auth/TeacherAuthService.ts:29:19)
+    at async TeacherAuthController.login (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/auth/TeacherAuthController.ts:15:28)
+[2025-12-29T23:53:50.141Z] ERROR: POST /api/teacher/loginn - Route /api/teacher/loginn not found
+Error: Route /api/teacher/loginn not found
+    at exports.notFound (/Users/Chambs/Documents/Backed servers /ecolex/res/middleware/404.js:5:8)
+    at Layer.handle [as handle_request] (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:328:13)
+    at /Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:280:10)
+    at /Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:646:15
+    at next (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:265:14)
+    at Function.handle (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/Chambs/Documents/Backed servers /ecolex/node_modules/express/lib/router/index.js:47:12)
+[2025-12-29T23:54:03.431Z] ERROR: POST /api/teacher/login - Internal Server Error
+Error: Invalid registration number
+    at TeacherAuthService.login (/Users/Chambs/Documents/Backed servers /ecolex/res/Services/auth/TeacherAuthService.ts:29:19)
+    at async TeacherAuthController.login (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/auth/TeacherAuthController.ts:15:28)
+[2025-12-30T00:36:31.339Z] ERROR: POST /api/teacher/login - Invalid registration number

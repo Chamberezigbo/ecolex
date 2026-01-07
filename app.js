@@ -13,7 +13,7 @@ const systemAdmin = require("./res/routes/system-admin/generateToken");
 const studentRoutes = require("./res/routes/student");
 const teacherRoutes = require("./res/routes/teacher");
 const setupRoutes = require("./res/routes/setup");
-const errorMiddleware = require("./res/middleware/error");
+const { errorMiddleware } = require("./res/middleware/error");
 const publicRoutes = require("./res/routes/public");
 const { notFound } = require("./res/middleware/404");
 
@@ -25,7 +25,7 @@ app.use(cors());
 app.use(express.json());
 
 // Static files //
-app.use("./res/uploads", express.static("uploads"));
+app.use("/uploads", express.static("uploads"));
 
 // Routes
 app.use("/api/admin", adminRoutes);
