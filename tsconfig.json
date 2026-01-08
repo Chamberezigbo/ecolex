@@ -3,12 +3,12 @@
     "target": "ES2020",
     "module": "CommonJS",
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": "res",
     "strict": true,
     "esModuleInterop": true,
     "noImplicitAny": false,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["res/**/*.ts"],
   "exclude": ["node_modules"]
 }
