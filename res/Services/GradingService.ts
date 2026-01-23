@@ -6,6 +6,9 @@ import { Prisma } from "@prisma/client";
 
 
 export class GradingService {
+    static createScheme(schoolId: number, body: any) {
+        throw new Error("Method not implemented.");
+    }
 
     private validateGrades(grades: CreateGradingSchemeDTO["grades"]) {
         const sorted = [...grades].sort((a, b) => a.min - b.min);

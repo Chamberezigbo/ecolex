@@ -61,12 +61,12 @@ exports.setupSchool = async (req, res, next) => {
     // Ensure school name uniqueness
     const existingSchool = await prisma.school.findUnique({ where: { name } });
     if (existingSchool) {
-      return res.status(409).json({ message: "School already exists" });
+      return res.status(409).json({ message: "School already exists" }); // ✅ Already has return
     }
 
     const files = req.files;
     if (!files || !files.logoUrl || !files.stampUrl) {
-      return res
+      return res // ✅ Already has return
         .status(400)
         .json({ message: "Please upload both logo and stamp" });
     }
@@ -76,7 +76,7 @@ exports.setupSchool = async (req, res, next) => {
     if (prefix) {
       const normalized = normalizePrefix(prefix);
       if (normalized.length !== 4) {
-        return res
+        return res // ✅ Already has return
           .status(400)
           .json({ message: "Provided prefix must resolve to 4 characters." });
       }
@@ -85,7 +85,7 @@ exports.setupSchool = async (req, res, next) => {
         select: { id: true },
       });
       if (taken) {
-        return res.status(409).json({ message: "Prefix already exists." });
+        return res.status(409).json({ message: "Prefix already exists." }); // ✅ Already has return
       }
       finalPrefix = normalized;
     } else {
@@ -123,7 +123,7 @@ exports.setupSchool = async (req, res, next) => {
 
     await incrementAdminStep(adminId);
 
-    res.status(201).json({
+    return res.status(201).json({ 
       message: "School created successfully",
       school: newSchool,
     });

@@ -1,5 +1,3 @@
-require("ts-node/register");
-
 require('dotenv').config();
 
 const express = require("express");

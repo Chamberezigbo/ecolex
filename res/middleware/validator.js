@@ -9,7 +9,7 @@ const validate = (schema) => {
 
     if (error) {
       const errors = error.details.map((detail) => detail.message);
-      next(new AppError(`Validation error: ${errors.join(", ")}`, 400));
+       return next(new AppError(`Validation error: ${errors.join(", ")}`, 400));
     }
 
     next();

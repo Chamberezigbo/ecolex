@@ -4227,3 +4227,10 @@ Error: Invalid registration number
     at TeacherAuthService.login (/Users/Chambs/Documents/Backed servers /ecolex/res/Services/auth/TeacherAuthService.ts:29:19)
     at async TeacherAuthController.login (/Users/Chambs/Documents/Backed servers /ecolex/res/controller/auth/TeacherAuthController.ts:15:28)
 [2025-12-30T00:36:31.339Z] ERROR: POST /api/teacher/login - Invalid registration number
+[2026-01-09T12:08:44.021Z] ERROR: POST /api/school/setup - Route /api/school/setup not found
+[2026-01-09T12:09:03.007Z] ERROR: POST /api/school/setup - Route /api/school/setup not found
+[2026-01-09T12:09:22.468Z] ERROR: POST /api/school/setup - Route /api/school/setup not found
+[2026-01-09T12:09:47.849Z] ERROR: POST /api/school/setup - Route /api/school/setup not found
+[2026-01-09T12:16:22.599Z] ERROR: POST /api/school/setup - Route /api/school/setup not found
+[2026-01-09T12:20:03.970Z] ERROR: POST /api/school/setup - Route /api/school/setup not found
+[2026-01-09T12:20:20.931Z] ERROR: POST /api/school/setup - Route /api/school/setup not found

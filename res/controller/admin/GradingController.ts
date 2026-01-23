@@ -7,26 +7,34 @@ interface AuthenticatedRequest extends Request {
 }
 
 export class GradingController {
-    private gradingService = new GradingService()
+    private gradingService: GradingService;
 
-    create = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        try {
-            if (req.schoolId === undefined) {
-                throw new Error("Missing schoolId")
-            }
-            const schoolId = Number(req.schoolId)
-            if (Number.isNaN(schoolId)) {
-                throw new Error("Invalid schoolId")
-            }
-            const scheme = await this.gradingService.createScheme(schoolId, req.body)
+    public create: (
+        req: AuthenticatedRequest,
+        res: Response,
+        next: NextFunction
+    ) => Promise<void>;
 
-            res.status(201).json({
-                success: true,
-                message: "Grading scheme created successfully",
-                data: scheme
-            })
-        } catch (err) {
-            next(err)
+    constructor() {
+        this.gradingService = new GradingService();
+
+        this.create = async (req, res, next) => {
+            try {
+                if (req.schoolId === undefined) throw new Error("Missing schoolId");
+
+                const schoolId = Number(req.schoolId);
+                if (isNaN(schoolId)) throw new Error("Invalid schoolId");
+
+                const schema = await this.gradingService.createScheme(schoolId, req.body);
+                
+                res.status(201).json({
+                    success: true,
+                    message: "Grading scheme created successfully",
+                    data: schema
+                });
+            } catch (error) {
+                next(error as Error);    
+            }
         }
     }
 }

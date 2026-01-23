@@ -204,17 +204,20 @@ exports.createCampuses = async (req, res, next) => {
 
 exports.createAssessmentsAndExam = async (req, res, next) => {
   const adminId = req.user.id;
+
   try {
     const { assessments, exam } = req.body;
 
-    // Validate that assessments array exists and is not empty
     if (!Array.isArray(assessments) || assessments.length === 0) {
       return res
         .status(400)
         .json({ message: "Expected a non-empty array of assessments (CAs)." });
     }
 
-    // Validate each assessment item (without weightage)
+    // ✅ declare it so exam doesn’t crash
+    let examClassIds = [];
+
+    // Validate each CA + class exists
     for (const ca of assessments) {
       if (
         !ca.class_id ||
@@ -224,36 +227,28 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
         !ca.max_score ||
         typeof ca.max_score !== "number"
       ) {
-        return res
-          .status(400)
-          .json({ message: "Invalid assessment data provided." });
+        return res.status(400).json({ message: "Invalid assessment data provided." });
       }
 
-      // Check if class exists
       const existingClass = await prisma.class.findUnique({
         where: { id: ca.class_id },
+        select: { id: true },
       });
 
       if (!existingClass) {
-        return res.status(400).json({
-          message: `Class with ID ${ca.class_id} not found.`,
-        });
+        return res.status(400).json({ message: `Class with ID ${ca.class_id} not found.` });
       }
     }
 
-    // Validate exam if provided (without weightage)
+    // Validate exam (optional)
     if (exam) {
-      // Allow single number or array
-      if (Array.isArray(exam.class_id)) {
-        examClassIds = exam.class_id;
-      } else if (typeof exam.class_id === "number") {
-        examClassIds = [exam.class_id];
-      } else {
-        return res
-          .status(400)
-          .json({ message: "exam.class_id must be a number or array of numbers" });
+      if (Array.isArray(exam.class_id)) examClassIds = exam.class_id;
+      else if (typeof exam.class_id === "number") examClassIds = [exam.class_id];
+      else {
+        return res.status(400).json({
+          message: "exam.class_id must be a number or array of numbers",
+        });
       }
-
 
       if (
         !exam.name ||
@@ -263,62 +258,43 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
       ) {
         return res.status(400).json({ message: "Invalid exam data provided." });
       }
-
-      // Check if class exists for exam
-      // const existingClassForExam = await prisma.class.findUnique({
-      //   where: { id: exam.class_id },
-      // });
-
-      // if (!existingClassForExam) {
-      //   return res.status(400).json({
-      //     message: `Class with ID ${exam.class_id} not found for exam.`,
-      //   });
-      // }
-
-      // Check each class ID exists
-      for (const classId of examClassIds) {
-        const existingClass = await prisma.class.findUnique({
-          where: { id: classId },
-        });
-        if (!existingClass) {
-          return res.status(400).json({
-            message: `Class with ID ${classId} not found for exam.`,
-          });
-        }
-      }
     }
 
-    // If all validations pass, prepare data
     const assessmentsData = assessments.map((ca) => ({
       classId: ca.class_id,
       name: ca.name,
       maxScore: ca.max_score,
     }));
 
-    await prisma.continuousAssessment.createMany({
-      data: assessmentsData,
-      skipDuplicates: true
-    });
-
-    if (exam) {
-      const examDataArray = examClassIds.map((classId) => ({
-        classId,
-        name: exam.name,
-        maxScore: exam.max_score,
-      }));
-
-      await prisma.exam.createMany({
-        data: examDataArray,
+    const result = await prisma.$transaction(async (tx) => {
+      const caResult = await tx.continuousAssessment.createMany({
+        data: assessmentsData,
         skipDuplicates: true,
       });
-    }
 
-    // Update the admin step after successful creation
+      let examResult = null;
+      if (exam) {
+        const examDataArray = examClassIds.map((classId) => ({
+          classId,
+          name: exam.name,
+          maxScore: exam.max_score,
+        }));
+
+        examResult = await tx.exam.createMany({
+          data: examDataArray,
+          skipDuplicates: true,
+        });
+      }
+
+      return { caResult, examResult };
+    });
+
     const step = await incrementAdminStep(adminId);
 
-    // add it to the response best practice
-    res.status(201).json({
+    return res.status(201).json({
       message: "Assessments and exam created successfully.",
+      createdCA: result.caResult.count,
+      createdExam: result.examResult?.count ?? 0,
       step,
     });
   } catch (error) {
