@@ -11,11 +11,11 @@
     "build": "npm run prisma:generate && tsc -p tsconfig.json",
     "build:full": "npm install && npm run prisma:generate && npm run prisma:deploy",
     "prisma:generate": "prisma generate",
-    "prisma:deploy": "prisma migrate deploy",
+    "prisma:deploy": "npx prisma migrate deploy --schema=\"$INIT_CWD/prisma/schema.prisma\"",
     "prisma:migrate": "prisma migrate dev --name",
     "prisma:studio": "prisma studio",
     "prisma:reset": "prisma migrate reset",
-    "postinstall": "prisma generate"
+    "postinstall": "npx prisma generate --schema=\"$INIT_CWD/prisma/schema.prisma\""
   },
   "author": "chamberezigbo",
   "license": "ISC",
