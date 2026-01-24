@@ -24,8 +24,10 @@ model Admin {
   hasLoggedIn Boolean  @default(false)
 
   // Relationships
-  school School? @relation(fields: [schoolId], references: [id])
-  campus Campus? @relation(fields: [campusId], references: [id])
+  school                       School?                @relation(fields: [schoolId], references: [id])
+  campus                       Campus?                @relation(fields: [campusId], references: [id])
+  createdContinuousAssessments ContinuousAssessment[] @relation("AdminCreatedCAs")
+  createdExams                 Exam[]                 @relation("AdminCreatedExams")
 
   @@map("admins")
 }
@@ -222,16 +224,18 @@ model ContinuousAssessment {
   id        Int      @id @default(autoincrement())
   classId   Int
   subjectId Int?
-  name      String   @db.VarChar(50) // e.g., "CA1", "CA2"
-  // weightage Decimal? Weightage of this CA towards the final grade
+  name      String   @db.VarChar(50)
   maxScore  Int
   createdAt DateTime @default(now())
+
+  createdByAdminId Int?
+  createdByAdmin   Admin? @relation("AdminCreatedCAs", fields: [createdByAdminId], references: [id])
 
   class     Class      @relation(fields: [classId], references: [id])
   subject   Subject?   @relation(fields: [subjectId], references: [id])
   caResults CAResult[]
 
-  @@unique([classId, name])
+  @@unique([createdByAdminId, classId, name])
   @@map("continuous_assessments")
 }
 
@@ -259,11 +263,14 @@ model Exam {
   maxScore  Int
   createdAt DateTime @default(now())
 
+  createdByAdminId Int?
+  createdByAdmin   Admin? @relation("AdminCreatedExams", fields: [createdByAdminId], references: [id])
+
   class       Class        @relation(fields: [classId], references: [id])
   subject     Subject?     @relation(fields: [subjectId], references: [id])
   examResults ExamResult[]
 
-  @@unique([classId, name]) // ✅ prevents duplicate exams per class
+  @@unique([createdByAdminId, classId, name])
   @@map("exams")
 }
 

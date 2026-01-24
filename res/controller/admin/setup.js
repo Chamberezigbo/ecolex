@@ -264,6 +264,7 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
       classId: ca.class_id,
       name: ca.name,
       maxScore: ca.max_score,
+      createdByAdminId: adminId,
     }));
 
     const result = await prisma.$transaction(async (tx) => {
@@ -278,6 +279,7 @@ exports.createAssessmentsAndExam = async (req, res, next) => {
           classId,
           name: exam.name,
           maxScore: exam.max_score,
+          createdByAdminId: adminId,
         }));
 
         examResult = await tx.exam.createMany({
