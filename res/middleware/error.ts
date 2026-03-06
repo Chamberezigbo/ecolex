@@ -3,20 +3,23 @@ import { AppError } from "../util/AppError";
 import logger from "../config/logger";
 
 export const errorMiddleware = (
-  err: Error,
+  err: any,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const error =
-    err instanceof AppError
-      ? err
-      : new AppError("Internal Server Error", 500);
+  if (res.headersSent) return next(err);
 
-  logger.error(`${req.method} ${req.url} - ${error.message}`);
+  // log real error
+  logger.error(`${req.method} ${req.url} - ${err?.stack || err?.message || err}`);
+  console.error(err);
 
-  res.status(error.statusCode).json({
+  const isAppError = err instanceof AppError;
+  const statusCode = isAppError ? err.statusCode : 500;
+  const message = isAppError ? err.message : (err?.message || "Internal Server Error");
+
+  return res.status(statusCode).json({
     success: false,
-    message: error.message
+    message
   });
 };

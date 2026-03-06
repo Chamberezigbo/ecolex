@@ -4234,3 +4234,28 @@ Error: Invalid registration number
 [2026-01-09T12:16:22.599Z] ERROR: POST /api/school/setup - Route /api/school/setup not found
 [2026-01-09T12:20:03.970Z] ERROR: POST /api/school/setup - Route /api/school/setup not found
 [2026-01-09T12:20:20.931Z] ERROR: POST /api/school/setup - Route /api/school/setup not found
+[2026-01-27T14:36:18.953Z] ERROR: POST /admin/login - Route /admin/login not found
+[2026-01-27T14:37:54.193Z] ERROR: POST /admin/login - Route /admin/login not found
+[2026-01-27T14:38:16.656Z] ERROR: POST /api/admin/login - Validation error: "email" must be a valid email
+[2026-01-27T14:39:14.499Z] ERROR: POST /api/admin/login - Validation error: "email" must be a valid email
+[2026-01-28T00:18:53.449Z] ERROR: POST /api/admin/login - Validation error: "email" must be a valid email
+[2026-03-06T01:19:39.908Z] ERROR: POST /api/setup/ca - Internal Server Error
+[2026-03-06T01:19:55.154Z] ERROR: POST /api/setup/ca - Internal Server Error
+[2026-03-06T01:22:06.868Z] ERROR: POST /api/setup/ca - Internal Server Error
+[2026-03-06T01:27:47.948Z] ERROR: POST /api/setup/ca - PrismaClientKnownRequestError: 
+Invalid `tx.continuousAssessment.createMany()` invocation in
+/Users/cambers/Documents/Backend repos/ecolex/res/controller/admin/setup.js:271:54
+
+  268 }));
+  269 
+  270 const result = await prisma.$transaction(async (tx) => {
+→ 271   const caResult = await tx.continuousAssessment.createMany(
+The column `createdByAdminId` does not exist in the current database.
+    at $n.handleRequestError (/Users/cambers/Documents/Backend repos/ecolex/node_modules/@prisma/client/runtime/library.js:121:7315)
+    at $n.handleAndLogRequestError (/Users/cambers/Documents/Backend repos/ecolex/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/cambers/Documents/Backend repos/ecolex/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/cambers/Documents/Backend repos/ecolex/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async /Users/cambers/Documents/Backend repos/ecolex/res/util/prisma.js:38:18
+    at async /Users/cambers/Documents/Backend repos/ecolex/res/controller/admin/setup.js:271:24
+    at async Proxy._transactionWithCallback (/Users/cambers/Documents/Backend repos/ecolex/node_modules/@prisma/client/runtime/library.js:130:8000)
+    at async exports.createAssessmentsAndExam (/Users/cambers/Documents/Backend repos/ecolex/res/controller/admin/setup.js:270:20)
