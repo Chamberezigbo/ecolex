@@ -51,6 +51,10 @@ const {
   GradingController
 } = require("../../controller/admin/GradingController");
 
+const { AssessmentController } = require("../../controller/admin/AssessmentController");
+
+const assessmentController = new AssessmentController();
+
 const validate = require("../../middleware/validator");
 
 const {
@@ -124,5 +128,35 @@ router.get('/assessments', auth.authenticateAdmin, auth.attachSchoolId, getSchoo
 const gradingController = new GradingController();
 
 router.post('/grading/create', auth.authenticateSuperAdmin, auth.attachSchoolId, gradingController.create);
+
+router.post(
+  "/grading/:schemeId/classes",
+  auth.authenticateSuperAdmin,
+  auth.attachSchoolId,
+  gradingController.addApplicableClasses
+);
+
+router.delete(
+  "/grading/remark/:ruleId",
+  auth.authenticateSuperAdmin,
+  auth.attachSchoolId,
+  gradingController.deleteRemark
+);
+
+// School-wide template (no classId — applies to all classes):
+router.post("/ca-template", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.createCATemplate);
+router.post("/class-subject/assign", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.assignSubjectsToClass);
+router.get("/class-subject/:classId", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getClassSubjects);
+
+// broadsheet
+router.get("/broadsheet", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getAdminBroadsheet);
+
+
+router.post("/results/publish", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.publishResults);
+router.get("/results/submissions", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getPendingSubmissions);
+router.delete("/results/submissions/:submissionId/reject", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.rejectSubmission);
+
+
+
 
 module.exports = router;

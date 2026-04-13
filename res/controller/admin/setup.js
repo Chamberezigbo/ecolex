@@ -2,12 +2,8 @@ const prisma = require("../../util/prisma");
 const {
   classSchema,
   campusSchema,
-  continuousAssessmentSchema,
-  requestSchema,
 } = require("../../schemas/setupSchema");
 
-const validate = require("../../middleware/validator");
-const { date } = require("joi");
 
 const { incrementAdminStep } = require("../../util/adminStep");
 
@@ -202,104 +198,3 @@ exports.createCampuses = async (req, res, next) => {
   }
 };
 
-exports.createAssessmentsAndExam = async (req, res, next) => {
-  const adminId = req.user.id;
-
-  try {
-    const { assessments, exam } = req.body;
-
-    if (!Array.isArray(assessments) || assessments.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Expected a non-empty array of assessments (CAs)." });
-    }
-
-    // ✅ declare it so exam doesn’t crash
-    let examClassIds = [];
-
-    // Validate each CA + class exists
-    for (const ca of assessments) {
-      if (
-        !ca.class_id ||
-        typeof ca.class_id !== "number" ||
-        !ca.name ||
-        typeof ca.name !== "string" ||
-        !ca.max_score ||
-        typeof ca.max_score !== "number"
-      ) {
-        return res.status(400).json({ message: "Invalid assessment data provided." });
-      }
-
-      const existingClass = await prisma.class.findUnique({
-        where: { id: ca.class_id },
-        select: { id: true },
-      });
-
-      if (!existingClass) {
-        return res.status(400).json({ message: `Class with ID ${ca.class_id} not found.` });
-      }
-    }
-
-    // Validate exam (optional)
-    if (exam) {
-      if (Array.isArray(exam.class_id)) examClassIds = exam.class_id;
-      else if (typeof exam.class_id === "number") examClassIds = [exam.class_id];
-      else {
-        return res.status(400).json({
-          message: "exam.class_id must be a number or array of numbers",
-        });
-      }
-
-      if (
-        !exam.name ||
-        typeof exam.name !== "string" ||
-        !exam.max_score ||
-        typeof exam.max_score !== "number"
-      ) {
-        return res.status(400).json({ message: "Invalid exam data provided." });
-      }
-    }
-
-    const assessmentsData = assessments.map((ca) => ({
-      classId: ca.class_id,
-      name: ca.name,
-      maxScore: ca.max_score,
-      createdByAdminId: adminId,
-    }));
-
-    const result = await prisma.$transaction(async (tx) => {
-      const caResult = await tx.continuousAssessment.createMany({
-        data: assessmentsData,
-        skipDuplicates: true,
-      });
-
-      let examResult = null;
-      if (exam) {
-        const examDataArray = examClassIds.map((classId) => ({
-          classId,
-          name: exam.name,
-          maxScore: exam.max_score,
-          createdByAdminId: adminId,
-        }));
-
-        examResult = await tx.exam.createMany({
-          data: examDataArray,
-          skipDuplicates: true,
-        });
-      }
-
-      return { caResult, examResult };
-    });
-
-    const step = await incrementAdminStep(adminId);
-
-    return res.status(201).json({
-      message: "Assessments and exam created successfully.",
-      createdCA: result.caResult.count,
-      createdExam: result.examResult?.count ?? 0,
-      step,
-    });
-  } catch (error) {
-    next(error);
-  }
-};

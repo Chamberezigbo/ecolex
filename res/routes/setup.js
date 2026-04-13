@@ -13,6 +13,5 @@ router.post(
   auth.authenticateSuperAdmin,
   academicController.createCampuses
 );
-router.post("/ca", auth.authenticateSuperAdmin, academicController.createAssessmentsAndExam);
 
 module.exports = router;

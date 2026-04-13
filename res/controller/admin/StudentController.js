@@ -3,6 +3,7 @@ const prisma = require("../../util/prisma");
 const { response } = require("express");
 
 const { generateUniqueIdentifier } = require("../../Models/generateUniqueIdentifier");
+const { academicSession } = require("../../util/prisma");
 
 exports.getStudentDetails = async (req, res, next) => {
   try {
@@ -20,26 +21,28 @@ exports.getStudentDetails = async (req, res, next) => {
     if (name) filter.name = { contains: name };
     if (gender) filter.gender = gender;
     if (classId) filter.classId = parseInt(classId);
-    if  (classGroupId) filter.classGroupId = parseInt(classGroupId);
+    if (classGroupId) filter.classGroupId = parseInt(classGroupId);
 
     const students = await prisma.student.findMany({
-            where: filter,
-            take,
-            skip,
-            orderBy: { createdAt: "desc" },
-            include: {
-            class: {
-              include: {classGroups: {
-                select: {id:true, name:true}
-              }}
-            }, campus: {select: {id:true, name: true} },
-          },
+      where: filter,
+      take,
+      skip,
+      orderBy: { createdAt: "desc" },
+      include: {
+        class: {
+          include: {
+            classGroups: {
+              select: { id: true, name: true }
+            }
+          }
+        }, campus: { select: { id: true, name: true } },
+      },
     })
 
-    const total = await prisma.student.count({where: filter});
+    const total = await prisma.student.count({ where: filter });
 
     res.status(200).json({
-      students,meta: {
+      students, meta: {
         total,
         page: parseInt(page),
         pageSize: take,
@@ -110,6 +113,55 @@ exports.createStudent = async (req, res, next) => {
       groupData = { classGroupId: parseInt(groupId) };
     }
 
+    // Add this before prisma.student.create(...)
+    const trimmedSession = typeof session === "string" ? session.trim() : "";
+
+    let resolvedAcademicSession = null;
+
+    if (trimmedSession) {
+      resolvedAcademicSession = await prisma.academicSession.upsert({
+        where: {
+          schoolId_name: {
+            schoolId,
+            name: trimmedSession,
+          },
+        },
+        update: {},
+        create: {
+          schoolId,
+          name: trimmedSession,
+          isActive: false,
+        },
+        select: {
+          id: true,
+          name: true,
+          isActive: true,
+        },
+      });
+    } else {
+      resolvedAcademicSession = await prisma.academicSession.findFirst({
+        where: {
+          schoolId,
+          isActive: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        select: {
+          id: true,
+          name: true,
+          isActive: true,
+        },
+      });
+    }
+
+    if (!resolvedAcademicSession) {
+      return res.status(400).json({
+        message:
+          "No academic session provided and no active academic session found for this school",
+      });
+    }
+
     // 3️⃣ Create student
     const createdStudent = await prisma.student.create({
       data: {
@@ -124,7 +176,8 @@ exports.createStudent = async (req, res, next) => {
         guardianName,
         guardianNumber,
         lifestyle,
-        session,
+        academicSessionId: resolvedAcademicSession.id, 
+        // session,
         email,
         registrationNumber: uniqueId,
         ...groupData, // ✅ Attach group if provided
@@ -132,6 +185,7 @@ exports.createStudent = async (req, res, next) => {
       include: {
         class: { include: { classGroups: true } },
         classGroup: true, // ✅ Return group data if exists
+        academicSession: {select: { id: true, name: true, isActive: true }}
       },
     });
 
@@ -144,19 +198,22 @@ exports.createStudent = async (req, res, next) => {
     next(error);
   }
 };
-     
+
 
 exports.updateStudent = async (req, res, next) => {
-  try{
+  try {
     const { id } = req.params;
     const data = req.body;
 
     const studentExist = await prisma.student.findUnique({
       where: { id: parseInt(id) },
-            include: {campus: 
-        {select: 
-          {id:true, name: true}
-        }},
+      include: {
+        campus:
+        {
+          select:
+            { id: true, name: true }
+        }
+      },
     });
 
     if (!studentExist) {
@@ -173,36 +230,37 @@ exports.updateStudent = async (req, res, next) => {
       message: "Student updated successfully",
       student: updatedStudent,
     });
-  }catch(error){
-        next(error);
+  } catch (error) {
+    next(error);
   }
 }
 
 exports.getSingleStudent = async (req, res, next) => {
-  try{
+  try {
     const { id } = req.params;
 
     const studentExist = await prisma.student.findUnique({
-            where: { id: parseInt(id), },
-            include: {
-            campus: 
-            {select: 
-              {id:true, name: true}
-            },
-          }
+      where: { id: parseInt(id), },
+      include: {
+        campus:
+        {
+          select:
+            { id: true, name: true }
+        },
+      }
     });
 
     if (!studentExist) {
-            return res.status(404).json({ message: "Student not found" });
+      return res.status(404).json({ message: "Student not found" });
     }
 
     res.status(200).json({
-            success: true,
-            message: "Student updated successfully",
-            data: studentExist,
+      success: true,
+      message: "Student updated successfully",
+      data: studentExist,
     });
-  }catch(error){
-        next(error);
+  } catch (error) {
+    next(error);
   }
 }
 
@@ -270,9 +328,9 @@ exports.changeStudentClass = async (req, res, next) => {
     const updatedStudents = [];
     const errors = [];
 
-    
+
     for (const studentId of studentIds) {
-      
+
       try {
         const studentExist = await prisma.student.findUnique({
           where: { id: parseInt(studentId) },
@@ -312,9 +370,8 @@ exports.changeStudentClass = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: `Students moved to class ${classExist.name}${
-        groupId ? " and added to group" : ""
-      }${campusId ? " in the selected campus" : ""} successfully`,
+      message: `Students moved to class ${classExist.name}${groupId ? " and added to group" : ""
+        }${campusId ? " in the selected campus" : ""} successfully`,
       students: updatedStudents,
     });
   } catch (error) {

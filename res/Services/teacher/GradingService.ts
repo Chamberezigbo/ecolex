@@ -1,6 +1,6 @@
 // src/services/grading/GradingService.ts
-import prisma from "../util/prisma"
-import { CreateGradingSchemeDTO } from "../dtos/grading.dto"
+import prisma from "../../util/prisma"
+import { CreateGradingSchemeDTO } from "../../dtos/grading.dto"
 
 import { Prisma } from "@prisma/client";
 
@@ -79,6 +79,71 @@ export class GradingService {
                 grades: data.grades.length
             }
         });
+    }
+
+    async addClassesToScheme(schoolId: number, schemeId: number, classIds: number[]) {
+        if (!Array.isArray(classIds) || classIds.length === 0) {
+            throw new Error("classIds is required");
+        }
+
+        return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+            const scheme = await tx.gradingScheme.findFirst({
+                where: { id: schemeId, schoolId },
+                select: { id: true }
+            });
+
+            if (!scheme) throw new Error("Grading scheme not found for this school");
+
+            const classes = await tx.class.findMany({
+                where: { id: { in: classIds }, schoolId },
+                select: { id: true }
+            });
+
+            if (classes.length !== classIds.length) {
+                throw new Error("One or more classIds are invalid for this school");
+            }
+
+            const existing = await tx.gradingSchemeClass.findMany({
+                where: { classId: { in: classIds } },
+                select: { classId: true }
+            });
+
+            const taken = new Set(existing.map((x) => x.classId));
+            const newClassIds = classIds.filter((id) => !taken.has(id));
+
+            if (newClassIds.length === 0) {
+                return { added: 0, skipped: classIds.length };
+            }
+
+            await tx.gradingSchemeClass.createMany({
+                data: newClassIds.map((classId) => ({
+                    schemeId,
+                    classId
+                }))
+            });
+
+            return { added: newClassIds.length, skipped: classIds.length - newClassIds.length };
+        });
+    }
+
+    async deleteRemarkRule(schoolId: number, ruleId: number) {
+        const rule = await prisma.gradingRule.findFirst({
+            where: {
+                id: ruleId,
+                scheme: { schoolId }
+            },
+            select: { id: true }
+        });
+
+        if (!rule) {
+            throw new Error("Remark rule not found for this school");
+        }
+
+        await prisma.gradingRule.delete({
+            where: { id: ruleId }
+        });
+
+        return { deleted: true, ruleId };
     }
 }
 

@@ -29,6 +29,8 @@ model Admin {
   createdContinuousAssessments ContinuousAssessment[] @relation("AdminCreatedCAs")
   createdExams                 Exam[]                 @relation("AdminCreatedExams")
 
+  publishedResults PublishedResult[]
+
   @@map("admins")
 }
 
@@ -56,6 +58,7 @@ model School {
   Subject         Subject[]
   GradingScheme   GradingScheme[]
   AcademicSession AcademicSession[]
+  CATemplate      CATemplate[]
 
   @@map("schools")
 }
@@ -111,6 +114,10 @@ model Class {
   ContinuousAssessment ContinuousAssessment[]
   Exam                 Exam[]
   GradingSchemeClass   GradingSchemeClass[]
+  CATemplate           CATemplate[]
+  ClassSubject         ClassSubject[]
+  publishedResults PublishedResult[]
+  resultSubmissions ResultSubmission[]
 
   // Optionally, add a unique constraint for name, school, and campus
   @@unique([name, schoolId, campusId])
@@ -146,6 +153,7 @@ model Staff {
   campus      Campus?             @relation(fields: [campusId], references: [id])
   classes     Class[] // if staff is a teacher, they can have classes
   assignments TeacherAssignment[] // All class+subject+campus teaching assignments
+  resultSubmissions ResultSubmission[]
 
   @@unique([schoolId, registrationNumber])
   @@map("staffs")
@@ -180,6 +188,7 @@ model Student {
   class      Class        @relation(fields: [classId], references: [id])
   CAResult   CAResult[]
   ExamResult ExamResult[]
+  publishedResultRows PublishedResultRow[]
 
   // ✅ NEW: Unique constraint for registration number per school
   @@unique([schoolId, registrationNumber])
@@ -199,6 +208,9 @@ model Subject {
   assignments           TeacherAssignment[] // Who teaches this subject (and where)
   continuousAssessments ContinuousAssessment[]
   exams                 Exam[]
+  classSubjects         ClassSubject[]
+  publishedResults PublishedResult[]
+  resultSubmissions ResultSubmission[]
 
   @@map("subjects")
 }
@@ -220,6 +232,36 @@ model TeacherAssignment {
   @@map("teacher_assignments")
 }
 
+// School-level default CA structure
+model CATemplate {
+  id       Int     @id @default(autoincrement())
+  schoolId Int
+  classId  Int?    // NULL = applies to whole school, set = class override
+  name     String  // e.g. "CA1", "CA2", "Exam"
+  maxScore Int
+  isExam   Boolean @default(false) // true = this is an exam, false = CA
+
+  school School  @relation(fields: [schoolId], references: [id])
+  class  Class?  @relation(fields: [classId], references: [id])
+
+  @@unique([schoolId, classId, name])
+  @@map("ca_templates")
+}
+
+// Direct link between class and subject
+model ClassSubject {
+  id        Int @id @default(autoincrement())
+  classId   Int
+  subjectId Int
+
+  class   Class   @relation(fields: [classId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
+
+  @@unique([classId, subjectId])
+  @@map("class_subjects")
+}
+
+
 model ContinuousAssessment {
   id        Int      @id @default(autoincrement())
   classId   Int
@@ -235,7 +277,7 @@ model ContinuousAssessment {
   subject   Subject?   @relation(fields: [subjectId], references: [id])
   caResults CAResult[]
 
-  @@unique([createdByAdminId, classId, name])
+  @@unique([classId, subjectId, name])
   @@map("continuous_assessments")
 }
 
@@ -251,6 +293,7 @@ model CAResult {
   ca              ContinuousAssessment @relation(fields: [caId], references: [id])
   academicSession AcademicSession      @relation(fields: [academicSessionId], references: [id])
 
+  @@unique([studentId, caId, academicSessionId])
   @@map("ca_results")
 }
 
@@ -270,7 +313,7 @@ model Exam {
   subject     Subject?     @relation(fields: [subjectId], references: [id])
   examResults ExamResult[]
 
-  @@unique([createdByAdminId, classId, name])
+  @@unique([classId, subjectId, name])
   @@map("exams")
 }
 
@@ -286,6 +329,7 @@ model ExamResult {
   exam            Exam            @relation(fields: [examId], references: [id])
   academicSession AcademicSession @relation(fields: [academicSessionId], references: [id])
 
+  @@unique([studentId, examId, academicSessionId])
   @@map("exam_results")
 }
 
@@ -336,7 +380,69 @@ model AcademicSession {
   students    Student[]
   caResults   CAResult[]
   examResults ExamResult[]
+  publishedResults PublishedResult[]
+  resultSubmissions ResultSubmission[]
 
   @@unique([schoolId, name])
   @@map("academic_sessions")
 }
+
+model PublishedResult {
+  id                 Int      @id @default(autoincrement())
+  classId            Int
+  subjectId          Int
+  academicSessionId  Int
+  publishedByAdminId Int
+  publishedAt        DateTime @default(now())
+
+  class           Class           @relation(fields: [classId], references: [id])
+  subject         Subject         @relation(fields: [subjectId], references: [id])
+  academicSession AcademicSession @relation(fields: [academicSessionId], references: [id])
+  admin           Admin           @relation(fields: [publishedByAdminId], references: [id])
+  rows            PublishedResultRow[]
+
+  // One publication per class + subject + session
+  @@unique([classId, subjectId, academicSessionId])
+  @@map("published_results")
+}
+
+model PublishedResultRow {
+  id                Int    @id @default(autoincrement())
+  publishedResultId Int
+  studentId         Int
+  caTotal           Float
+  examTotal         Float
+  total             Float
+  grade             String?
+  remark            String?
+  position          Int?
+
+  publishedResult PublishedResult @relation(fields: [publishedResultId], references: [id])
+  student         Student         @relation(fields: [studentId], references: [id])
+
+  @@map("published_result_rows")
+}
+
+enum SubmissionStatus {
+  PENDING    // submitted, awaiting admin review
+  REJECTED   // admin rejected, teacher can re-enter
+}
+
+model ResultSubmission {
+  id                Int              @id @default(autoincrement())
+  classId           Int
+  subjectId         Int
+  academicSessionId Int
+  staffId           Int
+  status            SubmissionStatus @default(PENDING)
+  submittedAt       DateTime         @default(now())
+
+  class           Class           @relation(fields: [classId], references: [id])
+  subject         Subject         @relation(fields: [subjectId], references: [id])
+  academicSession AcademicSession @relation(fields: [academicSessionId], references: [id])
+  staff           Staff           @relation(fields: [staffId], references: [id])
+
+  @@unique([classId, subjectId, academicSessionId, staffId])
+  @@map("result_submissions")
+}
+
