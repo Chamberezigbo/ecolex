@@ -8,6 +8,14 @@ const auth = require("../middleware/authLogin");
 const router = express.Router();
 const prisma = new PrismaClient();
 
+const { StudentAuthController } = require("../controller/auth/StudentAuthController");
+
+const studentAuthController = new StudentAuthController();
+
+// Public route — no auth needed to log in
+router.post("/login", studentAuthController.login);
+
+
 //Environment variables for Jwt
 const JWT_SECRET = process.env.JWT_SECRET;
 

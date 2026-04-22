@@ -14,6 +14,7 @@ const setupRoutes = require("./res/routes/setup");
 const { errorMiddleware } = require("./res/middleware/error");
 const publicRoutes = require("./res/routes/public");
 const { notFound } = require("./res/middleware/404");
+const studentDash = require("./res/routes/studentDashboard");
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use("/api/student", studentRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/setup", setupRoutes);
 app.use("/api/public", publicRoutes);
+app.use("/api/dashboard", studentDash);
 
 // 404 Middleware
 app.use(notFound);

@@ -3,6 +3,7 @@ import { Response, NextFunction } from "express";
 import { TeacherRequest } from "../../middleware/teacherMiddleware";
 import { TeacherService } from "../../Services/teacher/TeacherService";
 import { GradingService } from "../../Services/teacher/GradingService";
+
 export class TeacherController {
     private service = new TeacherService();
     private gradingService = new GradingService();
@@ -203,6 +204,58 @@ export class TeacherController {
                 message: "Results submitted successfully. Scores are now locked pending admin review.",
                 data: result
             });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    getSubjectCAs = async (req: TeacherRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.staffId || !req.schoolId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const subjectId = Number(req.params.subjectId);
+            const classId = Number(req.query.classId);
+
+            if (!subjectId || !classId) {
+                throw new Error("subjectId (param) and classId (query) are required");
+            }
+
+            const data = await this.service.getSubjectCAs({
+                staffId: req.staffId,
+                schoolId: req.schoolId,
+                subjectId,
+                classId
+            });
+
+            return res.json({ success: true, data });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    getSubjectExams = async (req: TeacherRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.staffId || !req.schoolId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const subjectId = Number(req.params.subjectId);
+            const classId = Number(req.query.classId);
+
+            if (!subjectId || !classId) {
+                throw new Error("subjectId (param) and classId (query) are required");
+            }
+
+            const data = await this.service.getSubjectExams({
+                staffId: req.staffId,
+                schoolId: req.schoolId,
+                subjectId,
+                classId
+            });
+
+            return res.json({ success: true, data });
         } catch (err) {
             next(err);
         }

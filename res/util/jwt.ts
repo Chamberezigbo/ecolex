@@ -9,6 +9,18 @@ export interface TeacherJwtPayload {
     role: "teacher";
 }
 
+export interface StudentJwtPayload {
+    studentId: number;
+    schoolId: number;
+    role: "student";
+}
+
+
+export const signStudentToken = (payload: StudentJwtPayload) => {
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: "1d" });
+};
+
+
 export const signTeacherToken = (payload: TeacherJwtPayload) => {
     return jwt.sign(payload, JWT_SECRET, {
         expiresIn: "1d"

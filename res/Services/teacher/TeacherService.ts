@@ -437,5 +437,89 @@ export class TeacherService {
         return submission;
     }
 
+    async getSubjectCAs(input: {
+        staffId: number;
+        schoolId: number;
+        subjectId: number;
+        classId: number;
+    }) {
+        const { staffId, schoolId, subjectId, classId } = input;
+
+        // Confirm this teacher is actually assigned to this class + subject
+        await this.ensureTeacherCanTouchClass(staffId, classId, subjectId);
+
+        // Confirm subject belongs to this school
+        const subject = await prisma.subject.findFirst({
+            where: { id: subjectId, schoolId },
+            select: { id: true, name: true }
+        });
+        if (!subject) throw new Error("Subject not found");
+
+        // Confirm class belongs to this school
+        const cls = await prisma.class.findFirst({
+            where: { id: classId, schoolId },
+            select: { id: true, name: true }
+        });
+        if (!cls) throw new Error("Class not found");
+
+        // Fetch all CAs for this class + subject combination
+        const cas = await prisma.continuousAssessment.findMany({
+            where: {
+                classId,
+                subjectId  // narrows to only this subject's CAs
+            },
+            select: {
+                id: true,
+                name: true,     // e.g. "CA1", "CA2", "CA3"
+                maxScore: true
+            },
+            orderBy: { name: "asc" }
+        });
+
+        return {
+            subject,
+            class: cls,
+            cas  // teacher uses these caIds when saving scores
+        };
+    }
+
+    async getSubjectExams(input: {
+        staffId: number;
+        schoolId: number;
+        subjectId: number;
+        classId: number;
+    }) {
+        const { staffId, schoolId, subjectId, classId } = input;
+
+        // Step 1: confirm teacher is allowed to touch this class+subject
+        await this.ensureTeacherCanTouchClass(staffId, classId, subjectId);
+
+        // Step 2: confirm subject + class belong to this school
+        const subject = await prisma.subject.findFirst({
+            where: { id: subjectId, schoolId },
+            select: { id: true, name: true }
+        });
+        if (!subject) throw new Error("Subject not found");
+
+        const cls = await prisma.class.findFirst({
+            where: { id: classId, schoolId },
+            select: { id: true, name: true }
+        });
+        if (!cls) throw new Error("Class not found");
+
+        // Step 3: fetch exams for this class+subject — teacher picks the examId from here
+        const exams = await prisma.exam.findMany({
+            where: { classId, subjectId },
+            select: {
+                id: true,
+                name: true,      // e.g. "Midterm", "Final"
+                maxScore: true
+            },
+            orderBy: { name: "asc" }
+        });
+
+        return { subject, class: cls, exams };
+    }
+
 
 }
