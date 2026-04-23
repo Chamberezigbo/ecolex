@@ -7,21 +7,6 @@
   - You are about to drop the `Class` table. If the table is not empty, all the data it contains will be lost.
 
 */
--- DropForeignKey
-ALTER TABLE `Class` DROP FOREIGN KEY `Class_campusId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Class` DROP FOREIGN KEY `Class_schoolId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Class` DROP FOREIGN KEY `Class_teacherId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `ClassGroup` DROP FOREIGN KEY `ClassGroup_classId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Student` DROP FOREIGN KEY `Student_classId_fkey`;
-
 -- AlterTable
 ALTER TABLE `admins` MODIFY `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(3);
 
