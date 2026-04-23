@@ -6,12 +6,6 @@
   - You are about to alter the column `createdAt` on the `schools` table. The data in that column could be lost. The data in that column will be cast from `Timestamp(0)` to `Timestamp`.
 
 */
--- DropForeignKey
-ALTER TABLE `continuous_assessments` DROP FOREIGN KEY `continuous_assessments_subjectId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `exams` DROP FOREIGN KEY `exams_subjectId_fkey`;
-
 -- AlterTable
 ALTER TABLE `admins` MODIFY `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(3);
 

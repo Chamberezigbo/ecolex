@@ -7,14 +7,6 @@
   - Made the column `classId` on table `Student` required. This step will fail if there are existing NULL values in that column.
 
 */
--- DropForeignKey
-ALTER TABLE `Student` DROP FOREIGN KEY `Student_campusId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Student` DROP FOREIGN KEY `Student_classId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Teacher` DROP FOREIGN KEY `Teacher_campusId_fkey`;
 
 -- AlterTable
 ALTER TABLE `Student` MODIFY `campusId` INTEGER NULL,
