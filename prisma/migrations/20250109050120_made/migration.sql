@@ -6,8 +6,6 @@
   - You are about to alter the column `createdAt` on the `schools` table. The data in that column could be lost. The data in that column will be cast from `Timestamp(0)` to `Timestamp`.
 
 */
--- DropForeignKey
-ALTER TABLE `admins` DROP FOREIGN KEY `admins_schoolId_fkey`;
 
 -- AlterTable
 ALTER TABLE `admins` MODIFY `schoolId` INTEGER NULL,
