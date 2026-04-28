@@ -63,8 +63,8 @@ exports.createStudent = async (req, res, next) => {
   try {
     const {
       name,
-      campusId,
-      classId,
+      campusId: rawCampusId,
+      classId: rawClassId,
       groupId, // ✅ Accept groupId from request body
       surname,
       otherNames,
@@ -78,6 +78,14 @@ exports.createStudent = async (req, res, next) => {
     } = req.body;
 
     const schoolId = req.schoolId;
+
+    // Convert string IDs to integers (HTTP always sends strings)
+    const campusId = rawCampusId ? parseInt(rawCampusId) : null;
+    const classId  = rawClassId  ? parseInt(rawClassId)  : null;
+
+    if (!classId) {
+      return res.status(400).json({ message: "Class ID is required" });
+    }
 
     // Get the school prefix
     const school = await prisma.school.findUnique({
@@ -103,7 +111,7 @@ exports.createStudent = async (req, res, next) => {
 
     // 1️⃣ Validate class existence
     const classExist = await prisma.class.findUnique({
-      where: { id: parseInt(classId) },
+      where: { id: classId },
       include: { classGroups: true },
     });
     if (!classExist) {
@@ -245,9 +253,17 @@ exports.updateStudent = async (req, res, next) => {
       );
     }
 
+    // Parse any Int fields that come in as strings from the request body
+    const updateData = {
+      ...data,
+      ...(data.campusId && { campusId: parseInt(data.campusId) }),
+      ...(data.classId && { classId: parseInt(data.classId) }),
+      ...(data.classGroupId && { classGroupId: parseInt(data.classGroupId) }),
+    };
+
     const updatedStudent = await prisma.student.update({
       where: { id: parseInt(id) },
-      data,
+      data: updateData,
       include: {
         academicSession: { select: { id: true, name: true, isActive: true } },
       },
