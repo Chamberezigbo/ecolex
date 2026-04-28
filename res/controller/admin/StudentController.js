@@ -81,7 +81,7 @@ exports.createStudent = async (req, res, next) => {
 
     // Convert string IDs to integers (HTTP always sends strings)
     const campusId = rawCampusId ? parseInt(rawCampusId) : null;
-    const classId  = rawClassId  ? parseInt(rawClassId)  : null;
+    const classId = rawClassId ? parseInt(rawClassId) : null;
 
     if (!classId) {
       return res.status(400).json({ message: "Class ID is required" });
@@ -227,16 +227,13 @@ exports.createStudent = async (req, res, next) => {
 exports.updateStudent = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const data = req.body;
+    // Pull session out separately so it doesn't get passed raw to Prisma
+    const { session, ...data } = req.body;
 
     const studentExist = await prisma.student.findUnique({
       where: { id: parseInt(id) },
       include: {
-        campus:
-        {
-          select:
-            { id: true, name: true }
-        }
+        campus: { select: { id: true, name: true } }
       },
     });
 
@@ -253,12 +250,26 @@ exports.updateStudent = async (req, res, next) => {
       );
     }
 
+    // Resolve session name → academicSessionId if provided
+    let resolvedSessionId = undefined;
+    if (session) {
+      const trimmed = session.trim();
+      const resolved = await prisma.academicSession.upsert({
+        where: { schoolId_name: { schoolId: studentExist.schoolId, name: trimmed } },
+        update: {},
+        create: { schoolId: studentExist.schoolId, name: trimmed, isActive: false },
+        select: { id: true },
+      });
+      resolvedSessionId = resolved.id;
+    }
+
     // Parse any Int fields that come in as strings from the request body
     const updateData = {
       ...data,
       ...(data.campusId && { campusId: parseInt(data.campusId) }),
       ...(data.classId && { classId: parseInt(data.classId) }),
       ...(data.classGroupId && { classGroupId: parseInt(data.classGroupId) }),
+      ...(resolvedSessionId && { academicSessionId: resolvedSessionId }),
     };
 
     const updatedStudent = await prisma.student.update({
@@ -277,7 +288,8 @@ exports.updateStudent = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-}
+};
+
 
 exports.getSingleStudent = async (req, res, next) => {
   try {
