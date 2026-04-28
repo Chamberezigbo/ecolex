@@ -1,4 +1,6 @@
 const express = require("express");
+const upload = require("../../middleware/upload");
+
 
 const {
   createAdmin,
@@ -86,8 +88,19 @@ router.get("/my-school", auth.authenticateAdmin, getMySchool);
 
 // Student routes
 router.get("/students", auth.authenticateSuperAdmin, auth.attachSchoolId, getStudentDetails);
-router.post("/student/create", validate(studentSchema), auth.authenticateSuperAdmin, auth.attachSchoolId, createStudent);
-router.put("/student/:id", auth.authenticateSuperAdmin, updateStudent);
+router.post("/student/create",
+  upload.single("passport"),
+  validate(studentSchema),
+  auth.authenticateSuperAdmin,
+  auth.attachSchoolId,
+  createStudent
+);
+router.put("/student/:id",
+  upload.single("passport"),
+  auth.authenticateSuperAdmin,
+  updateStudent
+);
+
 router.patch("/student/change-class", auth.authenticateSuperAdmin, changeStudentClass);
 router.get("/student/:id", auth.authenticateSuperAdmin, getSingleStudent);
 // Staff routes
@@ -124,6 +137,8 @@ router.delete("/subject/:subjectId", auth.authenticateSuperAdmin, deleteSubject)
 // Optional filters: classId, subjectId, campusId, name; pagination: page, pageSize
 router.get('/assessments', auth.authenticateAdmin, auth.attachSchoolId, getSchoolAssessments);
 
+router.get("/ca-template", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getCATemplates);
+
 // Grading routes using ts and oop concept 
 const gradingController = new GradingController();
 
@@ -155,8 +170,6 @@ router.get("/broadsheet", auth.authenticateSuperAdmin, auth.attachSchoolId, asse
 router.post("/results/publish", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.publishResults);
 router.get("/results/submissions", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getPendingSubmissions);
 router.delete("/results/submissions/:submissionId/reject", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.rejectSubmission);
-
-
 
 
 module.exports = router;

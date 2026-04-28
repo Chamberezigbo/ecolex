@@ -56,6 +56,45 @@ export class AssessmentService {
         return saved;
     }
 
+    async getCATemplates(schoolId: number, classId?: number) {
+        // School-wide template (classId = null)
+        const schoolWide = await prisma.cATemplate.findMany({
+            where: { schoolId, classId: null },
+            select: { id: true, name: true, maxScore: true, isExam: true }
+        });
+
+        // Class-specific template only if classId was provided
+
+        let classSpecific: {
+            classId: number;
+            className: string;
+            templates: { name: string; id: number; maxScore: number; isExam: boolean }[];
+        } | null = null;
+
+
+        if (classId) {
+            const classRecord = await prisma.class.findFirst({
+                where: { id: classId, schoolId },
+                select: { id: true, name: true }
+            });
+            if (!classRecord) throw new Error("Class not found or does not belong to your school");
+
+            const templates = await prisma.cATemplate.findMany({
+                where: { schoolId, classId },
+                select: { id: true, name: true, maxScore: true, isExam: true }
+            });
+
+            classSpecific = {
+                classId,
+                className: classRecord.name,
+                templates  // empty array means class uses school-wide
+            };
+        }
+
+        return { schoolWide, classSpecific };
+    }
+
+
     async assignSubjectsToClass(data: {
         classId: number;
         subjectIds: number[];
@@ -199,12 +238,13 @@ export class AssessmentService {
         schoolId: number;
         academicSessionId: number;
         subjectIds: number[];  // admin passes all, teacher passes only theirs
+        classGroupId?: number;
     }) {
-        const { classId, schoolId, academicSessionId, subjectIds } = input;
+        const { classId, schoolId, academicSessionId, subjectIds, classGroupId } = input;
 
         // 1. Get students in this class for this session
         const students = await prisma.student.findMany({
-            where: { classId, schoolId, academicSessionId },
+            where: { classId, schoolId, academicSessionId, ...(classGroupId ? { classGroupId } : {}) },
             select: {
                 id: true,
                 surname: true,
@@ -263,6 +303,7 @@ export class AssessmentService {
                 examTotal: number;
                 subjectTotal: number;
                 grade: string | null;
+                remark: string | null;
             }> = {};
 
             for (const subject of subjects) {
@@ -285,7 +326,8 @@ export class AssessmentService {
                     caTotal,
                     examTotal,
                     subjectTotal,
-                    grade: matched?.grade ?? null
+                    grade: matched?.grade ?? null,
+                    remark: matched?.remark ?? null
                 };
             }
 
@@ -321,16 +363,28 @@ export class AssessmentService {
         classId: number;
         schoolId: number;
         academicSessionId: number;
+        classGroupId?: number;
     }) {
-        const { classId, schoolId, academicSessionId } = input;
+        const { classId, schoolId, academicSessionId, classGroupId } = input;
 
         // Verify class belongs to school
         const classRecord = await prisma.class.findFirst({
             where: { id: classId, schoolId },
-            select: { id: true }
+            select: {
+                id: true,
+                name: true,
+                customName: true,
+                staff: { select: { name: true } },
+            }
         });
 
         if (!classRecord) throw new Error("Class not found or does not belong to your school");
+
+        // get session name
+        const session = await prisma.academicSession.findUnique({
+            where: { id: academicSessionId },
+            select: { name: true }
+        });
 
         // Get ALL subjects assigned to this class
         const classSubjects = await prisma.classSubject.findMany({
@@ -342,9 +396,26 @@ export class AssessmentService {
             throw new Error("No subjects assigned to this class yet");
         }
 
+
         const subjectIds = classSubjects.map((cs) => cs.subjectId);
 
-        return this.computeBroadsheet({ classId, schoolId, academicSessionId, subjectIds });
+        // pass classGroupId down
+        const broadsheet = await this.computeBroadsheet({
+            classId,
+            schoolId,
+            academicSessionId,
+            subjectIds,
+            classGroupId   // ← new
+        });
+
+
+        return {
+            ...broadsheet,
+            className: classRecord.customName ?? classRecord.name,
+            classTeacher: classRecord.staff?.name ?? null,
+            sessionName: session?.name ?? null
+        };
+
     }
 
     async publishResults(input: {

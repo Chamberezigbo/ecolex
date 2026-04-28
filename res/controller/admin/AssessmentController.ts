@@ -45,6 +45,21 @@ export class AssessmentController {
         }
     };
 
+    getCATemplates = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) throw new Error("Missing schoolId");
+
+            const classId = req.query.classId ? Number(req.query.classId) : undefined;
+
+            const result = await this.service.getCATemplates(Number(req.schoolId), classId);
+
+            return res.status(200).json({ success: true, data: result });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+
     assignSubjectsToClass = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             if (!req.schoolId) throw new Error("Missing schoolId");
@@ -87,28 +102,6 @@ export class AssessmentController {
                 success: true,
                 data: result
             });
-        } catch (err) {
-            next(err);
-        }
-    };
-
-    getAdminBroadsheet = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        try {
-            if (!req.schoolId) throw new Error("Missing schoolId");
-
-            const classId = Number(req.query.classId);
-            const academicSessionId = Number(req.query.academicSessionId);
-
-            if (isNaN(classId)) throw new Error("Invalid classId");
-            if (isNaN(academicSessionId)) throw new Error("Invalid academicSessionId");
-
-            const result = await this.service.getAdminBroadsheet({
-                classId,
-                academicSessionId,
-                schoolId: Number(req.schoolId)
-            });
-
-            return res.status(200).json({ success: true, data: result });
         } catch (err) {
             next(err);
         }
@@ -173,6 +166,31 @@ export class AssessmentController {
             next(err);
         }
     };
+
+    getAdminBroadsheet = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) throw new Error("Missing schoolId");
+
+            const classId = Number(req.query.classId);
+            const academicSessionId = Number(req.query.academicSessionId);
+            const classGroupId = req.query.classGroupId ? Number(req.query.classGroupId) : undefined;
+
+            if (isNaN(classId)) throw new Error("Invalid classId");
+            if (isNaN(academicSessionId)) throw new Error("Invalid academicSessionId");
+
+            const result = await this.service.getAdminBroadsheet({
+                classId,
+                academicSessionId,
+                schoolId: Number(req.schoolId),
+                classGroupId   // ← new
+            });
+
+            return res.status(200).json({ success: true, data: result });
+        } catch (err) {
+            next(err);
+        }
+    };
+
 
 
 }

@@ -1,6 +1,8 @@
 const { log } = require("winston");
 const prisma = require("../../util/prisma");
 const { response } = require("express");
+const processImage = require("../../config/compress");
+
 
 const { generateUniqueIdentifier } = require("../../Models/generateUniqueIdentifier");
 const { academicSession } = require("../../util/prisma");
@@ -35,7 +37,9 @@ exports.getStudentDetails = async (req, res, next) => {
               select: { id: true, name: true }
             }
           }
-        }, campus: { select: { id: true, name: true } },
+        },
+        campus: { select: { id: true, name: true } },
+        academicSession: { select: { id: true, name: true, isActive: true } },
       },
     })
 
@@ -85,6 +89,17 @@ exports.createStudent = async (req, res, next) => {
     }
 
     const uniqueId = generateUniqueIdentifier(school.prefix, "STD");
+
+    // Upload passport if provided
+    let passportUrl = null;
+    if (req.file) {
+      passportUrl = await processImage(
+        req.file.buffer,
+        "passports",
+        `${uniqueId}-passport.jpeg`
+      );
+    }
+
 
     // 1️⃣ Validate class existence
     const classExist = await prisma.class.findUnique({
@@ -176,16 +191,17 @@ exports.createStudent = async (req, res, next) => {
         guardianName,
         guardianNumber,
         lifestyle,
-        academicSessionId: resolvedAcademicSession.id, 
+        academicSessionId: resolvedAcademicSession.id,
         // session,
         email,
         registrationNumber: uniqueId,
+        passportUrl,
         ...groupData, // ✅ Attach group if provided
       },
       include: {
         class: { include: { classGroups: true } },
         classGroup: true, // ✅ Return group data if exists
-        academicSession: {select: { id: true, name: true, isActive: true }}
+        academicSession: { select: { id: true, name: true, isActive: true } }
       },
     });
 
@@ -220,9 +236,21 @@ exports.updateStudent = async (req, res, next) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
+    // Upload new passport if provided
+    if (req.file) {
+      data.passportUrl = await processImage(
+        req.file.buffer,
+        "passports",
+        `${studentExist.registrationNumber}-passport.jpeg`
+      );
+    }
+
     const updatedStudent = await prisma.student.update({
       where: { id: parseInt(id) },
       data,
+      include: {
+        academicSession: { select: { id: true, name: true, isActive: true } },
+      },
     });
 
     res.status(200).json({
@@ -246,6 +274,10 @@ exports.getSingleStudent = async (req, res, next) => {
         {
           select:
             { id: true, name: true }
+        },
+        academicSession: {
+          select:
+            { id: true, name: true, isActive: true }
         },
       }
     });

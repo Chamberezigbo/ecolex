@@ -32,7 +32,11 @@ export class GradingService {
         return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
 
             const classes = await tx.class.findMany({
-                where: { id: { in: data.classIds }, schoolId },
+                where: {
+                    id: { in: data.classIds },
+                    schoolId,
+                    ...(data.campusId ? { campusId: data.campusId } : {})
+                },
                 select: { id: true }
             });
 
@@ -51,6 +55,7 @@ export class GradingService {
             const scheme = await tx.gradingScheme.create({
                 data: {
                     schoolId,
+                    campusId: data.campusId ?? null,
                     name: data.name,
                     usePosition: data.usePosition
                 }

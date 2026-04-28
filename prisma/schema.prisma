@@ -90,6 +90,7 @@ model Campus {
   Student            Student[]
   Subject            Subject[]
   TeacherAssignments TeacherAssignment[] // ✅ added
+  gradingSchemes GradingScheme[]
 
   @@unique([schoolId, name]) // 🔒 Prevent same campus name for same school
   @@map("campuses")
@@ -181,6 +182,7 @@ model Student {
   classGroup         ClassGroup?     @relation(fields: [classGroupId], references: [id])
   // ✅ NEW: Registration Number Field
   registrationNumber String          @unique @db.VarChar(50)
+  passportUrl       String?  @db.VarChar(255)
 
   createdAt  DateTime     @default(now())
   school     School       @relation(fields: [schoolId], references: [id])
@@ -339,9 +341,11 @@ model GradingScheme {
   name        String // e.g. "Junior Secondary Grading"
   usePosition Boolean  @default(true) // rank students or not
   createdAt   DateTime @default(now())
+  campusId    Int?  
 
   school  School               @relation(fields: [schoolId], references: [id])
   grades  GradingRule[]
+  campus  Campus?              @relation(fields: [campusId], references: [id]) 
   classes GradingSchemeClass[]
 
   @@map("grading_schemes")

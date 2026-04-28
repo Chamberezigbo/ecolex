@@ -9,6 +9,7 @@ export interface GradeInput {
 export interface CreateGradingSchemeDTO {
     name: string
     usePosition: boolean
+    campusId?: number
     classIds: number[]
     grades: GradeInput[]
 }

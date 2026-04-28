@@ -1,11 +1,10 @@
 # Task Management
 
 ## 🔥 Immediate Focus
-- [ ] Broadsheet — all subjects side by side per student (GET /teacher/results/broadsheet)
-- [ ] Position/ranking using usePosition flag on GradingScheme
-- [ ] Result publication — admin reviews and publishes results (snapshot to DB)
-- [ ] Lock results after submission — teachers cannot edit after submitting
-- [ ] Result submission confirmation
+
+- [ ] Get endpoint for CA  for school wide template and class
+- [ ] Return session name in student details and edit student endpoint.
+- [ ] add student passport for create student
 
 
 ---
@@ -59,6 +58,12 @@
 
 - [x] Assign subjects to class endpoint (POST /admin/class-subject/assign) → auto-generates CAs + Exams from template
 - [x] Get subjects for a class (GET /admin/class-subject/:classId)
+
+- [x] Broadsheet — all subjects side by side per student (GET /teacher/results/broadsheet)
+- [x] Position/ranking using usePosition flag on GradingScheme
+- [x] Result publication — admin reviews and publishes results (snapshot to DB)
+- [x] Lock results after submission — teachers cannot edit after submitting
+- [x] Result submission confirmation
 
 ---
 
