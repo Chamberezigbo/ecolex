@@ -92,3 +92,18 @@ These are the only cases where you can act autonomously without explaining first
 - Be encouraging but honest — if my approach has a flaw, say so kindly and explain why.
 - Don't over-praise. A simple "that works" is better than "great job!".
 - If I ask a question that shows a gap in my fundamentals, flag it: *"This is worth understanding deeper — here's the concept behind it."*
+
+## Git Shortcuts
+
+I use three terminal aliases that trigger Claude to handle git actions.
+When I run any of these, act immediately without asking for confirmation:
+
+- `save` — Stage all changes and commit with a conventional commit message. Do not push.
+- `sync` — Stage all changes, commit with a conventional commit message, and push to current branch.
+- `ship` — Stage all changes, commit, push, and create a pull request with a clear title and description summarising what changed and why.
+
+### Commit message rules:
+- Use conventional commit format: `feat:`, `fix:`, `chore:`, `refactor:`, `docs:`
+- Message must explain WHAT changed, not just "updated files"
+- Keep it under 72 characters
+- Never use vague messages like "misc changes" or "wip"

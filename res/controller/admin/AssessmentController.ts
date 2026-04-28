@@ -191,6 +191,60 @@ export class AssessmentController {
         }
     };
 
+    getStudentResult = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) throw new Error("Missing schoolId");
 
+            const studentId = Number(req.query.studentId);
+            const classId = Number(req.query.classId);
+            const academicSessionId = Number(req.query.academicSessionId);
+
+            if (!studentId || !classId || !academicSessionId) {
+                return res.status(400).json({ message: "studentId, classId, and academicSessionId are required" });
+            }
+
+            const result = await this.service.getStudentResult({
+                studentId,
+                classId,
+                schoolId: Number(req.schoolId),
+                academicSessionId
+            });
+
+            return res.status(200).json({ success: true, data: result });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    getTeacherResult = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) throw new Error("Missing schoolId");
+
+            const staffId = Number(req.query.staffId);
+            const classId = Number(req.query.classId);
+            const subjectId = Number(req.query.subjectId);
+            const academicSessionId = Number(req.query.academicSessionId);
+            const page = req.query.page ? Number(req.query.page) : 1;
+
+            if (!staffId || !classId || !subjectId || !academicSessionId) {
+                return res.status(400).json({
+                    message: "staffId, classId, subjectId and academicSessionId are required"
+                });
+            }
+
+            const result = await this.service.getTeacherResult({
+                staffId,
+                classId,
+                subjectId,
+                schoolId: Number(req.schoolId),
+                academicSessionId,
+                page
+            });
+
+            return res.status(200).json({ success: true, data: result });
+        } catch (err) {
+            next(err);
+        }
+    };
 
 }

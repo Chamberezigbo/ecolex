@@ -40,6 +40,7 @@ exports.getStudentDetails = async (req, res, next) => {
         },
         campus: { select: { id: true, name: true } },
         academicSession: { select: { id: true, name: true, isActive: true } },
+        classGroup: { select: { id: true, name: true } },
       },
     })
 
