@@ -121,9 +121,10 @@ export class TeacherService {
         staffId: number;
         schoolId: number;
         academicSessionId: number;
-        entries: CAScoreEntry[];
+        termId?: number;
+        entries: { studentId: number; caId: number; score: number }[];
     }) {
-        const { staffId, schoolId, academicSessionId, entries } = input;
+        const { staffId, schoolId, academicSessionId, termId, entries } = input;
         if (!Array.isArray(entries) || entries.length === 0) throw new Error("entries is required");
 
         const done = await prisma.$transaction(async (tx) => {
@@ -189,7 +190,7 @@ export class TeacherService {
                     });
                 } else {
                     await tx.cAResult.create({
-                        data: { studentId: e.studentId, caId: e.caId, academicSessionId, score: e.score }
+                        data: { studentId: e.studentId, caId: e.caId, academicSessionId, score: e.score, termId: termId ?? null }
                     });
                 }
 
@@ -206,9 +207,10 @@ export class TeacherService {
         staffId: number;
         schoolId: number;
         academicSessionId: number;
+        termId?: number;
         entries: ExamScoreEntry[];
     }) {
-        const { staffId, schoolId, academicSessionId, entries } = input;
+        const { staffId, schoolId, academicSessionId,termId, entries } = input;
         if (!Array.isArray(entries) || entries.length === 0) throw new Error("entries is required");
 
         const done = await prisma.$transaction(async (tx) => {
@@ -273,7 +275,7 @@ export class TeacherService {
                     });
                 } else {
                     await tx.examResult.create({
-                        data: { studentId: e.studentId, examId: e.examId, academicSessionId, score: e.score }
+                        data: { studentId: e.studentId, examId: e.examId, academicSessionId, score: e.score, termId: termId ?? null }
                     });
                 }
 
@@ -292,8 +294,9 @@ export class TeacherService {
         classId: number;
         subjectId?: number;
         academicSessionId: number;
+        termId?: number;
     }) {
-        const { staffId, schoolId, classId, subjectId, academicSessionId } = input;
+        const { staffId, schoolId, classId, subjectId, academicSessionId, termId } = input;
 
         await this.ensureTeacherCanTouchClass(staffId, classId, subjectId);
 
@@ -304,11 +307,11 @@ export class TeacherService {
             }),
             prisma.continuousAssessment.findMany({
                 where: { classId, ...(subjectId ? { subjectId } : {}) },
-                select: { id: true, name: true, maxScore: true, caResults: { where: { academicSessionId }, select: { studentId: true, score: true } } }
+                select: { id: true, name: true, maxScore: true, caResults: { where: { academicSessionId, ...(termId ? { termId } : {}) }, select: { studentId: true, score: true } } }
             }),
             prisma.exam.findMany({
                 where: { classId, ...(subjectId ? { subjectId } : {}) },
-                select: { id: true, name: true, maxScore: true, examResults: { where: { academicSessionId }, select: { studentId: true, score: true } } }
+                select: { id: true, name: true, maxScore: true, examResults: { where: { academicSessionId, ...(termId ? { termId } : {}) }, select: { studentId: true, score: true } } }
             }),
             prisma.gradingSchemeClass.findUnique({
                 where: { classId },
@@ -359,8 +362,9 @@ export class TeacherService {
         schoolId: number;
         classId: number;
         academicSessionId: number;
+        termId?: number;
     }) {
-        const { staffId, schoolId, classId, academicSessionId } = input;
+        const { staffId, schoolId, classId, academicSessionId, termId } = input;
 
         // Get only subjects this teacher is assigned to in this class
         const assignments = await prisma.teacherAssignment.findMany({
@@ -383,7 +387,8 @@ export class TeacherService {
             classId,
             schoolId,
             academicSessionId,
-            subjectIds
+            subjectIds,
+            termId
         });
     }
 
@@ -392,9 +397,10 @@ export class TeacherService {
         schoolId: number;
         classId: number;
         subjectId: number;
+        termId?: number;
         academicSessionId: number;
     }) {
-        const { staffId, schoolId, classId, subjectId, academicSessionId } = input;
+        const { staffId, schoolId, classId, subjectId, termId, academicSessionId } = input;
 
         // 1. Verify teacher is assigned to this class + subject
         await this.ensureTeacherCanTouchClass(staffId, classId, subjectId);
@@ -423,13 +429,14 @@ export class TeacherService {
 
         // 4. Create submission record
         const submission = await prisma.resultSubmission.create({
-            data: { classId, subjectId, academicSessionId, staffId },
+            data: { classId, subjectId, academicSessionId, staffId, termId: termId ?? null },
             select: {
                 id: true,
                 classId: true,
                 subjectId: true,
                 academicSessionId: true,
                 status: true,
+                termId: true,
                 submittedAt: true
             }
         });

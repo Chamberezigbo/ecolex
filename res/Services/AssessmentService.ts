@@ -239,8 +239,9 @@ export class AssessmentService {
         academicSessionId: number;
         subjectIds: number[];  // admin passes all, teacher passes only theirs
         classGroupId?: number;
+        termId?: number;
     }) {
-        const { classId, schoolId, academicSessionId, subjectIds, classGroupId } = input;
+        const { classId, schoolId, academicSessionId, subjectIds, classGroupId, termId } = input;
 
         // 1. Get students in this class for this session
         const students = await prisma.student.findMany({
@@ -275,7 +276,7 @@ export class AssessmentService {
                     select: {
                         id: true,
                         caResults: {
-                            where: { academicSessionId },
+                            where: { academicSessionId, ...(termId ? { termId } : {}) },
                             select: { studentId: true, score: true }
                         }
                     }
@@ -285,7 +286,7 @@ export class AssessmentService {
                     select: {
                         id: true,
                         examResults: {
-                            where: { academicSessionId },
+                            where: { academicSessionId, ...(termId ? { termId } : {}) },
                             select: { studentId: true, score: true }
                         }
                     }
@@ -364,8 +365,9 @@ export class AssessmentService {
         schoolId: number;
         academicSessionId: number;
         classGroupId?: number;
+        termId?: number;
     }) {
-        const { classId, schoolId, academicSessionId, classGroupId } = input;
+        const { classId, schoolId, academicSessionId, classGroupId, termId } = input;
 
         // Verify class belongs to school
         const classRecord = await prisma.class.findFirst({
@@ -399,13 +401,13 @@ export class AssessmentService {
 
         const subjectIds = classSubjects.map((cs) => cs.subjectId);
 
-        // pass classGroupId down
         const broadsheet = await this.computeBroadsheet({
             classId,
             schoolId,
             academicSessionId,
             subjectIds,
-            classGroupId   // ← new
+            classGroupId,
+            termId
         });
 
 
@@ -424,8 +426,9 @@ export class AssessmentService {
         academicSessionId: number;
         schoolId: number;
         adminId: number;
+        termId?: number;
     }) {
-        const { classId, subjectId, academicSessionId, schoolId, adminId } = input;
+        const { classId, subjectId, academicSessionId, schoolId, termId, adminId } = input;
 
         // 1. Verify class and subject belong to this school
         const classRecord = await prisma.class.findFirst({
@@ -465,6 +468,7 @@ export class AssessmentService {
                     classId,
                     subjectId,
                     academicSessionId,
+                    termId: termId ?? null,
                     publishedByAdminId: adminId
                 }
             });
@@ -541,8 +545,9 @@ export class AssessmentService {
         classId: number;
         schoolId: number;
         academicSessionId: number;
+        termId?: number;
     }) {
-        const { studentId, classId, schoolId, academicSessionId } = input;
+        const { studentId, classId, schoolId, academicSessionId, termId } = input;
 
         // 1. Get student info
         const student = await prisma.student.findFirst({
@@ -590,7 +595,7 @@ export class AssessmentService {
                     select: {
                         name: true,
                         caResults: {
-                            where: { academicSessionId, studentId },
+                            where: { academicSessionId, studentId, ...(termId ? { termId } : {}) },
                             select: { score: true }
                         }
                     }
@@ -599,7 +604,7 @@ export class AssessmentService {
                     where: { classId },
                     select: {
                         examResults: {
-                            where: { academicSessionId, studentId },
+                            where: { academicSessionId, studentId, ...(termId ? { termId } : {}) },
                             select: { score: true }
                         }
                     }
@@ -637,7 +642,7 @@ export class AssessmentService {
         });
 
         // 6. Get class position by running the full broadsheet and finding this student's row
-        const broadsheet = await this.computeBroadsheet({ classId, schoolId, academicSessionId, subjectIds });
+        const broadsheet = await this.computeBroadsheet({ classId, schoolId, academicSessionId, subjectIds, termId });
         const myRow = broadsheet.rows.find(r => r.studentId === studentId);
         const position = myRow?.position ?? null;
         const totalStudents = broadsheet.rows.length;
@@ -672,8 +677,9 @@ export class AssessmentService {
         schoolId: number;
         academicSessionId: number;
         page?: number;
+        termId?: number;
     }) {
-        const { staffId, classId, subjectId, schoolId, academicSessionId, page = 1 } = input;
+        const { staffId, classId, subjectId, schoolId, academicSessionId, page = 1, termId } = input;
         const take = 8;
         const skip = (page - 1) * take;
 
@@ -745,11 +751,11 @@ export class AssessmentService {
         // 5. Fetch all CA results and exam results for these students in one query each
         const [caResults, examResults] = await Promise.all([
             prisma.cAResult.findMany({
-                where: { caId: { in: caIds }, studentId: { in: studentIds }, academicSessionId },
+                where: { caId: { in: caIds }, studentId: { in: studentIds }, academicSessionId, ...(termId ? { termId } : {}) },
                 select: { caId: true, studentId: true, score: true }
             }),
             prisma.examResult.findMany({
-                where: { examId: { in: examIds }, studentId: { in: studentIds }, academicSessionId },
+                where: { examId: { in: examIds }, studentId: { in: studentIds }, academicSessionId, ...(termId ? { termId } : {}) },
                 select: { examId: true, studentId: true, score: true }
             })
         ]);
@@ -804,6 +810,22 @@ export class AssessmentService {
         };
     }
 
+    async scheduleExam(input: { examId: number; schoolId: number; scheduledDate: Date }) {
+        const { examId, schoolId, scheduledDate } = input;
+
+        const exam = await prisma.exam.findFirst({
+            where: { id: examId, class: { schoolId } },
+            select: { id: true }
+        });
+
+        if (!exam) throw new Error("Exam not found or does not belong to your school");
+
+        return prisma.exam.update({
+            where: { id: examId },
+            data: { scheduledDate },
+            select: { id: true, name: true, scheduledDate: true, class: { select: { name: true } } }
+        });
+    }
 
 
 }

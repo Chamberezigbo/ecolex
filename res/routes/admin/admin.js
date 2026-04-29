@@ -10,7 +10,8 @@ const {
   deleteAdmin,
   checkHealth,
   getMySchool,
-  getSchoolAssessments
+  getSchoolAssessments,
+  getOverview,
 } = require("../../controller/admin/admin");
 
 const {
@@ -48,6 +49,11 @@ const {
   editSubject,
   deleteSubject
 } = require("../../controller/admin/SubjectController");
+
+const { AcademicTermController } = require("../../controller/admin/AcademicTerm");
+const termController = new AcademicTermController();
+
+
 
 const {
   GradingController
@@ -173,6 +179,18 @@ router.delete("/results/submissions/:submissionId/reject", auth.authenticateSupe
 
 router.get("/result/student", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getStudentResult);
 router.get("/result/teacher", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getTeacherResult);
+
+// Academic term routes
+router.post("/term", auth.authenticateSuperAdmin, auth.attachSchoolId, termController.createTerm);
+router.patch("/term/:id/activate", auth.authenticateSuperAdmin, auth.attachSchoolId, termController.activateTerm);
+router.get("/terms", auth.authenticateSuperAdmin, auth.attachSchoolId, termController.getTerms);
+router.get("/active-term", auth.authenticateSuperAdmin, auth.attachSchoolId, termController.getActiveTerm);
+router.get("/overview", auth.authenticateSuperAdmin, auth.attachSchoolId, getOverview);
+
+router.post("/session", auth.authenticateSuperAdmin, auth.attachSchoolId, termController.createSession);
+router.get("/sessions", auth.authenticateSuperAdmin, auth.attachSchoolId, termController.getSessions);
+router.patch("/exam/:examId/schedule", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.scheduleExam);
+
 
 
 

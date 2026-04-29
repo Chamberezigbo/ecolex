@@ -58,6 +58,7 @@ model School {
   Subject         Subject[]
   GradingScheme   GradingScheme[]
   AcademicSession AcademicSession[]
+  AcademicTerm    AcademicTerm[]
   CATemplate      CATemplate[]
 
   @@map("schools")
@@ -288,16 +289,19 @@ model CAResult {
   studentId         Int
   caId              Int
   academicSessionId Int
+  termId            Int?     // ← add this
   score             Decimal
   createdAt         DateTime @default(now())
 
   student         Student              @relation(fields: [studentId], references: [id])
   ca              ContinuousAssessment @relation(fields: [caId], references: [id])
   academicSession AcademicSession      @relation(fields: [academicSessionId], references: [id])
+  term            AcademicTerm?        @relation(fields: [termId], references: [id]) // ← add this
 
   @@unique([studentId, caId, academicSessionId])
   @@map("ca_results")
 }
+
 
 model Exam {
   id        Int      @id @default(autoincrement())
@@ -314,6 +318,7 @@ model Exam {
   class       Class        @relation(fields: [classId], references: [id])
   subject     Subject?     @relation(fields: [subjectId], references: [id])
   examResults ExamResult[]
+  scheduledDate DateTime?
 
   @@unique([classId, subjectId, name])
   @@map("exams")
@@ -324,12 +329,14 @@ model ExamResult {
   studentId         Int
   examId            Int
   academicSessionId Int
+  termId            Int?     // ← add this
   score             Decimal
   createdAt         DateTime @default(now())
 
   student         Student         @relation(fields: [studentId], references: [id])
   exam            Exam            @relation(fields: [examId], references: [id])
   academicSession AcademicSession @relation(fields: [academicSessionId], references: [id])
+  term            AcademicTerm?   @relation(fields: [termId], references: [id]) // ← add this
 
   @@unique([studentId, examId, academicSessionId])
   @@map("exam_results")
@@ -380,12 +387,13 @@ model AcademicSession {
   isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  school      School       @relation(fields: [schoolId], references: [id])
-  students    Student[]
-  caResults   CAResult[]
-  examResults ExamResult[]
-  publishedResults PublishedResult[]
+  school            School             @relation(fields: [schoolId], references: [id])
+  students          Student[]
+  caResults         CAResult[]
+  examResults       ExamResult[]
+  publishedResults  PublishedResult[]
   resultSubmissions ResultSubmission[]
+  terms             AcademicTerm[]
 
   @@unique([schoolId, name])
   @@map("academic_sessions")
@@ -396,22 +404,23 @@ model PublishedResult {
   classId            Int
   subjectId          Int
   academicSessionId  Int
+  termId             Int?
   publishedByAdminId Int
   publishedAt        DateTime @default(now())
 
   class           Class           @relation(fields: [classId], references: [id])
   subject         Subject         @relation(fields: [subjectId], references: [id])
   academicSession AcademicSession @relation(fields: [academicSessionId], references: [id])
+  term            AcademicTerm?   @relation(fields: [termId], references: [id])
   admin           Admin           @relation(fields: [publishedByAdminId], references: [id])
   rows            PublishedResultRow[]
 
-  // One publication per class + subject + session
   @@unique([classId, subjectId, academicSessionId])
   @@map("published_results")
 }
 
 model PublishedResultRow {
-  id                Int    @id @default(autoincrement())
+  id                Int     @id @default(autoincrement())
   publishedResultId Int
   studentId         Int
   caTotal           Float
@@ -427,6 +436,7 @@ model PublishedResultRow {
   @@map("published_result_rows")
 }
 
+
 enum SubmissionStatus {
   PENDING    // submitted, awaiting admin review
   REJECTED   // admin rejected, teacher can re-enter
@@ -437,6 +447,7 @@ model ResultSubmission {
   classId           Int
   subjectId         Int
   academicSessionId Int
+  termId            Int?             // ← add this
   staffId           Int
   status            SubmissionStatus @default(PENDING)
   submittedAt       DateTime         @default(now())
@@ -444,9 +455,33 @@ model ResultSubmission {
   class           Class           @relation(fields: [classId], references: [id])
   subject         Subject         @relation(fields: [subjectId], references: [id])
   academicSession AcademicSession @relation(fields: [academicSessionId], references: [id])
+  term            AcademicTerm?   @relation(fields: [termId], references: [id]) // ← add this
   staff           Staff           @relation(fields: [staffId], references: [id])
 
   @@unique([classId, subjectId, academicSessionId, staffId])
   @@map("result_submissions")
 }
+
+
+model AcademicTerm {
+  id        Int      @id @default(autoincrement())
+  schoolId  Int
+  sessionId Int
+  name      String   // "First Term", "Second Term", "Third Term"
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  school   School          @relation(fields: [schoolId], references: [id])
+  session  AcademicSession @relation(fields: [sessionId], references: [id])
+
+  caResults         CAResult[]
+  examResults       ExamResult[]
+  resultSubmissions ResultSubmission[]
+  publishedResults  PublishedResult[]
+
+  @@unique([schoolId, sessionId, name])
+  @@map("academic_terms")
+}
+
+
 

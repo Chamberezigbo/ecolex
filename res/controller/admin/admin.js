@@ -310,3 +310,79 @@ exports.getSchoolAssessments = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getOverview = async (req, res, next) => {
+  try {
+    const schoolId = req.schoolId;
+    if (!schoolId) return res.status(400).json({ message: "School ID required" });
+
+    const sid = Number(schoolId);
+
+    // Run all DB queries in parallel — much faster than sequential awaits
+    const [
+      totalStudents,
+      boysCount,
+      girlsCount,
+      totalStaff,
+      totalCampuses,
+      recentExams,
+      activeSession
+    ] = await Promise.all([
+      prisma.student.count({ where: { schoolId: sid } }),
+      prisma.student.count({ where: { schoolId: sid, gender: "Male" } }),
+      prisma.student.count({ where: { schoolId: sid, gender: "Female" } }),
+      prisma.staff.count({ where: { schoolId: sid } }),
+      prisma.campus.count({ where: { schoolId: sid } }),
+      prisma.exam.findMany({
+        where: { class: { schoolId: sid } },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: {
+          id: true,
+          name: true,
+          createdAt: true,
+          class: { select: { name: true, customName: true } },
+          subject: { select: { name: true } }
+        }
+      }),
+      prisma.academicSession.findFirst({
+        where: { schoolId: sid, isActive: true },
+        select: {
+          id: true,
+          name: true,
+          terms: {
+            where: { isActive: true },
+            select: { id: true, name: true }
+          }
+        }
+      })
+    ]);
+
+    // Compute gender percentages
+    const totalGender = boysCount + girlsCount;
+    const boysPercent = totalGender > 0 ? Math.round((boysCount / totalGender) * 100) : 0;
+    const girlsPercent = totalGender > 0 ? 100 - boysPercent : 0;
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        students: {
+          total: totalStudents,
+          boys: boysPercent,   // percentage
+          girls: girlsPercent
+        },
+        staff: { total: totalStaff },
+        campuses: { total: totalCampuses },
+        bill: null,   // v2 — no billing model yet
+        upcomingExams: recentExams,
+        activeSession: activeSession
+          ? { id: activeSession.id, name: activeSession.name }
+          : null,
+        activeTerm: activeSession?.terms[0] ?? null,
+        noticeBoard: null  // v2
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};

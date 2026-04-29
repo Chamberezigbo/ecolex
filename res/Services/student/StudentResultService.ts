@@ -12,7 +12,7 @@ export class StudentResultService {
         });
     }
 
-    async getResults(studentId: number, academicSessionId: number) {
+    async getResults(studentId: number, academicSessionId: number, termId?: number) {
         // Get student + their class info
         const student = await prisma.student.findUnique({
             where: { id: studentId },
@@ -34,7 +34,8 @@ export class StudentResultService {
         const publishedResults = await prisma.publishedResult.findMany({
             where: {
                 classId: student.classId,
-                academicSessionId
+                academicSessionId,
+                ...(termId ? { termId } : {}) // filter by termId if provided
             },
             include: {
                 subject: { select: { id: true, name: true } },

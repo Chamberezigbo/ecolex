@@ -39,6 +39,7 @@ export class TeacherController {
                 staffId: req.staffId,
                 schoolId: req.schoolId,
                 academicSessionId: Number(req.body.academicSessionId),
+                termId: req.body.termId ? Number(req.body.termId) : undefined,
                 entries: req.body.entries
             });
 
@@ -55,6 +56,7 @@ export class TeacherController {
             const data = await this.service.upsertExamScores({
                 staffId: req.staffId,
                 schoolId: req.schoolId,
+                termId: req.body.termId ? Number(req.body.termId) : undefined,
                 academicSessionId: Number(req.body.academicSessionId),
                 entries: req.body.entries
             });
@@ -74,7 +76,8 @@ export class TeacherController {
                 schoolId: req.schoolId,
                 classId: Number(req.query.classId),
                 subjectId: req.query.subjectId ? Number(req.query.subjectId) : undefined,
-                academicSessionId: Number(req.query.academicSessionId)
+                academicSessionId: Number(req.query.academicSessionId),
+                termId: req.query.termId ? Number(req.query.termId) : undefined
             });
 
             return res.json({ success: true, data });
@@ -162,8 +165,9 @@ export class TeacherController {
         try {
             if (!req.staffId || !req.schoolId) return res.status(401).json({ message: "Unauthorized" });
 
-            const classId = Number(req.query.classId);
+            const classId           = Number(req.query.classId);
             const academicSessionId = Number(req.query.academicSessionId);
+            const termId            = req.query.termId ? Number(req.query.termId) : undefined;
 
             if (isNaN(classId)) throw new Error("Invalid classId");
             if (isNaN(academicSessionId)) throw new Error("Invalid academicSessionId");
@@ -172,7 +176,8 @@ export class TeacherController {
                 staffId: req.staffId,
                 schoolId: req.schoolId,
                 classId,
-                academicSessionId
+                academicSessionId,
+                termId
             });
 
             return res.json({ success: true, data });
@@ -196,7 +201,8 @@ export class TeacherController {
                 schoolId: req.schoolId,
                 classId: Number(classId),
                 subjectId: Number(subjectId),
-                academicSessionId: Number(academicSessionId)
+                academicSessionId: Number(academicSessionId),
+                termId: req.body.termId ? Number(req.body.termId) : undefined
             });
 
             return res.status(201).json({
