@@ -39,6 +39,8 @@ router.get("/broadsheet", teacherAuthMiddleware, teacherController.getTeacherBro
 // Teacher submits results for admin review (locks scores)
 router.post("/results/submit", teacherAuthMiddleware, teacherController.submitResults);
 
+router.get("/active-term", teacherAuthMiddleware, teacherController.getActiveTerm);
+
 
 
 

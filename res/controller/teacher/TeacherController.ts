@@ -3,10 +3,13 @@ import { Response, NextFunction } from "express";
 import { TeacherRequest } from "../../middleware/teacherMiddleware";
 import { TeacherService } from "../../Services/teacher/TeacherService";
 import { GradingService } from "../../Services/teacher/GradingService";
+import { AcademicTermService } from "../../Services/AcademicTermService";
+
 
 export class TeacherController {
     private service = new TeacherService();
     private gradingService = new GradingService();
+    private academicTermService = new AcademicTermService();
 
     getStudentsForGrading = async (req: TeacherRequest, res: Response, next: NextFunction) => {
         try {
@@ -165,9 +168,9 @@ export class TeacherController {
         try {
             if (!req.staffId || !req.schoolId) return res.status(401).json({ message: "Unauthorized" });
 
-            const classId           = Number(req.query.classId);
+            const classId = Number(req.query.classId);
             const academicSessionId = Number(req.query.academicSessionId);
-            const termId            = req.query.termId ? Number(req.query.termId) : undefined;
+            const termId = req.query.termId ? Number(req.query.termId) : undefined;
 
             if (isNaN(classId)) throw new Error("Invalid classId");
             if (isNaN(academicSessionId)) throw new Error("Invalid academicSessionId");
@@ -267,5 +270,16 @@ export class TeacherController {
         }
     };
 
+    getActiveTerm = async (req: TeacherRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) return res.status(401).json({ message: "Unauthorized" });
+
+            const result = await this.academicTermService.getActiveTerm(req.schoolId);
+
+            return res.json({ success: true, data: result });
+        } catch (err) {
+            next(err);
+        }
+    };
 
 }
