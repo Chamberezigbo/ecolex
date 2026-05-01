@@ -210,7 +210,7 @@ export class TeacherService {
         termId?: number;
         entries: ExamScoreEntry[];
     }) {
-        const { staffId, schoolId, academicSessionId,termId, entries } = input;
+        const { staffId, schoolId, academicSessionId, termId, entries } = input;
         if (!Array.isArray(entries) || entries.length === 0) throw new Error("entries is required");
 
         const done = await prisma.$transaction(async (tx) => {
@@ -291,105 +291,259 @@ export class TeacherService {
     async getComputedResults(input: {
         staffId: number;
         schoolId: number;
-        classId: number;
+        classId?: number;
         subjectId?: number;
+        academicSessionId?: number;
+        termId?: number;
+    }) {
+        const { staffId, schoolId, classId, subjectId, academicSessionId, termId } = input;
+
+        // Get active/latest session if not provided
+        let sessionId = academicSessionId;
+        if (!sessionId) {
+            const activeSession = await prisma.academicSession.findFirst({
+                where: { schoolId, isActive: true },
+                select: { id: true }
+            });
+
+            if (!activeSession) {
+                const latestSession = await prisma.academicSession.findFirst({
+                    where: { schoolId },
+                    orderBy: { createdAt: "desc" },
+                    select: { id: true }
+                });
+                if (!latestSession) throw new Error("No academic session found");
+                sessionId = latestSession.id;
+            } else {
+                sessionId = activeSession.id;
+            }
+        }
+
+        // Get all classes this teacher teaches if classId not provided
+        let classIds: number[] = [];
+        if (classId) {
+            classIds = [classId];
+        } else {
+            const assignments = await prisma.teacherAssignment.findMany({
+                where: { staffId },
+                select: { classId: true },
+                distinct: ["classId"]
+            });
+            classIds = assignments.map(a => a.classId!).filter(Boolean);
+            if (classIds.length === 0) throw new Error("Teacher not assigned to any classes");
+        }
+
+        // Fetch results for all applicable classes/subjects
+        const results = await Promise.all(
+            classIds.map(async (cId) => {
+                const classSubjects = subjectId
+                    ? [subjectId]
+                    : (await prisma.classSubject.findMany({
+                        where: { classId: cId },
+                        select: { subjectId: true }
+                    })).map(cs => cs.subjectId);
+
+                return Promise.all(
+                    classSubjects.map(sId =>
+                        this.computeClassResults({
+                            staffId,
+                            schoolId,
+                            classId: cId,
+                            subjectId: sId,
+                            academicSessionId: sessionId,
+                            termId
+                        })
+                    )
+                );
+            })
+        );
+
+        return results.flat();
+    }
+
+    private async computeClassResults(input: {
+        staffId: number;
+        schoolId: number;
+        classId: number;
+        subjectId: number;
         academicSessionId: number;
         termId?: number;
     }) {
         const { staffId, schoolId, classId, subjectId, academicSessionId, termId } = input;
 
+        // Verify teacher is assigned to this class/subject
         await this.ensureTeacherCanTouchClass(staffId, classId, subjectId);
 
-        const [students, cas, exams, schemeClass] = await Promise.all([
-            prisma.student.findMany({
-                where: { schoolId, classId, academicSessionId },
-                select: { id: true, surname: true, name: true, otherNames: true, registrationNumber: true }
-            }),
-            prisma.continuousAssessment.findMany({
-                where: { classId, ...(subjectId ? { subjectId } : {}) },
-                select: { id: true, name: true, maxScore: true, caResults: { where: { academicSessionId, ...(termId ? { termId } : {}) }, select: { studentId: true, score: true } } }
-            }),
-            prisma.exam.findMany({
-                where: { classId, ...(subjectId ? { subjectId } : {}) },
-                select: { id: true, name: true, maxScore: true, examResults: { where: { academicSessionId, ...(termId ? { termId } : {}) }, select: { studentId: true, score: true } } }
-            }),
-            prisma.gradingSchemeClass.findUnique({
-                where: { classId },
-                include: { scheme: { include: { grades: true } } }
-            })
-        ]);
+        // Get students in this class
+        const students = await prisma.student.findMany({
+            where: { classId, schoolId, academicSessionId },
+            select: {
+                id: true,
+                surname: true,
+                name: true,
+                otherNames: true,
+                registrationNumber: true
+            }
+        });
 
-        if (!schemeClass) throw new Error("No grading scheme assigned to class");
+        // Get grading scheme for this class
+        const schemeClass = await prisma.gradingSchemeClass.findUnique({
+            where: { classId },
+            include: { scheme: { include: { grades: true } } }
+        });
 
+        if (!schemeClass) throw new Error("No grading scheme assigned to this class");
         const rules = [...schemeClass.scheme.grades].sort((a, b) => b.minScore - a.minScore);
 
-        const resultRows = students.map((s) => {
+        // Fetch CAs for this subject in this class
+        const cas = await prisma.continuousAssessment.findMany({
+            where: { classId, subjectId },
+            include: {
+                caResults: {
+                    where: { academicSessionId, ...(termId ? { termId } : {}) }
+                }
+            }
+        });
+
+        // Fetch Exams for this subject in this class
+        const exams = await prisma.exam.findMany({
+            where: { classId, subjectId },
+            include: {
+                examResults: {
+                    where: { academicSessionId, ...(termId ? { termId } : {}) }
+                }
+            }
+        });
+
+        // Get subject name
+        const subject = await prisma.subject.findUnique({
+            where: { id: subjectId },
+            select: { id: true, name: true }
+        });
+
+        if (!subject) throw new Error("Subject not found");
+
+        // Build results for each student
+        const rows = students.map((student) => {
             const caTotal = cas.reduce((acc, ca) => {
-                const r = ca.caResults.find((x) => x.studentId === s.id);
-                return acc + Number(r?.score ?? 0);
+                const result = ca.caResults.find((r) => r.studentId === student.id);
+                return acc + Number(result?.score ?? 0);
             }, 0);
 
-            const examTotal = exams.reduce((acc, ex) => {
-                const r = ex.examResults.find((x) => x.studentId === s.id);
-                return acc + Number(r?.score ?? 0);
+            const examTotal = exams.reduce((acc, exam) => {
+                const result = exam.examResults.find((r) => r.studentId === student.id);
+                return acc + Number(result?.score ?? 0);
             }, 0);
 
-            const total = caTotal + examTotal;
-            const matched = rules.find((r) => total >= r.minScore && total <= r.maxScore);
+            const subjectTotal = caTotal + examTotal;
+            const matched = rules.find((r) => subjectTotal >= r.minScore && subjectTotal <= r.maxScore);
 
             return {
-                studentId: s.id,
-                studentName: `${s.surname} ${s.name} ${s.otherNames ?? ""}`.trim(),
-                registrationNumber: s.registrationNumber,
+                studentId: student.id,
+                studentName: `${student.surname} ${student.name} ${student.otherNames ?? ""}`.trim(),
+                registrationNumber: student.registrationNumber,
                 caTotal,
                 examTotal,
-                total,
+                subjectTotal,
                 grade: matched?.grade ?? null,
                 remark: matched?.remark ?? null
             };
         });
 
+        // Sort by score descending
+        const sorted = [...rows].sort((a, b) => b.subjectTotal - a.subjectTotal);
+
+        const usePosition = schemeClass.scheme.usePosition;
+        const finalRows = sorted.map((row, index) => ({
+            ...row,
+            position: usePosition ? index + 1 : null
+        }));
+
         return {
             classId,
-            subjectId: subjectId ?? null,
+            subjectId,
+            subjectName: subject.name,
             academicSessionId,
-            rows: resultRows
+            rows: finalRows
         };
     }
+
 
     async getTeacherBroadsheet(input: {
         staffId: number;
         schoolId: number;
-        classId: number;
-        academicSessionId: number;
+        classId?: number;
+        academicSessionId?: number;
         termId?: number;
     }) {
         const { staffId, schoolId, classId, academicSessionId, termId } = input;
 
-        // Get only subjects this teacher is assigned to in this class
-        const assignments = await prisma.teacherAssignment.findMany({
-            where: { staffId, classId },
-            select: { subjectId: true }
-        });
+        // Get active/latest session if not provided
+        let sessionId = academicSessionId;
+        if (!sessionId) {
+            const activeSession = await prisma.academicSession.findFirst({
+                where: { schoolId, isActive: true },
+                select: { id: true }
+            });
 
-        const subjectIds = assignments
-            .map((a) => a.subjectId)
-            .filter((id): id is number => id !== null);
+            if (!activeSession) {
+                const latestSession = await prisma.academicSession.findFirst({
+                    where: { schoolId },
+                    orderBy: { createdAt: "desc" },
+                    select: { id: true }
+                });
+                if (!latestSession) throw new Error("No academic session found");
+                sessionId = latestSession.id;
+            } else {
+                sessionId = activeSession.id;
+            }
+        }
 
-        if (subjectIds.length === 0) {
-            throw new Error("You have no subject assignments for this class");
+        // Get all classes this teacher teaches if classId not provided
+        let classIds: number[] = [];
+        if (classId) {
+            classIds = [classId];
+        } else {
+            const assignments = await prisma.teacherAssignment.findMany({
+                where: { staffId },
+                select: { classId: true },
+                distinct: ["classId"]
+            });
+            classIds = assignments.map(a => a.classId!).filter(Boolean);
+            if (classIds.length === 0) throw new Error("Teacher not assigned to any classes");
         }
 
         // Reuse the shared broadsheet logic from AssessmentService
         const assessmentService = new (await import("../AssessmentService")).AssessmentService();
 
-        return assessmentService.computeBroadsheet({
-            classId,
-            schoolId,
-            academicSessionId,
-            subjectIds,
-            termId
-        });
+        // Fetch broadsheets for all applicable classes
+        const results = await Promise.all(
+            classIds.map(async (cId) => {
+                // Get only subjects this teacher is assigned to in this class
+                const assignments = await prisma.teacherAssignment.findMany({
+                    where: { staffId, classId: cId },
+                    select: { subjectId: true }
+                });
+
+                const subjectIds = assignments
+                    .map((a) => a.subjectId)
+                    .filter((id): id is number => id !== null);
+
+                if (subjectIds.length === 0) {
+                    return null;
+                }
+
+                return assessmentService.computeBroadsheet({
+                    classId: cId,
+                    schoolId,
+                    academicSessionId: sessionId,
+                    subjectIds,
+                    termId
+                });
+            })
+        );
+
+        return results.filter(Boolean);
     }
 
     async submitResults(input: {

@@ -107,3 +107,15 @@ When I run any of these, act immediately without asking for confirmation:
 - Message must explain WHAT changed, not just "updated files"
 - Keep it under 72 characters
 - Never use vague messages like "misc changes" or "wip"
+
+## Model Selection Rules
+
+Use the most appropriate model for each task:
+
+- **Simple tasks** → use `claude-haiku-4-5-20251001`
+  - Explaining code, answering questions, reading files, simple edits
+
+- **Complex tasks** → use `claude-sonnet-4-6`
+  - Multi-file changes, architecture decisions, debugging hard problems
+
+When I start a task, tell me which model you're using and why.

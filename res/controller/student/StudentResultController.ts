@@ -16,17 +16,19 @@ export class StudentResultController {
 
     getResults = async (req: StudentRequest, res: Response, next: NextFunction) => {
         try {
-            const academicSessionId = Number(req.query.academicSessionId);
+            const academicSessionId = req.query.academicSessionId ? Number(req.query.academicSessionId) : undefined;
             const termId = req.query.termId ? Number(req.query.termId) : undefined;
 
-            if (!academicSessionId) {
-                throw new Error("academicSessionId is required");
-            }
-
-            const data = await this.resultService.getResults(req.studentId!, academicSessionId, termId);
+            const data = await this.resultService.getResults(
+                req.studentId!,
+                Number(req.schoolId!),
+                academicSessionId,
+                termId
+            );
             res.status(200).json({ success: true, data });
         } catch (err) {
             next(err);
         }
     };
+
 }

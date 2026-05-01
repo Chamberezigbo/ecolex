@@ -171,13 +171,10 @@ export class AssessmentController {
         try {
             if (!req.schoolId) throw new Error("Missing schoolId");
 
-            const classId = Number(req.query.classId);
-            const academicSessionId = Number(req.query.academicSessionId);
+            const classId = req.query.classId ? Number(req.query.classId) : undefined;
+            const academicSessionId = req.query.academicSessionId ? Number(req.query.academicSessionId) : undefined;
             const classGroupId = req.query.classGroupId ? Number(req.query.classGroupId) : undefined;
             const termId = req.query.termId ? Number(req.query.termId) : undefined;
-
-            if (isNaN(classId)) throw new Error("Invalid classId");
-            if (isNaN(academicSessionId)) throw new Error("Invalid academicSessionId");
 
             const result = await this.service.getAdminBroadsheet({
                 classId,
@@ -197,21 +194,21 @@ export class AssessmentController {
         try {
             if (!req.schoolId) throw new Error("Missing schoolId");
 
-            const studentId = Number(req.query.studentId);
-            const classId = Number(req.query.classId);
-            const academicSessionId = Number(req.query.academicSessionId);
+            const studentId = req.query.studentId ? Number(req.query.studentId) : undefined;
+            const classId = req.query.classId ? Number(req.query.classId) : undefined;
+            const academicSessionId = req.query.academicSessionId ? Number(req.query.academicSessionId) : undefined;
             const termId = req.query.termId ? Number(req.query.termId) : undefined;
-
-            if (!studentId || !classId || !academicSessionId) {
-                return res.status(400).json({ message: "studentId, classId, and academicSessionId are required" });
-            }
+            const page = req.query.page ? Number(req.query.page) : 1;
+            const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10;
 
             const result = await this.service.getStudentResult({
                 studentId,
                 classId,
                 schoolId: Number(req.schoolId),
                 academicSessionId,
-                termId
+                termId,
+                page,
+                pageSize
             });
 
             return res.status(200).json({ success: true, data: result });
@@ -220,22 +217,18 @@ export class AssessmentController {
         }
     };
 
+
     getTeacherResult = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             if (!req.schoolId) throw new Error("Missing schoolId");
 
-            const staffId = Number(req.query.staffId);
-            const classId = Number(req.query.classId);
-            const subjectId = Number(req.query.subjectId);
-            const academicSessionId = Number(req.query.academicSessionId);
+            const staffId = req.query.staffId ? Number(req.query.staffId) : undefined;
+            const classId = req.query.classId ? Number(req.query.classId) : undefined;
+            const subjectId = req.query.subjectId ? Number(req.query.subjectId) : undefined;
+            const academicSessionId = req.query.academicSessionId ? Number(req.query.academicSessionId) : undefined;
             const page = req.query.page ? Number(req.query.page) : 1;
+            const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 8;
             const termId = req.query.termId ? Number(req.query.termId) : undefined;
-
-            if (!staffId || !classId || !subjectId || !academicSessionId) {
-                return res.status(400).json({
-                    message: "staffId, classId, subjectId and academicSessionId are required"
-                });
-            }
 
             const result = await this.service.getTeacherResult({
                 staffId,
@@ -244,6 +237,7 @@ export class AssessmentController {
                 schoolId: Number(req.schoolId),
                 academicSessionId,
                 page,
+                pageSize,
                 termId
             });
 
@@ -252,6 +246,7 @@ export class AssessmentController {
             next(err);
         }
     };
+
 
     scheduleExam = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {

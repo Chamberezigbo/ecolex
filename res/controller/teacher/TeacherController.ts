@@ -77,9 +77,9 @@ export class TeacherController {
             const data = await this.service.getComputedResults({
                 staffId: req.staffId,
                 schoolId: req.schoolId,
-                classId: Number(req.query.classId),
+                classId: req.query.classId ? Number(req.query.classId) : undefined,
                 subjectId: req.query.subjectId ? Number(req.query.subjectId) : undefined,
-                academicSessionId: Number(req.query.academicSessionId),
+                academicSessionId: req.query.academicSessionId ? Number(req.query.academicSessionId) : undefined,
                 termId: req.query.termId ? Number(req.query.termId) : undefined
             });
 
@@ -88,6 +88,7 @@ export class TeacherController {
             next(err);
         }
     };
+
 
     // Grading scheme related endpoints
     createGradingScheme = async (req: TeacherRequest, res: Response, next: NextFunction) => {
@@ -168,12 +169,9 @@ export class TeacherController {
         try {
             if (!req.staffId || !req.schoolId) return res.status(401).json({ message: "Unauthorized" });
 
-            const classId = Number(req.query.classId);
-            const academicSessionId = Number(req.query.academicSessionId);
+            const classId = req.query.classId ? Number(req.query.classId) : undefined;
+            const academicSessionId = req.query.academicSessionId ? Number(req.query.academicSessionId) : undefined;
             const termId = req.query.termId ? Number(req.query.termId) : undefined;
-
-            if (isNaN(classId)) throw new Error("Invalid classId");
-            if (isNaN(academicSessionId)) throw new Error("Invalid academicSessionId");
 
             const data = await this.service.getTeacherBroadsheet({
                 staffId: req.staffId,

@@ -3,4 +3,5 @@ node_modules
 .env
 Ecolex .docx
 res/config/error.log
+.claudeignore
 
