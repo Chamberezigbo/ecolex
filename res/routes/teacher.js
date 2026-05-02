@@ -41,8 +41,11 @@ router.post("/results/submit", teacherAuthMiddleware, teacherController.submitRe
 
 router.get("/active-term", teacherAuthMiddleware, teacherController.getActiveTerm);
 
-
-
+// New teacher data endpoints
+router.get("/classes", teacherAuthMiddleware, teacherController.getMyClasses);
+router.get("/campuses", teacherAuthMiddleware, teacherController.getMyCampus);
+router.get("/class-groups", teacherAuthMiddleware, teacherController.getMyClassGroups);
+router.get("/sessions", teacherAuthMiddleware, teacherController.getActiveSession);
 
 
 

@@ -682,5 +682,74 @@ export class TeacherService {
         return { subject, class: cls, exams };
     }
 
+    async getTeacherClasses(staffId: number) {
+        const assignments = await prisma.teacherAssignment.findMany({
+            where: { staffId },
+            select: {
+                class: {
+                    select: { id: true, name: true, customName: true }
+                }
+            },
+            distinct: ["classId"]
+        });
+
+        return assignments.map(a => a.class);
+    }
+
+    async getTeacherCampus(staffId: number) {
+        const teacher = await prisma.staff.findUnique({
+            where: { id: staffId },
+            select: {
+                campus: {
+                    select: { id: true, name: true, address: true, phoneNumber: true, email: true }
+                }
+            }
+        });
+
+        return teacher?.campus ?? null;
+    }
+
+    async getTeacherClassGroups(staffId: number) {
+        // Get all classes assigned to this teacher
+        const assignments = await prisma.teacherAssignment.findMany({
+            where: { staffId },
+            select: { classId: true },
+            distinct: ["classId"]
+        });
+
+        const classIds = assignments.map(a => a.classId).filter(Boolean) as number[];
+
+        if (classIds.length === 0) return [];
+
+        // Get all class groups for these classes
+        const classGroups = await prisma.classGroup.findMany({
+            where: { classId: { in: classIds } },
+            select: {
+                id: true,
+                name: true,
+                classId: true,
+                class: { select: { name: true, customName: true } }
+            },
+            orderBy: { class: { name: "asc" } }
+        });
+
+        return classGroups.map(group => ({
+            ...group,
+            className: group.class.customName ?? group.class.name
+        }));
+    }
+
+    async getActiveSession(schoolId: number) {
+        const session = await prisma.academicSession.findFirst({
+            where: { schoolId, isActive: true },
+            select: { id: true, name: true, isActive: true, createdAt: true }
+        });
+
+        if (!session) {
+            throw new Error("No active academic session found");
+        }
+
+        return session;
+    }
 
 }

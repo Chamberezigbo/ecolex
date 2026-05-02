@@ -280,4 +280,52 @@ export class TeacherController {
         }
     };
 
+    getMyClasses = async (req: TeacherRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.staffId) return res.status(401).json({ message: "Unauthorized" });
+
+            const data = await this.service.getTeacherClasses(req.staffId);
+
+            return res.json({ success: true, data });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    getMyCampus = async (req: TeacherRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.staffId) return res.status(401).json({ message: "Unauthorized" });
+
+            const data = await this.service.getTeacherCampus(req.staffId);
+
+            return res.json({ success: true, data });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    getMyClassGroups = async (req: TeacherRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.staffId) return res.status(401).json({ message: "Unauthorized" });
+
+            const data = await this.service.getTeacherClassGroups(req.staffId);
+
+            return res.json({ success: true, data });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    getActiveSession = async (req: TeacherRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) return res.status(401).json({ message: "Unauthorized" });
+
+            const data = await this.service.getActiveSession(Number(req.schoolId));
+
+            return res.json({ success: true, data });
+        } catch (err) {
+            next(err);
+        }
+    };
+
 }
