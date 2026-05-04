@@ -328,4 +328,59 @@ export class TeacherController {
         }
     };
 
+    getCAs = async (req: TeacherRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.staffId || !req.schoolId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const classId = req.query.classId ? Number(req.query.classId) : undefined;
+            const classGroupId = req.query.classGroupId ? Number(req.query.classGroupId) : undefined;
+
+            // At least one filter must be provided
+            if (!classId && !classGroupId) {
+                return res.status(400).json({ message: "Either classId or classGroupId is required" });
+            }
+
+            const data = await this.service.getCAsByFilters({
+                staffId: req.staffId,
+                schoolId: req.schoolId,
+                classId,
+                classGroupId
+            });
+
+            return res.json({ success: true, data });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    getExams = async (req: TeacherRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.staffId || !req.schoolId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const classId = req.query.classId ? Number(req.query.classId) : undefined;
+            const classGroupId = req.query.classGroupId ? Number(req.query.classGroupId) : undefined;
+
+            // At least one filter must be provided
+            if (!classId && !classGroupId) {
+                return res.status(400).json({ message: "Either classId or classGroupId is required" });
+            }
+
+            const data = await this.service.getExamsByFilters({
+                staffId: req.staffId,
+                schoolId: req.schoolId,
+                classId,
+                classGroupId
+            });
+
+            return res.json({ success: true, data });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+
 }

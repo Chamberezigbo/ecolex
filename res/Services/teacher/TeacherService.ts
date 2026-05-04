@@ -752,4 +752,97 @@ export class TeacherService {
         return session;
     }
 
+    async getCAsByFilters(input: {
+        staffId: number;
+        schoolId: number;
+        classId?: number;
+        classGroupId?: number;
+    }) {
+        const { staffId, schoolId, classId, classGroupId } = input;
+
+        // Determine which class(es) to query
+        let resolvedClassId: number;
+
+        if (classId) {
+            resolvedClassId = classId;
+        } else if (classGroupId) {
+            // Get the class this group belongs to
+            const classGroup = await prisma.classGroup.findUnique({
+                where: { id: classGroupId },
+                select: { classId: true }
+            });
+            if (!classGroup) throw new Error("ClassGroup not found");
+            resolvedClassId = classGroup.classId;
+        } else {
+            throw new Error("Either classId or classGroupId must be provided");
+        }
+
+        // Verify the class belongs to this school
+        const cls = await prisma.class.findFirst({
+            where: { id: resolvedClassId, schoolId },
+            select: { id: true }
+        });
+        if (!cls) throw new Error("Class not found in this school");
+
+        // Fetch CAs for this class
+        const cas = await prisma.continuousAssessment.findMany({
+            where: {
+                classId: resolvedClassId
+            },
+            include: {
+                class: { select: { id: true, name: true } },
+                subject: { select: { id: true, name: true } }
+            },
+            orderBy: { name: "asc" }
+        });
+
+        return cas;
+    }
+
+    async getExamsByFilters(input: {
+        staffId: number;
+        schoolId: number;
+        classId?: number;
+        classGroupId?: number;
+    }) {
+        const { staffId, schoolId, classId, classGroupId } = input;
+
+        let resolvedClassId: number;
+
+        if (classId) {
+            resolvedClassId = classId;
+        } else if (classGroupId) {
+            // Get the class this group belongs to
+            const classGroup = await prisma.classGroup.findUnique({
+                where: { id: classGroupId },
+                select: { classId: true }
+            });
+            if (!classGroup) throw new Error("ClassGroup not found");
+            resolvedClassId = classGroup.classId;
+        } else {
+            throw new Error("Either classId or classGroupId must be provided");
+        }
+        // Verify the class belongs to this school
+        const cls = await prisma.class.findFirst({
+            where: { id: resolvedClassId, schoolId },
+            select: { id: true }
+        });
+        if (!cls) throw new Error("Class not found in this school");    
+        // Fetch exams for this class
+        const exams = await prisma.exam.findMany({
+            where: {
+                classId: resolvedClassId
+            },
+            include: {
+                class: { select: { id: true, name: true } },
+                subject: { select: { id: true, name: true } }
+            },
+            orderBy: { name: "asc" }
+        });
+
+        return exams;
+    }
+
+
+
 }
