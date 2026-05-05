@@ -791,12 +791,38 @@ export class TeacherService {
             },
             include: {
                 class: { select: { id: true, name: true } },
-                subject: { select: { id: true, name: true } }
+                subject: { select: { id: true, name: true } },
+                caResults: {
+                    select: {
+                        score: true,
+                        student: {
+                            select: {
+                                id: true,
+                                surname: true,
+                                name: true,
+                                otherNames: true,
+                                registrationNumber: true
+                            }
+                        }
+                    },
+                    orderBy: { student: { surname: "asc" } }
+                }
             },
             orderBy: { name: "asc" }
         });
 
-        return cas;
+        // Format response with student names combined
+        const formattedCas = cas.map(ca => ({
+            ...ca,
+            caResults: ca.caResults.map(result => ({
+                score: result.score,
+                studentId: result.student.id,
+                studentName: `${result.student.surname} ${result.student.name}`.trim(),
+                registrationNumber: result.student.registrationNumber
+            }))
+        }));
+
+        return formattedCas;
     }
 
     async getExamsByFilters(input: {
@@ -827,7 +853,7 @@ export class TeacherService {
             where: { id: resolvedClassId, schoolId },
             select: { id: true }
         });
-        if (!cls) throw new Error("Class not found in this school");    
+        if (!cls) throw new Error("Class not found in this school");
         // Fetch exams for this class
         const exams = await prisma.exam.findMany({
             where: {
@@ -835,12 +861,38 @@ export class TeacherService {
             },
             include: {
                 class: { select: { id: true, name: true } },
-                subject: { select: { id: true, name: true } }
+                subject: { select: { id: true, name: true } },
+                examResults: {
+                    select: {
+                        score: true,
+                        student: {
+                            select: {
+                                id: true,
+                                surname: true,
+                                name: true,
+                                otherNames: true,
+                                registrationNumber: true
+                            }
+                        }
+                    },
+                    orderBy: { student: { surname: "asc" } }
+                }
             },
             orderBy: { name: "asc" }
         });
 
-        return exams;
+        // Format response with student names combined
+        const formattedExams = exams.map(exam => ({
+            ...exam,
+            examResults: exam.examResults.map(result => ({
+                score: result.score,
+                studentId: result.student.id,
+                studentName: `${result.student.surname} ${result.student.name}`.trim(),
+                registrationNumber: result.student.registrationNumber
+            }))
+        }));
+
+        return formattedExams;
     }
 
 

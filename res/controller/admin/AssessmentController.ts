@@ -140,7 +140,20 @@ export class AssessmentController {
         try {
             if (!req.schoolId) throw new Error("Missing schoolId");
 
-            const result = await this.service.getPendingSubmissions(Number(req.schoolId));
+            const campusId = req.query.campusId ? Number(req.query.campusId) : undefined;
+            const classId = req.query.classId ? Number(req.query.classId) : undefined;
+            const academicSessionId = req.query.academicSessionId ? Number(req.query.academicSessionId) : undefined;
+            const termId = req.query.termId ? Number(req.query.termId) : undefined;
+            const subjectId = req.query.subjectId ? Number(req.query.subjectId) : undefined;
+
+            const result = await this.service.getPendingSubmissions({
+                schoolId: Number(req.schoolId),
+                campusId,
+                classId,
+                academicSessionId,
+                termId,
+                subjectId
+            });
 
             return res.status(200).json({ success: true, data: result });
         } catch (err) {

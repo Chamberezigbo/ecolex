@@ -534,19 +534,42 @@ export class AssessmentService {
     }
 
     // Admin gets all pending submissions for their school
-    async getPendingSubmissions(schoolId: number) {
+    async getPendingSubmissions(input: {
+        schoolId: number;
+        campusId?: number;
+        classId?: number;
+        academicSessionId?: number;
+        termId?: number;
+        subjectId?: number;
+    }) {
+        const { schoolId, campusId, classId, academicSessionId, termId, subjectId } = input;
+
         return prisma.resultSubmission.findMany({
             where: {
                 status: "PENDING",
-                class: { schoolId }
+                class: {
+                    schoolId,
+                    ...(campusId && { campusId })
+                },
+                ...(classId && { classId }),
+                ...(academicSessionId && { academicSessionId }),
+                ...(termId && { termId }),
+                ...(subjectId && { subjectId })
             },
             select: {
                 id: true,
                 status: true,
                 submittedAt: true,
-                class: { select: { id: true, name: true } },
+                class: {
+                    select: {
+                        id: true,
+                        name: true,
+                        campus: { select: { id: true, name: true } }
+                    }
+                },
                 subject: { select: { id: true, name: true } },
                 academicSession: { select: { id: true, name: true } },
+                term: { select: { id: true, name: true } },
                 staff: { select: { id: true, name: true } }
             },
             orderBy: { submittedAt: "desc" }
