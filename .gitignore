@@ -4,4 +4,5 @@ node_modules
 Ecolex .docx
 res/config/error.log
 .claudeignore
+dist
 

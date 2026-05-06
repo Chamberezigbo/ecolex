@@ -800,7 +800,6 @@ export class TeacherService {
                                 id: true,
                                 surname: true,
                                 name: true,
-                                otherNames: true,
                                 registrationNumber: true
                             }
                         }
@@ -811,15 +810,17 @@ export class TeacherService {
             orderBy: { name: "asc" }
         });
 
-        // Format response with student names combined
+        // Format response with student names combined, filter out null students
         const formattedCas = cas.map(ca => ({
             ...ca,
-            caResults: ca.caResults.map(result => ({
-                score: result.score,
-                studentId: result.student.id,
-                studentName: `${result.student.surname} ${result.student.name}`.trim(),
-                registrationNumber: result.student.registrationNumber
-            }))
+            caResults: ca.caResults
+                .filter(result => result.student !== null)
+                .map(result => ({
+                    score: result.score,
+                    studentId: result.student!.id,
+                    studentName: `${result.student!.surname} ${result.student!.name}`.trim(),
+                    registrationNumber: result.student!.registrationNumber
+                }))
         }));
 
         return formattedCas;
@@ -870,7 +871,6 @@ export class TeacherService {
                                 id: true,
                                 surname: true,
                                 name: true,
-                                otherNames: true,
                                 registrationNumber: true
                             }
                         }
@@ -881,15 +881,17 @@ export class TeacherService {
             orderBy: { name: "asc" }
         });
 
-        // Format response with student names combined
+        // Format response with student names combined, filter out null students
         const formattedExams = exams.map(exam => ({
             ...exam,
-            examResults: exam.examResults.map(result => ({
-                score: result.score,
-                studentId: result.student.id,
-                studentName: `${result.student.surname} ${result.student.name}`.trim(),
-                registrationNumber: result.student.registrationNumber
-            }))
+            examResults: exam.examResults
+                .filter(result => result.student !== null)
+                .map(result => ({
+                    score: result.score,
+                    studentId: result.student!.id,
+                    studentName: `${result.student!.surname} ${result.student!.name}`.trim(),
+                    registrationNumber: result.student!.registrationNumber
+                }))
         }));
 
         return formattedExams;

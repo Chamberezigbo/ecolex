@@ -522,6 +522,16 @@ export class AssessmentService {
                 })
             });
 
+            // Delete the submission after publishing (it's been approved)
+            await tx.resultSubmission.deleteMany({
+                where: {
+                    classId,
+                    subjectId,
+                    academicSessionId,
+                    status: "PENDING"
+                }
+            });
+
             return {
                 publicationId: publication.id,
                 classId,
@@ -576,6 +586,48 @@ export class AssessmentService {
         });
     }
 
+    async getRejectedResults(input: {
+        schoolId: number;
+        campusId?: number;
+        classId?: number;
+        academicSessionId?: number;
+        termId?: number;
+        subjectId?: number;
+    }) {
+        const { schoolId, campusId, classId, academicSessionId, termId, subjectId } = input;
+
+        return prisma.resultSubmission.findMany({
+            where: {
+                status: "REJECTED",
+                class: {
+                    schoolId,
+                    ...(campusId && { campusId })
+                },
+                ...(classId && { classId }),
+                ...(academicSessionId && { academicSessionId }),
+                ...(termId && { termId }),
+                ...(subjectId && { subjectId })
+            },
+            select: {
+                id: true,
+                status: true,
+                submittedAt: true,
+                class: {
+                    select: {
+                        id: true,
+                        name: true,
+                        campus: { select: { id: true, name: true } }
+                    }
+                },
+                subject: { select: { id: true, name: true } },
+                academicSession: { select: { id: true, name: true } },
+                term: { select: { id: true, name: true } },
+                staff: { select: { id: true, name: true } }
+            },
+            orderBy: { submittedAt: "desc" }
+        });
+    }
+
     // Admin rejects a submission — unlocks scores for teacher
     async rejectSubmission(submissionId: number, schoolId: number) {
         const submission = await prisma.resultSubmission.findFirst({
@@ -593,6 +645,49 @@ export class AssessmentService {
         await prisma.resultSubmission.delete({ where: { id: submissionId } });
 
         return { rejected: true, submissionId };
+    }
+
+    // Admin restores a rejected submission back to PENDING
+    async restoreRejectedSubmission(submissionId: number, schoolId: number) {
+        const submission = await prisma.resultSubmission.findFirst({
+            where: { id: submissionId, class: { schoolId } },
+            select: {
+                id: true,
+                status: true,
+                classId: true,
+                subjectId: true,
+                academicSessionId: true,
+                staffId: true,
+                submittedAt: true
+            }
+        });
+
+        if (!submission) throw new Error("Submission not found");
+
+        if (submission.status !== "REJECTED") {
+            throw new Error("Only rejected submissions can be restored");
+        }
+
+        // Restore to PENDING status
+        const restored = await prisma.resultSubmission.update({
+            where: { id: submissionId },
+            data: { status: "PENDING" },
+            select: {
+                id: true,
+                status: true,
+                submittedAt: true,
+                class: { select: { id: true, name: true } },
+                subject: { select: { id: true, name: true } },
+                academicSession: { select: { id: true, name: true } },
+                staff: { select: { id: true, name: true } }
+            }
+        });
+
+        return {
+            restored: true,
+            message: "Submission restored to PENDING. Teacher can now resubmit.",
+            data: restored
+        };
     }
 
     async getStudentResult(input: {

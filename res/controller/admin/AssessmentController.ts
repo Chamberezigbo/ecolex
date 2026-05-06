@@ -161,6 +161,31 @@ export class AssessmentController {
         }
     };
 
+    getRejectedResults = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) throw new Error("Missing schoolId");
+
+            const campusId = req.query.campusId ? Number(req.query.campusId) : undefined;
+            const classId = req.query.classId ? Number(req.query.classId) : undefined;
+            const academicSessionId = req.query.academicSessionId ? Number(req.query.academicSessionId) : undefined;
+            const termId = req.query.termId ? Number(req.query.termId) : undefined;
+            const subjectId = req.query.subjectId ? Number(req.query.subjectId) : undefined;
+
+            const result = await this.service.getRejectedResults({
+                schoolId: Number(req.schoolId),
+                campusId,
+                classId,
+                academicSessionId,
+                termId,
+                subjectId
+            });
+
+            return res.status(200).json({ success: true, data: result });
+        } catch (err) {
+            next(err);
+        }
+    };
+
     rejectSubmission = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             if (!req.schoolId) throw new Error("Missing schoolId");
@@ -174,6 +199,25 @@ export class AssessmentController {
                 success: true,
                 message: "Submission rejected. Teacher can now re-enter scores.",
                 data: result
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    restoreRejectedSubmission = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) throw new Error("Missing schoolId");
+
+            const submissionId = Number(req.params.submissionId);
+            if (isNaN(submissionId)) throw new Error("Invalid submissionId");
+
+            const result = await this.service.restoreRejectedSubmission(submissionId, Number(req.schoolId));
+
+            return res.status(200).json({
+                success: true,
+                message: result.message,
+                data: result.data
             });
         } catch (err) {
             next(err);
