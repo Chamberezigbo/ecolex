@@ -910,6 +910,110 @@ export class TeacherService {
         return formattedExams;
     }
 
+    async getTeacherStudents(input: {
+        staffId: number;
+        schoolId: number;
+        classId?: number;
+        classGroupId?: number;
+        subjectId?: number;
+        academicSessionId?: number;
+    }) {
+        const { staffId, schoolId, classId, classGroupId, subjectId, academicSessionId } = input;
 
+        // Get active/latest session if not provided
+        let sessionId = academicSessionId;
+        if (!sessionId) {
+            const activeSession = await prisma.academicSession.findFirst({
+                where: { schoolId, isActive: true },
+                select: { id: true }
+            });
+
+            if (!activeSession) {
+                const latestSession = await prisma.academicSession.findFirst({
+                    where: { schoolId },
+                    orderBy: { createdAt: "desc" },
+                    select: { id: true }
+                });
+                if (!latestSession) throw new Error("No academic session found");
+                sessionId = latestSession.id;
+            } else {
+                sessionId = activeSession.id;
+            }
+        }
+
+        // Determine which class(es) to query
+        let resolvedClassIds: number[] = [];
+
+        if (classId) {
+            resolvedClassIds = [classId];
+        } else if (classGroupId) {
+            // Get the class this group belongs to
+            const classGroup = await prisma.classGroup.findUnique({
+                where: { id: classGroupId },
+                select: { classId: true }
+            });
+            if (!classGroup) throw new Error("ClassGroup not found");
+            resolvedClassIds = [classGroup.classId];
+        } else {
+            // Get all classes this teacher is assigned to
+            const assignments = await prisma.teacherAssignment.findMany({
+                where: {
+                    staffId,
+                    ...(subjectId && { subjectId })
+                },
+                select: { classId: true },
+                distinct: ["classId"]
+            });
+            resolvedClassIds = assignments.map(a => a.classId).filter((id): id is number => id !== null);
+
+            if (resolvedClassIds.length === 0) {
+                throw new Error("Teacher not assigned to any classes");
+            }
+        }
+
+        // Fetch students from those classes in the active session
+        const students = await prisma.student.findMany({
+            where: {
+                schoolId,
+                classId: { in: resolvedClassIds },
+                academicSessionId: sessionId,
+                ...(classGroupId && { classGroupId })
+            },
+            select: {
+                id: true,
+                name: true,
+                surname: true,
+                otherNames: true,
+                registrationNumber: true,
+                email: true,
+                gender: true,
+                classId: true,
+                class: {
+                    select: { id: true, name: true, customName: true }
+                }
+            },
+            orderBy: [
+                { class: { name: "asc" } },
+                { surname: "asc" }
+            ]
+        });
+
+        return {
+            academicSessionId: sessionId,
+            classIds: resolvedClassIds,
+            total: students.length,
+            students: students.map(s => ({
+                id: s.id,
+                name: s.name,
+                surname: s.surname,
+                otherNames: s.otherNames,
+                registrationNumber: s.registrationNumber,
+                email: s.email,
+                gender: s.gender,
+                classId: s.classId,
+                className: s.class.customName ?? s.class.name
+            }))
+        };
+    }
 
 }

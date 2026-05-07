@@ -15,8 +15,8 @@ const teacherController = new TeacherController();
 router.post("/login", teacherAuthController.login);
 router.get("/overview", teacherAuthMiddleware, teacherOverviewController.getOverview);
 
-// existing read
-router.get("/students", teacherAuthMiddleware, teacherController.getStudentsForGrading);
+// Get students assigned to teacher
+router.get("/my-students", teacherAuthMiddleware, teacherController.getStudentsForGrading);
 
 // new: write/edit scores
 router.post("/scores/ca", teacherAuthMiddleware, teacherController.upsertCAScores);
@@ -46,6 +46,7 @@ router.get("/classes", teacherAuthMiddleware, teacherController.getMyClasses);
 router.get("/campuses", teacherAuthMiddleware, teacherController.getMyCampus);
 router.get("/class-groups", teacherAuthMiddleware, teacherController.getMyClassGroups);
 router.get("/sessions", teacherAuthMiddleware, teacherController.getActiveSession);
+router.get("/students", teacherAuthMiddleware, teacherController.getStudents);
 
 router.get("/ca", teacherAuthMiddleware, teacherController.getCAs);
 router.get("/exam", teacherAuthMiddleware, teacherController.getExams);
