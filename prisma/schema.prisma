@@ -286,14 +286,14 @@ model ContinuousAssessment {
 
 model CAResult {
   id                Int      @id @default(autoincrement())
-  studentId         Int
+  studentId         Int?
   caId              Int
   academicSessionId Int
   termId            Int?     // ← add this
   score             Decimal
   createdAt         DateTime @default(now())
 
-  student         Student              @relation(fields: [studentId], references: [id])
+  student         Student?             @relation(fields: [studentId], references: [id])
   ca              ContinuousAssessment @relation(fields: [caId], references: [id])
   academicSession AcademicSession      @relation(fields: [academicSessionId], references: [id])
   term            AcademicTerm?        @relation(fields: [termId], references: [id]) // ← add this
@@ -326,14 +326,14 @@ model Exam {
 
 model ExamResult {
   id                Int      @id @default(autoincrement())
-  studentId         Int
+  studentId         Int?
   examId            Int
   academicSessionId Int
   termId            Int?     // ← add this
   score             Decimal
   createdAt         DateTime @default(now())
 
-  student         Student         @relation(fields: [studentId], references: [id])
+  student         Student?        @relation(fields: [studentId], references: [id])
   exam            Exam            @relation(fields: [examId], references: [id])
   academicSession AcademicSession @relation(fields: [academicSessionId], references: [id])
   term            AcademicTerm?   @relation(fields: [termId], references: [id]) // ← add this
