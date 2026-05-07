@@ -784,44 +784,59 @@ export class TeacherService {
         });
         if (!cls) throw new Error("Class not found in this school");
 
-        // Fetch CAs for this class
+        // Fetch CAs without results first
         const cas = await prisma.continuousAssessment.findMany({
             where: {
                 classId: resolvedClassId
             },
-            include: {
+            select: {
+                id: true,
+                name: true,
+                maxScore: true,
+                classId: true,
+                subjectId: true,
                 class: { select: { id: true, name: true } },
-                subject: { select: { id: true, name: true } },
-                caResults: {
-                    select: {
-                        score: true,
-                        student: {
-                            select: {
-                                id: true,
-                                surname: true,
-                                name: true,
-                                registrationNumber: true
-                            }
-                        }
-                    }
-                }
+                subject: { select: { id: true, name: true } }
             },
             orderBy: { name: "asc" }
         });
 
-        // Format response with student names combined, filter out null students and sort by surname
-        const formattedCas = cas.map(ca => ({
-            ...ca,
-            caResults: ca.caResults
-                .filter(result => result.student !== null)
+        // Fetch CA results with students only (filter null students at DB level)
+        const caResults = await prisma.cAResult.findMany({
+            where: {
+                ca: { classId: resolvedClassId }
+            },
+            select: {
+                caId: true,
+                score: true,
+                student: {
+                    select: {
+                        id: true,
+                        surname: true,
+                        name: true,
+                        registrationNumber: true
+                    }
+                }
+            }
+        });
+
+        // Combine CAs with their results, sorted by student surname
+        const formattedCas = cas.map(ca => {
+            const results = caResults
+                .filter(r => r.caId === ca.id && r.student)
                 .sort((a, b) => (a.student!.surname || "").localeCompare(b.student!.surname || ""))
-                .map(result => ({
-                    score: result.score,
-                    studentId: result.student!.id,
-                    studentName: `${result.student!.surname} ${result.student!.name}`.trim(),
-                    registrationNumber: result.student!.registrationNumber
-                }))
-        }));
+                .map(r => ({
+                    score: r.score,
+                    studentId: r.student!.id,
+                    studentName: `${r.student!.surname} ${r.student!.name}`.trim(),
+                    registrationNumber: r.student!.registrationNumber
+                }));
+
+            return {
+                ...ca,
+                caResults: results
+            };
+        });
 
         return formattedCas;
     }
