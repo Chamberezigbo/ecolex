@@ -806,9 +806,7 @@ export class TeacherService {
             where: {
                 ca: { classId: resolvedClassId }
             },
-            select: {
-                caId: true,
-                score: true,
+            include: {
                 student: {
                     select: {
                         id: true,
