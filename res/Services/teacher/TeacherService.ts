@@ -803,18 +803,18 @@ export class TeacherService {
                                 registrationNumber: true
                             }
                         }
-                    },
-                    orderBy: { student: { surname: "asc" } }
+                    }
                 }
             },
             orderBy: { name: "asc" }
         });
 
-        // Format response with student names combined, filter out null students
+        // Format response with student names combined, filter out null students and sort by surname
         const formattedCas = cas.map(ca => ({
             ...ca,
             caResults: ca.caResults
                 .filter(result => result.student !== null)
+                .sort((a, b) => (a.student!.surname || "").localeCompare(b.student!.surname || ""))
                 .map(result => ({
                     score: result.score,
                     studentId: result.student!.id,
@@ -874,18 +874,18 @@ export class TeacherService {
                                 registrationNumber: true
                             }
                         }
-                    },
-                    orderBy: { student: { surname: "asc" } }
+                    }
                 }
             },
             orderBy: { name: "asc" }
         });
 
-        // Format response with student names combined, filter out null students
+        // Format response with student names combined, filter out null students and sort by surname
         const formattedExams = exams.map(exam => ({
             ...exam,
             examResults: exam.examResults
                 .filter(result => result.student !== null)
+                .sort((a, b) => (a.student!.surname || "").localeCompare(b.student!.surname || ""))
                 .map(result => ({
                     score: result.score,
                     studentId: result.student!.id,
