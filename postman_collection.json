@@ -1,0 +1,167 @@
+{
+  "info": {
+    "name": "Ecolex Teacher API - Students Endpoint",
+    "description": "Examples for the new GET /api/teacher/students endpoint",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "TEST 1: Get All Students",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/api/teacher/students",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "teacher", "students"]
+        }
+      }
+    },
+    {
+      "name": "TEST 2: Filter by ClassId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/api/teacher/students?classId=1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "teacher", "students"],
+          "query": [
+            {
+              "key": "classId",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "TEST 3: Filter by Academic Session",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/api/teacher/students?academicSessionId=1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "teacher", "students"],
+          "query": [
+            {
+              "key": "academicSessionId",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "TEST 4: Filter by ClassGroupId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/api/teacher/students?classGroupId=1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "teacher", "students"],
+          "query": [
+            {
+              "key": "classGroupId",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "TEST 5: Filter by SubjectId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/api/teacher/students?subjectId=1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "teacher", "students"],
+          "query": [
+            {
+              "key": "subjectId",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "TEST 6: Multiple Filters Combined",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/api/teacher/students?classId=1&academicSessionId=1&subjectId=1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "teacher", "students"],
+          "query": [
+            {
+              "key": "classId",
+              "value": "1"
+            },
+            {
+              "key": "academicSessionId",
+              "value": "1"
+            },
+            {
+              "key": "subjectId",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
