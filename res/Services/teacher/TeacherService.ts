@@ -1016,4 +1016,188 @@ export class TeacherService {
         };
     }
 
+    async getTeacherStudentsWithScores(input: {
+        staffId: number;
+        schoolId: number;
+        classId?: number;
+        classGroupId?: number;
+        subjectId?: number;
+        academicSessionId?: number;
+        termId?: number;
+    }) {
+        const { staffId, schoolId, classId, classGroupId, subjectId, academicSessionId, termId } = input;
+
+        // Get active/latest session if not provided
+        let sessionId = academicSessionId;
+        if (!sessionId) {
+            const activeSession = await prisma.academicSession.findFirst({
+                where: { schoolId, isActive: true },
+                select: { id: true }
+            });
+
+            if (!activeSession) {
+                const latestSession = await prisma.academicSession.findFirst({
+                    where: { schoolId },
+                    orderBy: { createdAt: "desc" },
+                    select: { id: true }
+                });
+                if (!latestSession) throw new Error("No academic session found");
+                sessionId = latestSession.id;
+            } else {
+                sessionId = activeSession.id;
+            }
+        }
+
+        // Determine which class(es) to query
+        let resolvedClassIds: number[] = [];
+
+        if (classId) {
+            resolvedClassIds = [classId];
+        } else if (classGroupId) {
+            const classGroup = await prisma.classGroup.findUnique({
+                where: { id: classGroupId },
+                select: { classId: true }
+            });
+            if (!classGroup) throw new Error("ClassGroup not found");
+            resolvedClassIds = [classGroup.classId];
+        } else {
+            const assignments = await prisma.teacherAssignment.findMany({
+                where: {
+                    staffId,
+                    ...(subjectId && { subjectId })
+                },
+                select: { classId: true },
+                distinct: ["classId"]
+            });
+            resolvedClassIds = assignments.map(a => a.classId).filter((id): id is number => id !== null);
+
+            if (resolvedClassIds.length === 0) {
+                throw new Error("Teacher not assigned to any classes");
+            }
+        }
+
+        // Fetch CAs for those classes
+        const cas = await prisma.continuousAssessment.findMany({
+            where: {
+                classId: { in: resolvedClassIds },
+                ...(subjectId && { subjectId })
+            },
+            select: {
+                id: true,
+                name: true,
+                maxScore: true,
+                subjectId: true,
+                caResults: {
+                    where: { academicSessionId: sessionId, ...(termId ? { termId } : {}) },
+                    select: { studentId: true, score: true }
+                }
+            },
+            orderBy: { name: "asc" }
+        });
+
+        // Fetch Exams for those classes
+        const exams = await prisma.exam.findMany({
+            where: {
+                classId: { in: resolvedClassIds },
+                ...(subjectId && { subjectId })
+            },
+            select: {
+                id: true,
+                name: true,
+                maxScore: true,
+                subjectId: true,
+                examResults: {
+                    where: { academicSessionId: sessionId, ...(termId ? { termId } : {}) },
+                    select: { studentId: true, score: true }
+                }
+            },
+            orderBy: { name: "asc" }
+        });
+
+        // Fetch students from those classes
+        const students = await prisma.student.findMany({
+            where: {
+                schoolId,
+                classId: { in: resolvedClassIds },
+                academicSessionId: sessionId,
+                ...(classGroupId && { classGroupId })
+            },
+            select: {
+                id: true,
+                name: true,
+                surname: true,
+                otherNames: true,
+                registrationNumber: true,
+                classId: true,
+                class: {
+                    select: { id: true, name: true, customName: true }
+                }
+            },
+            orderBy: [
+                { class: { name: "asc" } },
+                { surname: "asc" }
+            ]
+        });
+
+        // Build response with individual CA scores
+        const studentsWithScores = students.map(student => {
+            // Build CA scores array with individual scores
+            const caScores = cas.map(ca => {
+                const result = ca.caResults.find(r => r.studentId === student.id);
+                return {
+                    caId: ca.id,
+                    caName: ca.name,
+                    score: result?.score ?? null,
+                    maxScore: ca.maxScore
+                };
+            });
+
+            // Get exam score
+            const firstExam = exams.length > 0 ? exams[0] : null;
+            const examResult = firstExam?.examResults.find(r => r.studentId === student.id) ?? null;
+            const examScore = firstExam ? {
+                examId: firstExam.id,
+                examName: firstExam.name,
+                score: examResult?.score ?? null,
+                maxScore: firstExam.maxScore
+            } : null;
+
+            // Calculate totals
+            const caTotal = caScores.reduce((sum, ca) => sum + Number(ca.score ?? 0), 0);
+            const examTotal = examScore ? Number(examScore.score ?? 0) : 0;
+            const grandTotal = caTotal + examTotal;
+
+            return {
+                id: student.id,
+                registrationNumber: student.registrationNumber,
+                surname: student.surname,
+                name: student.name,
+                otherNames: student.otherNames,
+                className: student.class.customName ?? student.class.name,
+                caScores,
+                examScore,
+                caTotal,
+                examTotal,
+                grandTotal
+            };
+        });
+
+        return {
+            academicSessionId: sessionId,
+            termId: termId ?? null,
+            classIds: resolvedClassIds,
+            cas: cas.map(ca => ({
+                id: ca.id,
+                name: ca.name,
+                maxScore: ca.maxScore
+            })),
+            exams: exams.map(exam => ({
+                id: exam.id,
+                name: exam.name,
+                maxScore: exam.maxScore
+            })),
+            students: studentsWithScores
+        };
+    }
+
 }

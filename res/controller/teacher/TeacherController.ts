@@ -408,5 +408,32 @@ export class TeacherController {
         }
     };
 
+    getStudentsWithScores = async (req: TeacherRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.staffId || !req.schoolId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const classId = req.query.classId ? Number(req.query.classId) : undefined;
+            const classGroupId = req.query.classGroupId ? Number(req.query.classGroupId) : undefined;
+            const subjectId = req.query.subjectId ? Number(req.query.subjectId) : undefined;
+            const academicSessionId = req.query.academicSessionId ? Number(req.query.academicSessionId) : undefined;
+            const termId = req.query.termId ? Number(req.query.termId) : undefined;
+
+            const data = await this.service.getTeacherStudentsWithScores({
+                staffId: req.staffId,
+                schoolId: req.schoolId,
+                classId,
+                classGroupId,
+                subjectId,
+                academicSessionId,
+                termId
+            });
+
+            return res.json({ success: true, data });
+        } catch (err) {
+            next(err);
+        }
+    };
 
 }
