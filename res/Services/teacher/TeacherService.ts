@@ -1099,6 +1099,7 @@ export class TeacherService {
                 name: true,
                 maxScore: true,
                 subjectId: true,
+                subject: { select: { id: true, name: true } },
                 caResults: {
                     where: { academicSessionId: sessionId, ...(resolvedTermId ? { termId: resolvedTermId } : {}) },
                     select: { studentId: true, score: true }
@@ -1118,6 +1119,7 @@ export class TeacherService {
                 name: true,
                 maxScore: true,
                 subjectId: true,
+                subject: { select: { id: true, name: true } },
                 examResults: {
                     where: { academicSessionId: sessionId, ...(resolvedTermId ? { termId: resolvedTermId } : {}) },
                     select: { studentId: true, score: true }
@@ -1201,12 +1203,14 @@ export class TeacherService {
             cas: cas.map(ca => ({
                 id: ca.id,
                 name: ca.name,
-                maxScore: ca.maxScore
+                maxScore: ca.maxScore,
+                subject: ca.subject ? { id: ca.subject.id, name: ca.subject.name } : null
             })),
             exams: exams.map(exam => ({
                 id: exam.id,
                 name: exam.name,
-                maxScore: exam.maxScore
+                maxScore: exam.maxScore,
+                subject: exam.subject ? { id: exam.subject.id, name: exam.subject.name } : null
             })),
             students: studentsWithScores
         };
