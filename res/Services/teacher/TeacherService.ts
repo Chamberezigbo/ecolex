@@ -1048,6 +1048,18 @@ export class TeacherService {
             }
         }
 
+        // Get active term if not provided
+        let resolvedTermId = termId;
+        if (!resolvedTermId) {
+            const activeTerm = await prisma.academicTerm.findFirst({
+                where: { schoolId, isActive: true },
+                select: { id: true }
+            });
+            if (activeTerm) {
+                resolvedTermId = activeTerm.id;
+            }
+        }
+
         // Determine which class(es) to query
         let resolvedClassIds: number[] = [];
 
@@ -1088,7 +1100,7 @@ export class TeacherService {
                 maxScore: true,
                 subjectId: true,
                 caResults: {
-                    where: { academicSessionId: sessionId, ...(termId ? { termId } : {}) },
+                    where: { academicSessionId: sessionId, ...(resolvedTermId ? { termId: resolvedTermId } : {}) },
                     select: { studentId: true, score: true }
                 }
             },
@@ -1107,7 +1119,7 @@ export class TeacherService {
                 maxScore: true,
                 subjectId: true,
                 examResults: {
-                    where: { academicSessionId: sessionId, ...(termId ? { termId } : {}) },
+                    where: { academicSessionId: sessionId, ...(resolvedTermId ? { termId: resolvedTermId } : {}) },
                     select: { studentId: true, score: true }
                 }
             },
@@ -1184,7 +1196,7 @@ export class TeacherService {
 
         return {
             academicSessionId: sessionId,
-            termId: termId ?? null,
+            termId: resolvedTermId ?? null,
             classIds: resolvedClassIds,
             cas: cas.map(ca => ({
                 id: ca.id,
