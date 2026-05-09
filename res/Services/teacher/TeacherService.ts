@@ -976,7 +976,8 @@ export class TeacherService {
             where: {
                 schoolId,
                 classId: { in: resolvedClassIds },
-                academicSessionId: sessionId
+                academicSessionId: sessionId,
+                ...(classGroupId && { classGroupId })
             },
             select: {
                 id: true,
