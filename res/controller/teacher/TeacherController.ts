@@ -442,4 +442,26 @@ export class TeacherController {
         }
     };
 
+    async getTeacherSubjects(req: TeacherRequest, res: Response) {
+        try {
+            if (!req.staffId || !req.schoolId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const teacherService = new TeacherService();
+            const subjects = await teacherService.getTeacherSubjects(req.staffId);
+
+            return res.status(200).json({
+                success: true,
+                total: subjects.length,
+                subjects
+            });
+        } catch (error: any) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+
 }

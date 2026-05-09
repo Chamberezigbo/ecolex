@@ -1216,4 +1216,44 @@ export class TeacherService {
         };
     }
 
+    async getTeacherSubjects(staffId: number) {
+        const assignments = await prisma.teacherAssignment.findMany({
+            where: {
+                staffId,
+                subjectId: { not: null }
+            },
+            select: {
+                subject: {
+                    select: {
+                        id: true,
+                        name: true,
+                        code: true
+                    }
+                },
+                class: {
+                    select: {
+                        id: true,
+                        name: true,
+                        customName: true
+                    }
+                }
+            },
+            distinct: ["subjectId"]
+        });
+
+        return assignments
+            .filter(a => a.subject !== null)
+            .map(a => ({
+                id: a.subject!.id,
+                name: a.subject!.name,
+                code: a.subject!.code,
+                class: a.class
+                    ? {
+                        id: a.class.id,
+                        name: a.class.customName ?? a.class.name
+                    }
+                    : null
+            }));
+    }
+
 }
