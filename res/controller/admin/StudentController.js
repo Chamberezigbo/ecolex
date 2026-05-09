@@ -308,6 +308,10 @@ exports.getSingleStudent = async (req, res, next) => {
           select:
             { id: true, name: true, isActive: true }
         },
+        classGroup: {
+          select:
+            { id: true, name: true }
+        },
       }
     });
 
