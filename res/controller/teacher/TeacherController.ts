@@ -237,7 +237,10 @@ export class TeacherController {
             });
 
             return res.json({ success: true, data });
-        } catch (err) {
+        } catch (err: any) {
+            if (err.message?.includes("Forbidden")) {
+                return res.status(403).json({ success: false, message: err.message });
+            }
             next(err);
         }
     };
@@ -263,7 +266,10 @@ export class TeacherController {
             });
 
             return res.json({ success: true, data });
-        } catch (err) {
+        } catch (err: any) {
+            if (err.message?.includes("Forbidden")) {
+                return res.status(403).json({ success: false, message: err.message });
+            }
             next(err);
         }
     };
