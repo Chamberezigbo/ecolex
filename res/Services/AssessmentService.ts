@@ -927,5 +927,277 @@ export class AssessmentService {
         });
     }
 
+    async createRemarkScheme(input: {
+        schoolId: number;
+        name: string;
+        rules: Array<{ minScore: number; maxScore: number; remark: string }>;
+    }) {
+        const { schoolId, name, rules } = input;
+
+        const scheme = await prisma.remarkScheme.upsert({
+            where: { schoolId },
+            create: {
+                schoolId,
+                name,
+                rules: {
+                    create: rules.map(r => ({
+                        minScore: r.minScore,
+                        maxScore: r.maxScore,
+                        remark: r.remark
+                    }))
+                }
+            },
+            update: {
+                name,
+                rules: {
+                    deleteMany: {},
+                    create: rules.map(r => ({
+                        minScore: r.minScore,
+                        maxScore: r.maxScore,
+                        remark: r.remark
+                    }))
+                }
+            },
+            include: { rules: true }
+        });
+
+        return scheme;
+    }
+
+    async addRemarkRules(input: {
+        schemeId: number;
+        schoolId: number;
+        rules: Array<{ minScore: number; maxScore: number; remark: string }>;
+    }) {
+        const { schemeId, schoolId, rules } = input;
+
+        const scheme = await prisma.remarkScheme.findFirst({
+            where: { id: schemeId, schoolId }
+        });
+
+        if (!scheme) {
+            throw new Error("Remark scheme not found or does not belong to your school");
+        }
+
+        const createdRules = await prisma.remarkRule.createMany({
+            data: rules.map(r => ({
+                schemeId,
+                minScore: r.minScore,
+                maxScore: r.maxScore,
+                remark: r.remark
+            }))
+        });
+
+        const updatedScheme = await prisma.remarkScheme.findUnique({
+            where: { id: schemeId },
+            include: { rules: { orderBy: { minScore: "desc" } } }
+        });
+
+        return updatedScheme;
+    }
+
+    async getStudentCompleteResult(input: {
+        studentId: number;
+        schoolId: number;
+        academicSessionId?: number;
+        termId?: number;
+    }) {
+        const { studentId, schoolId, academicSessionId, termId } = input;
+
+        // Resolve academic session
+        let sessionId = academicSessionId;
+        if (!sessionId) {
+            const activeSession = await prisma.academicSession.findFirst({
+                where: { schoolId, isActive: true },
+                select: { id: true, name: true }
+            });
+            if (!activeSession) {
+                const latestSession = await prisma.academicSession.findFirst({
+                    where: { schoolId },
+                    orderBy: { createdAt: "desc" },
+                    select: { id: true, name: true }
+                });
+                if (!latestSession) throw new Error("No academic session found");
+                sessionId = latestSession.id;
+            } else {
+                sessionId = activeSession.id;
+            }
+        }
+
+        // Fetch student details
+        const student = await prisma.student.findUnique({
+            where: { id: studentId },
+            select: {
+                id: true,
+                name: true,
+                surname: true,
+                otherNames: true,
+                registrationNumber: true,
+                dateOfBirth: true,
+                gender: true,
+                passportUrl: true,
+                classId: true,
+                class: { select: { id: true, name: true, customName: true, campus: { select: { name: true } } } },
+                academicSessionId: true
+            }
+        });
+
+        if (!student) throw new Error("Student not found");
+
+        // Fetch class subjects
+        const classSubjects = await prisma.classSubject.findMany({
+            where: { classId: student.classId },
+            select: {
+                subject: { select: { id: true, name: true, code: true } }
+            }
+        });
+
+        // Get grading scheme for the class
+        const gradingScheme = await prisma.gradingScheme.findFirst({
+            where: {
+                classes: { some: { classId: student.classId } }
+            },
+            select: {
+                grades: { orderBy: { minScore: "desc" } }
+            }
+        });
+
+        // Fetch results for each subject
+        const subjects = await Promise.all(
+            classSubjects.map(async (cs) => {
+                const subject = cs.subject;
+                const cas = await prisma.continuousAssessment.findMany({
+                    where: { classId: student.classId, subjectId: subject.id },
+                    select: {
+                        id: true,
+                        name: true,
+                        maxScore: true,
+                        caResults: {
+                            where: { studentId, academicSessionId: sessionId, ...(termId ? { termId } : {}) },
+                            select: { score: true }
+                        }
+                    },
+                    orderBy: { name: "asc" }
+                });
+
+                const exams = await prisma.exam.findMany({
+                    where: { classId: student.classId, subjectId: subject.id },
+                    select: {
+                        id: true,
+                        name: true,
+                        maxScore: true,
+                        examResults: {
+                            where: { studentId, academicSessionId: sessionId, ...(termId ? { termId } : {}) },
+                            select: { score: true }
+                        }
+                    },
+                    orderBy: { name: "asc" }
+                });
+
+                const caTotal = cas.reduce((sum, ca) => sum + Number(ca.caResults[0]?.score ?? 0), 0);
+                const examTotal = exams.reduce((sum, exam) => sum + Number(exam.examResults[0]?.score ?? 0), 0);
+                const subjectTotal = caTotal + examTotal;
+
+                const grade = gradingScheme?.grades.find(g => subjectTotal >= g.minScore && subjectTotal <= g.maxScore);
+
+                return {
+                    id: subject.id,
+                    name: subject.name,
+                    code: subject.code,
+                    cas: cas.map(ca => ({
+                        id: ca.id,
+                        name: ca.name,
+                        maxScore: ca.maxScore,
+                        score: ca.caResults[0]?.score ?? null
+                    })),
+                    exam: exams.length > 0 ? {
+                        id: exams[0].id,
+                        name: exams[0].name,
+                        maxScore: exams[0].maxScore,
+                        score: exams[0].examResults[0]?.score ?? null
+                    } : null,
+                    caTotal,
+                    examTotal,
+                    subjectTotal,
+                    grade: grade?.grade ?? "N/A",
+                    remark: grade?.remark ?? ""
+                };
+            })
+        );
+
+        // Calculate performance summary
+        const totalScore = subjects.reduce((sum, s) => sum + s.subjectTotal, 0);
+        const averageScore = subjects.length > 0 ? Math.round(totalScore / subjects.length) : 0;
+        const overallGrade = gradingScheme?.grades.find(g => totalScore >= g.minScore && totalScore <= g.maxScore);
+
+        // Get class position
+        const classStudents = await prisma.student.findMany({
+            where: { classId: student.classId, academicSessionId: sessionId },
+            select: { id: true }
+        });
+
+        const classPosition = classStudents.length;
+
+        // Fetch remark based on overall score using RemarkScheme
+        const remarkScheme = await prisma.remarkScheme.findUnique({
+            where: { schoolId },
+            select: { rules: { orderBy: { minScore: "desc" } } }
+        });
+
+        const remarkTemplate = remarkScheme?.rules.find(r => totalScore >= r.minScore && totalScore <= r.maxScore)?.remark ?? "";
+
+        // Personalize remark with student name
+        const studentDisplayName = `${student.surname} ${student.name}`;
+        const personalizedRemark = remarkTemplate ? remarkTemplate.replace('{studentName}', studentDisplayName) : null;
+
+        // Get session and term names
+        const session = await prisma.academicSession.findUnique({
+            where: { id: sessionId },
+            select: { id: true, name: true }
+        });
+
+        const term = termId ? await prisma.academicTerm.findUnique({
+            where: { id: termId },
+            select: { id: true, name: true }
+        }) : null;
+
+        // Count total terms in session
+        const totalTerms = await prisma.academicTerm.count({
+            where: { sessionId }
+        });
+
+        return {
+            studentInformation: {
+                id: student.id,
+                name: student.name,
+                surname: student.surname,
+                otherNames: student.otherNames,
+                registrationNumber: student.registrationNumber,
+                className: student.class.customName ?? student.class.name,
+                classId: student.classId,
+                campus: student.class.campus?.name ?? "N/A",
+                dateOfBirth: student.dateOfBirth,
+                gender: student.gender,
+                passportUrl: student.passportUrl
+            },
+            academicInfo: {
+                academicSessionId: sessionId,
+                academicSessionName: session?.name,
+                termId: term?.id ?? null,
+                termName: term?.name ?? null
+            },
+            subjects,
+            performanceSummary: {
+                totalScore,
+                averageScore,
+                classPosition: `${classPosition}`,
+                overallGrade: overallGrade?.grade ?? "N/A",
+                sessionLength: totalTerms
+            },
+            teacherRemark: personalizedRemark,
+            schoolRecommendationDate: new Date().toISOString().split('T')[0]
+        };
+    }
+
 
 }

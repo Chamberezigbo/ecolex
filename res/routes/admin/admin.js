@@ -157,6 +157,10 @@ router.post(
   gradingController.addApplicableClasses
 );
 
+// Remark scheme routes
+router.post("/remark-scheme/create", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.createRemarkScheme);
+router.post("/remark-scheme/:schemeId/rules", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.addRemarkRules);
+
 router.delete(
   "/grading/remark/:ruleId",
   auth.authenticateSuperAdmin,
@@ -181,6 +185,7 @@ router.put("/results/rejected/:submissionId/restore", auth.authenticateSuperAdmi
 
 router.get("/result/student", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getStudentResult);
 router.get("/result/teacher", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getTeacherResult);
+router.get("/result/student/:studentId", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getStudentCompleteResult);
 
 // Academic term routes
 router.post("/term", auth.authenticateSuperAdmin, auth.attachSchoolId, termController.createTerm);

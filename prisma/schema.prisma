@@ -57,6 +57,7 @@ model School {
   Student         Student[]
   Subject         Subject[]
   GradingScheme   GradingScheme[]
+  RemarkScheme    RemarkScheme?
   AcademicSession AcademicSession[]
   AcademicTerm    AcademicTerm[]
   CATemplate      CATemplate[]
@@ -380,6 +381,31 @@ model GradingSchemeClass {
   class  Class         @relation(fields: [classId], references: [id])
 }
 
+model RemarkScheme {
+  id        Int      @id @default(autoincrement())
+  schoolId  Int
+  name      String
+  createdAt DateTime @default(now())
+
+  school School      @relation(fields: [schoolId], references: [id])
+  rules  RemarkRule[]
+
+  @@unique([schoolId])
+  @@map("remark_schemes")
+}
+
+model RemarkRule {
+  id       Int    @id @default(autoincrement())
+  schemeId Int
+  minScore Int
+  maxScore Int
+  remark   String @db.Text
+
+  scheme RemarkScheme @relation(fields: [schemeId], references: [id])
+
+  @@map("remark_rules")
+}
+
 model AcademicSession {
   id        Int      @id @default(autoincrement())
   schoolId  Int
@@ -482,6 +508,5 @@ model AcademicTerm {
   @@unique([schoolId, sessionId, name])
   @@map("academic_terms")
 }
-
 
 

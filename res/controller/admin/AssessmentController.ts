@@ -328,5 +328,103 @@ export class AssessmentController {
         }
     };
 
+    getStudentCompleteResult = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const studentId = Number(req.params.studentId);
+            const academicSessionId = req.query.academicSessionId ? Number(req.query.academicSessionId) : undefined;
+            const termId = req.query.termId ? Number(req.query.termId) : undefined;
+
+            if (Number.isNaN(studentId)) {
+                return res.status(400).json({ message: "Invalid studentId" });
+            }
+
+            const data = await this.service.getStudentCompleteResult({
+                studentId,
+                schoolId: Number(req.schoolId),
+                academicSessionId,
+                termId
+            });
+
+            return res.json({ success: true, data });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    createRemarkScheme = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const { name, rules } = req.body;
+
+            if (!name) {
+                return res.status(400).json({ message: "Scheme name is required" });
+            }
+
+            if (!Array.isArray(rules) || rules.length === 0) {
+                return res.status(400).json({ message: "Rules must be a non-empty array" });
+            }
+
+            for (const rule of rules) {
+                if (rule.minScore === undefined || rule.maxScore === undefined || !rule.remark) {
+                    return res.status(400).json({ message: "Each rule must have minScore, maxScore, and remark" });
+                }
+            }
+
+            const data = await this.service.createRemarkScheme({
+                schoolId: Number(req.schoolId),
+                name,
+                rules
+            });
+
+            return res.status(201).json({
+                success: true,
+                message: "Remark scheme created successfully",
+                data
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    addRemarkRules = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const schemeId = Number(req.params.schemeId);
+            const { rules } = req.body;
+
+            if (Number.isNaN(schemeId)) {
+                return res.status(400).json({ message: "Invalid schemeId" });
+            }
+
+            if (!Array.isArray(rules) || rules.length === 0) {
+                return res.status(400).json({ message: "Rules must be a non-empty array" });
+            }
+
+            const data = await this.service.addRemarkRules({
+                schemeId,
+                schoolId: Number(req.schoolId),
+                rules
+            });
+
+            return res.status(201).json({
+                success: true,
+                message: "Remark rules added successfully",
+                data
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
+
 
 }
