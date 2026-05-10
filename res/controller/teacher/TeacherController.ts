@@ -464,4 +464,18 @@ export class TeacherController {
         }
     }
 
+    getTeacherDetails = async (req: TeacherRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.staffId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const data = await this.service.getTeacherDetails(req.staffId);
+
+            return res.json({ success: true, data });
+        } catch (err) {
+            next(err);
+        }
+    };
+
 }

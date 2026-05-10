@@ -1256,4 +1256,27 @@ export class TeacherService {
             }));
     }
 
+    async getTeacherDetails(staffId: number) {
+        const teacher = await prisma.staff.findUnique({
+            where: { id: staffId },
+            select: {
+                id: true,
+                name: true,
+                registrationNumber: true,
+                email: true,
+                phoneNumber: true,
+                address: true,
+                duty: true,
+                dateEmployed: true,
+                schoolId: true
+            }
+        });
+
+        if (!teacher) {
+            throw new Error("Teacher not found");
+        }
+
+        return teacher;
+    }
+
 }

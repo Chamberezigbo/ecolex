@@ -5,7 +5,9 @@
     "schema": "prisma/schema.prisma"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "start": "node dist/app.js",
     "dev": "nodemon --watch 'res/**/*.ts' --watch 'res/**/*.js' --watch 'app.ts' --exec 'ts-node' app.ts",
     "build": "npm run prisma:generate && tsc -p tsconfig.json",
@@ -21,8 +23,11 @@
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^5.0.6",
-    "@types/node": "^25.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.6.2",
+    "jest": "^30.4.2",
     "prisma": "^5.22.0",
+    "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
