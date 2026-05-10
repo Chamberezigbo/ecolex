@@ -1128,6 +1128,30 @@ export class TeacherService {
             orderBy: { name: "asc" }
         });
 
+        // Fetch teacher's assigned subjects for the resolved classes
+        const teacherSubjects = await prisma.teacherAssignment.findMany({
+            where: {
+                staffId,
+                classId: { in: resolvedClassIds },
+                subjectId: { not: null },
+                ...(subjectId && { subjectId })
+            },
+            select: {
+                subject: {
+                    select: { id: true, name: true, code: true }
+                }
+            },
+            distinct: ["subjectId"]
+        });
+
+        const distinctSubjects = Array.from(
+            new Map(
+                teacherSubjects
+                    .filter(a => a.subject !== null)
+                    .map(a => [a.subject!.id, a.subject!])
+            ).values()
+        );
+
         // Fetch students from those classes
         const students = await prisma.student.findMany({
             where: {
@@ -1200,6 +1224,11 @@ export class TeacherService {
             academicSessionId: sessionId,
             termId: resolvedTermId ?? null,
             classIds: resolvedClassIds,
+            subjects: distinctSubjects.map(s => ({
+                id: s.id,
+                name: s.name,
+                code: s.code
+            })),
             cas: cas.map(ca => ({
                 id: ca.id,
                 name: ca.name,
