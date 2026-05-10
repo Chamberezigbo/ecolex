@@ -48,7 +48,7 @@ router.get("/class-groups", teacherAuthMiddleware, teacherController.getMyClassG
 router.get("/sessions", teacherAuthMiddleware, teacherController.getActiveSession);
 router.get("/students", teacherAuthMiddleware, teacherController.getStudents);
 router.get("/students-with-scores", teacherAuthMiddleware, teacherController.getStudentsWithScores);
-router.get("/my-subjects", teacherAuthMiddleware, teacherController.getMySubjects);
+router.get("/my-subjects", teacherAuthMiddleware, teacherController.getTeacherSubjects);
 
 
 router.get("/ca", teacherAuthMiddleware, teacherController.getCAs);
