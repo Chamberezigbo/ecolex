@@ -1088,47 +1088,7 @@ export class TeacherService {
             }
         }
 
-        // Fetch CAs for those classes
-        const cas = await prisma.continuousAssessment.findMany({
-            where: {
-                classId: { in: resolvedClassIds },
-                ...(subjectId && { subjectId })
-            },
-            select: {
-                id: true,
-                name: true,
-                maxScore: true,
-                subjectId: true,
-                subject: { select: { id: true, name: true } },
-                caResults: {
-                    where: { academicSessionId: sessionId, ...(resolvedTermId ? { termId: resolvedTermId } : {}) },
-                    select: { studentId: true, score: true }
-                }
-            },
-            orderBy: { name: "asc" }
-        });
-
-        // Fetch Exams for those classes
-        const exams = await prisma.exam.findMany({
-            where: {
-                classId: { in: resolvedClassIds },
-                ...(subjectId && { subjectId })
-            },
-            select: {
-                id: true,
-                name: true,
-                maxScore: true,
-                subjectId: true,
-                subject: { select: { id: true, name: true } },
-                examResults: {
-                    where: { academicSessionId: sessionId, ...(resolvedTermId ? { termId: resolvedTermId } : {}) },
-                    select: { studentId: true, score: true }
-                }
-            },
-            orderBy: { name: "asc" }
-        });
-
-        // Fetch teacher's assigned subjects for the resolved classes
+        // Fetch teacher's assigned subjects for the resolved classes first
         const teacherSubjects = await prisma.teacherAssignment.findMany({
             where: {
                 staffId,
@@ -1151,6 +1111,50 @@ export class TeacherService {
                     .map(a => [a.subject!.id, a.subject!])
             ).values()
         );
+
+        const teacherSubjectIds = distinctSubjects.map(s => s.id);
+
+        // Fetch CAs for those classes and teacher's subjects only
+        const cas = await prisma.continuousAssessment.findMany({
+            where: {
+                classId: { in: resolvedClassIds },
+                subjectId: { in: teacherSubjectIds },
+                ...(subjectId && { subjectId })
+            },
+            select: {
+                id: true,
+                name: true,
+                maxScore: true,
+                subjectId: true,
+                subject: { select: { id: true, name: true } },
+                caResults: {
+                    where: { academicSessionId: sessionId, ...(resolvedTermId ? { termId: resolvedTermId } : {}) },
+                    select: { studentId: true, score: true }
+                }
+            },
+            orderBy: { name: "asc" }
+        });
+
+        // Fetch Exams for those classes and teacher's subjects only
+        const exams = await prisma.exam.findMany({
+            where: {
+                classId: { in: resolvedClassIds },
+                subjectId: { in: teacherSubjectIds },
+                ...(subjectId && { subjectId })
+            },
+            select: {
+                id: true,
+                name: true,
+                maxScore: true,
+                subjectId: true,
+                subject: { select: { id: true, name: true } },
+                examResults: {
+                    where: { academicSessionId: sessionId, ...(resolvedTermId ? { termId: resolvedTermId } : {}) },
+                    select: { studentId: true, score: true }
+                }
+            },
+            orderBy: { name: "asc" }
+        });
 
         // Fetch students from those classes
         const students = await prisma.student.findMany({
