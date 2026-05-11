@@ -826,19 +826,19 @@ export class AssessmentService {
     }) {
         const { staffId, classId, subjectId, schoolId, academicSessionId, page, pageSize, termId } = input;
 
-        // Get active/latest session if not provided
+        // Resolve academic session
         let sessionId = academicSessionId;
         if (!sessionId) {
             const activeSession = await prisma.academicSession.findFirst({
                 where: { schoolId, isActive: true },
-                select: { id: true }
+                select: { id: true, name: true }
             });
 
             if (!activeSession) {
                 const latestSession = await prisma.academicSession.findFirst({
                     where: { schoolId },
                     orderBy: { createdAt: "desc" },
-                    select: { id: true }
+                    select: { id: true, name: true }
                 });
                 if (!latestSession) throw new Error("No academic session found");
                 sessionId = latestSession.id;
@@ -847,11 +847,171 @@ export class AssessmentService {
             }
         }
 
-        // Build teacher filter
+        // Resolve term
+        let resolvedTermId = termId;
+        if (!resolvedTermId) {
+            const activeTerm = await prisma.academicTerm.findFirst({
+                where: { sessionId, isActive: true },
+                select: { id: true, name: true }
+            });
+            resolvedTermId = activeTerm?.id;
+        }
+
+        // Get teacher with assignment if specific class/subject provided
+        if (staffId && classId && subjectId) {
+            const teacher = await prisma.staff.findUnique({
+                where: { id: staffId },
+                select: {
+                    id: true,
+                    name: true,
+                    registrationNumber: true
+                }
+            });
+
+            if (!teacher) throw new Error("Teacher not found");
+
+            // Get class and subject info
+            const classRecord = await prisma.class.findFirst({
+                where: { id: classId, schoolId },
+                select: { id: true, name: true, campus: { select: { name: true } } }
+            });
+
+            const subject = await prisma.subject.findUnique({
+                where: { id: subjectId },
+                select: { id: true, name: true, code: true }
+            });
+
+            const session = await prisma.academicSession.findUnique({
+                where: { id: sessionId },
+                select: { id: true, name: true }
+            });
+
+            const term = resolvedTermId ? await prisma.academicTerm.findUnique({
+                where: { id: resolvedTermId },
+                select: { id: true, name: true }
+            }) : null;
+
+            // Get all students in the class with their scores
+            const classStudents = await prisma.student.findMany({
+                where: { classId },
+                select: { id: true, registrationNumber: true, name: true, surname: true }
+            });
+
+            // Get CA and Exam scores for each student
+            const students = await Promise.all(
+                classStudents.map(async (student) => {
+                    const cas = await prisma.continuousAssessment.findMany({
+                        where: { classId, subjectId },
+                        select: {
+                            id: true,
+                            name: true,
+                            maxScore: true,
+                            caResults: {
+                                where: { studentId: student.id, academicSessionId: sessionId, ...(resolvedTermId ? { termId: resolvedTermId } : {}) },
+                                select: { score: true }
+                            }
+                        },
+                        orderBy: { name: "asc" }
+                    });
+
+                    const exams = await prisma.exam.findMany({
+                        where: { classId, subjectId },
+                        select: {
+                            id: true,
+                            name: true,
+                            maxScore: true,
+                            examResults: {
+                                where: { studentId: student.id, academicSessionId: sessionId, ...(resolvedTermId ? { termId: resolvedTermId } : {}) },
+                                select: { score: true }
+                            }
+                        },
+                        orderBy: { name: "asc" }
+                    });
+
+                    const caTotal = cas.reduce((sum, ca) => sum + Number(ca.caResults[0]?.score ?? 0), 0);
+                    const examTotal = exams.reduce((sum, exam) => sum + Number(exam.examResults[0]?.score ?? 0), 0);
+                    const total = caTotal + examTotal;
+
+                    // Get grade
+                    const gradingScheme = await prisma.gradingScheme.findFirst({
+                        where: {
+                            classes: { some: { classId } }
+                        },
+                        select: {
+                            grades: { orderBy: { minScore: "desc" } }
+                        }
+                    });
+
+                    const grade = gradingScheme?.grades.find(g => total >= g.minScore && total <= g.maxScore);
+
+                    // Get remark scheme remark
+                    const remarkScheme = await prisma.remarkScheme.findUnique({
+                        where: { schoolId },
+                        select: { rules: { orderBy: { minScore: "desc" } } }
+                    });
+
+                    const remarkTemplate = remarkScheme?.rules.find(r => total >= r.minScore && total <= r.maxScore)?.remark ?? "";
+                    const personalized = remarkTemplate.replace('{studentName}', `${student.surname} ${student.name}`);
+
+                    return {
+                        registrationNumber: student.registrationNumber,
+                        studentName: `${student.surname} ${student.name}`,
+                        cas: cas.map((ca, idx) => ({
+                            name: ca.name,
+                            score: ca.caResults[0]?.score ?? null
+                        })),
+                        examScore: exams.length > 0 ? exams[0].examResults[0]?.score ?? null : null,
+                        total,
+                        grade: grade?.grade ?? "N/A",
+                        remarks: personalized || grade?.remark || ""
+                    };
+                })
+            );
+
+            // Get date submitted (latest result submission)
+            const latestSubmission = await prisma.resultSubmission.findFirst({
+                where: {
+                    classId,
+                    subjectId,
+                    staffId,
+                    academicSessionId: sessionId
+                },
+                select: { submittedAt: true },
+                orderBy: { submittedAt: "desc" }
+            });
+
+            return {
+                teacherInformation: {
+                    name: teacher.name,
+                    registrationNumber: teacher.registrationNumber,
+                    subject: subject?.name,
+                    subjectCode: subject?.code,
+                    class: classRecord?.name,
+                    campus: classRecord?.campus?.name ?? "N/A",
+                    session: session?.name,
+                    academicYear: session?.name,
+                    term: term?.name,
+                    dateSubmitted: latestSubmission?.submittedAt ? latestSubmission.submittedAt.toISOString().split('T')[0] : null
+                },
+                students: students.slice((page - 1) * pageSize, page * pageSize),
+                pagination: {
+                    page,
+                    pageSize,
+                    totalCount: students.length,
+                    totalPages: Math.ceil(students.length / pageSize)
+                }
+            };
+        }
+
+        // If no specific assignment, list all teacher assignments
+        const teacher = staffId ? await prisma.staff.findUnique({
+            where: { id: staffId },
+            select: { id: true, name: true, registrationNumber: true }
+        }) : null;
+
         const teacherFilter: any = { schoolId };
         if (staffId) teacherFilter.id = staffId;
 
-        // Get paginated teachers
         const [teachers, totalCount] = await Promise.all([
             prisma.staff.findMany({
                 where: teacherFilter,
@@ -863,16 +1023,10 @@ export class AssessmentService {
             prisma.staff.count({ where: teacherFilter })
         ]);
 
-        // Fetch results for each teacher
         const results = await Promise.all(
-            teachers.map(async (teacher) => {
-                // Get assignments for this teacher
+            teachers.map(async (t) => {
                 const assignments = await prisma.teacherAssignment.findMany({
-                    where: {
-                        staffId: teacher.id,
-                        ...(classId ? { classId } : {}),
-                        ...(subjectId ? { subjectId } : {})
-                    },
+                    where: { staffId: t.id },
                     include: {
                         class: { select: { id: true, name: true } },
                         subject: { select: { id: true, name: true } }
@@ -880,30 +1034,26 @@ export class AssessmentService {
                     distinct: ["classId", "subjectId"]
                 });
 
-                const subjectResults = assignments.map((assignment) => ({
-                    classId: assignment.classId,
-                    className: assignment.class?.name,
-                    subjectId: assignment.subjectId,
-                    subjectName: assignment.subject?.name
-                }));
-
                 return {
-                    staffId: teacher.id,
-                    staffName: teacher.name,
-                    registrationNumber: teacher.registrationNumber,
-                    assignments: subjectResults
+                    staffId: t.id,
+                    staffName: t.name,
+                    registrationNumber: t.registrationNumber,
+                    assignments: assignments.map(a => ({
+                        classId: a.classId,
+                        className: a.class?.name,
+                        subjectId: a.subjectId,
+                        subjectName: a.subject?.name
+                    }))
                 };
             })
         );
-
-        const totalPages = Math.ceil(totalCount / pageSize);
 
         return {
             pagination: {
                 page,
                 pageSize,
                 totalCount,
-                totalPages
+                totalPages: Math.ceil(totalCount / pageSize)
             },
             data: results
         };
