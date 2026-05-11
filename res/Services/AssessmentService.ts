@@ -439,7 +439,7 @@ export class AssessmentService {
 
                 return {
                     ...broadsheet,
-                    className: classRecord.customName ?? classRecord.name,
+                    className: classRecord.name,
                     classTeacher: classRecord.staff?.name ?? null,
                     sessionName: (await prisma.academicSession.findUnique({
                         where: { id: sessionId },
@@ -1184,7 +1184,7 @@ export class AssessmentService {
                 surname: student.surname,
                 otherNames: student.otherNames,
                 registrationNumber: student.registrationNumber,
-                className: student.class.customName ?? student.class.name,
+                className: student.class.name,
                 classId: student.classId,
                 campus: student.class.campus?.name ?? "N/A",
                 dateOfBirth: student.dateOfBirth,
