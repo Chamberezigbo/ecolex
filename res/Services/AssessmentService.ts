@@ -996,6 +996,19 @@ export class AssessmentService {
         return updatedScheme;
     }
 
+    async getRemarkScheme(schoolId: number) {
+        const scheme = await prisma.remarkScheme.findUnique({
+            where: { schoolId },
+            include: { rules: { orderBy: { minScore: "desc" } } }
+        });
+
+        if (!scheme) {
+            throw new Error("No remark scheme found for this school");
+        }
+
+        return scheme;
+    }
+
     async getStudentCompleteResult(input: {
         studentId: number;
         schoolId: number;

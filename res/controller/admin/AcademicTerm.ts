@@ -100,4 +100,26 @@ export class AcademicTermController {
         }
     };
 
+    updateTerm = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) throw new Error("Missing schoolId");
+
+            const termId = Number(req.params.id);
+            if (isNaN(termId)) throw new Error("Invalid term ID");
+
+            const { name, resumptionDate } = req.body;
+
+            const result = await this.service.updateTerm({
+                termId,
+                schoolId: Number(req.schoolId),
+                name,
+                resumptionDate: resumptionDate ? new Date(resumptionDate) : undefined
+            });
+
+            return res.status(200).json({ success: true, message: "Term updated", data: result });
+        } catch (err) {
+            next(err);
+        }
+    };
+
 }

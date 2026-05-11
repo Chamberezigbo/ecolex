@@ -146,6 +146,41 @@ export class AcademicTermService {
         });
     }
 
-    
+    async updateTerm(input: { termId: number; schoolId: number; name?: string; resumptionDate?: Date }) {
+        const { termId, schoolId, name, resumptionDate } = input;
+
+        // Find the term and confirm it belongs to this school
+        const term = await prisma.academicTerm.findFirst({
+            where: { id: termId, schoolId },
+            select: { id: true, name: true }
+        });
+
+        if (!term) throw new Error("Term not found");
+
+        // Validate name if provided
+        if (name) {
+            const allowed = ["First Term", "Second Term", "Third Term"];
+            if (!allowed.includes(name)) {
+                throw new Error("Term name must be one of: First Term, Second Term, Third Term");
+            }
+        }
+
+        // Update term with provided fields
+        const updateData: any = {};
+        if (name) updateData.name = name;
+        if (resumptionDate) updateData.resumptionDate = resumptionDate;
+
+        if (Object.keys(updateData).length === 0) {
+            throw new Error("No fields to update");
+        }
+
+        const updated = await prisma.academicTerm.update({
+            where: { id: termId },
+            data: updateData,
+            select: { id: true, name: true, isActive: true, resumptionDate: true, session: { select: { id: true, name: true } } }
+        });
+
+        return updated;
+    }
 
 }

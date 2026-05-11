@@ -426,5 +426,21 @@ export class AssessmentController {
         }
     };
 
+    getRemarkScheme = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const data = await this.service.getRemarkScheme(Number(req.schoolId));
+
+            return res.status(200).json({
+                success: true,
+                data
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
 
 }

@@ -160,6 +160,7 @@ router.post(
 // Remark scheme routes
 router.post("/remark-scheme/create", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.createRemarkScheme);
 router.post("/remark-scheme/:schemeId/rules", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.addRemarkRules);
+router.get("/remark-scheme", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getRemarkScheme);
 
 router.delete(
   "/grading/remark/:ruleId",
@@ -189,6 +190,7 @@ router.get("/result/student/:studentId", auth.authenticateSuperAdmin, auth.attac
 
 // Academic term routes
 router.post("/term", auth.authenticateSuperAdmin, auth.attachSchoolId, termController.createTerm);
+router.put("/term/:id", auth.authenticateSuperAdmin, auth.attachSchoolId, termController.updateTerm);
 router.patch("/term/:id/activate", auth.authenticateSuperAdmin, auth.attachSchoolId, termController.activateTerm);
 router.get("/terms", auth.authenticateSuperAdmin, auth.attachSchoolId, termController.getTerms);
 router.get("/active-term", auth.authenticateSuperAdmin, auth.attachSchoolId, termController.getActiveTerm);
