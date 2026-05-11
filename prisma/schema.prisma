@@ -490,12 +490,13 @@ model ResultSubmission {
 
 
 model AcademicTerm {
-  id        Int      @id @default(autoincrement())
-  schoolId  Int
-  sessionId Int
-  name      String   // "First Term", "Second Term", "Third Term"
-  isActive  Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id              Int       @id @default(autoincrement())
+  schoolId        Int
+  sessionId       Int
+  name            String    // "First Term", "Second Term", "Third Term"
+  isActive        Boolean   @default(false)
+  resumptionDate  DateTime? // Date when this term resumes (next term start date)
+  createdAt       DateTime  @default(now())
 
   school   School          @relation(fields: [schoolId], references: [id])
   session  AcademicSession @relation(fields: [sessionId], references: [id])

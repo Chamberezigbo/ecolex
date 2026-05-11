@@ -1156,15 +1156,26 @@ export class AssessmentService {
             select: { id: true, name: true }
         });
 
-        const term = termId ? await prisma.academicTerm.findUnique({
-            where: { id: termId },
-            select: { id: true, name: true }
-        }) : null;
-
-        // Count total terms in session
-        const totalTerms = await prisma.academicTerm.count({
-            where: { sessionId }
+        // Fetch all terms in session to find current and next term
+        const allTerms = await prisma.academicTerm.findMany({
+            where: { sessionId },
+            select: { id: true, name: true, resumptionDate: true },
+            orderBy: { createdAt: 'asc' }
         });
+
+        const currentTermIndex = termId
+            ? allTerms.findIndex(t => t.id === termId)
+            : allTerms.findIndex(t => t.id === sessionId); // fallback if termId not resolved yet
+
+        const currentTerm = termId ? allTerms.find(t => t.id === termId) : null;
+        const nextTerm = currentTermIndex >= 0 && currentTermIndex < allTerms.length - 1
+            ? allTerms[currentTermIndex + 1]
+            : null;
+
+        // Determine school recommendation date from next term or fallback to current date
+        const schoolRecommendationDate = nextTerm?.resumptionDate
+            ? nextTerm.resumptionDate.toISOString().split('T')[0]
+            : new Date().toISOString().split('T')[0];
 
         return {
             studentInformation: {
@@ -1183,8 +1194,8 @@ export class AssessmentService {
             academicInfo: {
                 academicSessionId: sessionId,
                 academicSessionName: session?.name,
-                termId: term?.id ?? null,
-                termName: term?.name ?? null
+                termId: currentTerm?.id ?? null,
+                termName: currentTerm?.name ?? null
             },
             subjects,
             performanceSummary: {
@@ -1192,10 +1203,10 @@ export class AssessmentService {
                 averageScore,
                 classPosition: `${classPosition}`,
                 overallGrade: overallGrade?.grade ?? "N/A",
-                sessionLength: totalTerms
+                sessionLength: allTerms.length
             },
             teacherRemark: personalizedRemark,
-            schoolRecommendationDate: new Date().toISOString().split('T')[0]
+            schoolRecommendationDate
         };
     }
 
