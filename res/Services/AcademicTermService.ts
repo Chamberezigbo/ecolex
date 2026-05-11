@@ -22,7 +22,7 @@ export class AcademicTermService {
 
         const term = await prisma.academicTerm.create({
             data: { schoolId, sessionId, name, isActive: false },
-            select: { id: true, name: true, isActive: true, session: { select: { id: true, name: true } } }
+            select: { id: true, name: true, isActive: true, resumptionDate: true, session: { select: { id: true, name: true } } }
         });
 
         return term;
