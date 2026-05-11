@@ -20,6 +20,27 @@ export class StudentDashboardService {
             where: { classId: student.classId }
         });
 
+        // Get current active term for the school
+        const activeSession = await prisma.academicSession.findFirst({
+            where: { schoolId: student.schoolId, isActive: true },
+            select: { id: true }
+        });
+
+        let currentTerm: any = null;
+        if (activeSession) {
+            const activeTerm = await prisma.academicTerm.findFirst({
+                where: { sessionId: activeSession.id, isActive: true },
+                select: { id: true, name: true, resumptionDate: true }
+            });
+            if (activeTerm) {
+                currentTerm = {
+                    id: activeTerm.id,
+                    name: activeTerm.name,
+                    resumptionDate: activeTerm.resumptionDate ? activeTerm.resumptionDate.toISOString().split('T')[0] : null
+                };
+            }
+        }
+
         return {
             student: {
                 name: `${student.name} ${student.surname}`,
@@ -27,6 +48,7 @@ export class StudentDashboardService {
                 class: student.class.name,
                 school: student.school
             },
+            currentTerm,
             stats: {
                 totalSchoolFee: 0,       // static — fees not yet implemented
                 totalStudentsInClass: classmateCount,
