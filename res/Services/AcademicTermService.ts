@@ -3,8 +3,8 @@ const prisma = require("../util/prisma");
 
 export class AcademicTermService {
 
-    async createTerm(input: { schoolId: number; sessionId: number; name: string }) {
-        const { schoolId, sessionId, name } = input;
+    async createTerm(input: { schoolId: number; sessionId: number; name: string; resumptionDate?: Date }) {
+        const { schoolId, sessionId, name, resumptionDate } = input;
 
         // Confirm session belongs to this school
         const session = await prisma.academicSession.findFirst({
@@ -21,7 +21,7 @@ export class AcademicTermService {
         }
 
         const term = await prisma.academicTerm.create({
-            data: { schoolId, sessionId, name, isActive: false },
+            data: { schoolId, sessionId, name, isActive: false, resumptionDate },
             select: { id: true, name: true, isActive: true, resumptionDate: true, session: { select: { id: true, name: true } } }
         });
 

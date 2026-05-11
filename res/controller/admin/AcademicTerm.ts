@@ -12,7 +12,7 @@ export class AcademicTermController {
         try {
             if (!req.schoolId) throw new Error("Missing schoolId");
 
-            const { sessionId, name } = req.body;
+            const { sessionId, name, resumptionDate } = req.body;
             if (!sessionId || !name) {
                 return res.status(400).json({ message: "sessionId and name are required" });
             }
@@ -20,7 +20,8 @@ export class AcademicTermController {
             const term = await this.service.createTerm({
                 schoolId: Number(req.schoolId),
                 sessionId: Number(sessionId),
-                name
+                name,
+                resumptionDate: resumptionDate ? new Date(resumptionDate) : undefined
             });
 
             return res.status(201).json({ success: true, message: "Term created", data: term });
