@@ -628,6 +628,46 @@ export class AssessmentService {
         });
     }
 
+    async getPublishedResults(input: {
+        schoolId: number;
+        campusId?: number;
+        classId?: number;
+        academicSessionId?: number;
+        termId?: number;
+        subjectId?: number;
+    }) {
+        const { schoolId, campusId, classId, academicSessionId, termId, subjectId } = input;
+
+        return prisma.publishedResult.findMany({
+            where: {
+                class: {
+                    schoolId,
+                    ...(campusId && { campusId })
+                },
+                ...(classId && { classId }),
+                ...(academicSessionId && { academicSessionId }),
+                ...(termId && { termId }),
+                ...(subjectId && { subjectId })
+            },
+            select: {
+                id: true,
+                publishedAt: true,
+                class: {
+                    select: {
+                        id: true,
+                        name: true,
+                        campus: { select: { id: true, name: true } }
+                    }
+                },
+                subject: { select: { id: true, name: true } },
+                academicSession: { select: { id: true, name: true } },
+                term: { select: { id: true, name: true } },
+                admin: { select: { id: true, name: true } }
+            },
+            orderBy: { publishedAt: "desc" }
+        });
+    }
+
     // Admin rejects a submission — unlocks scores for teacher
     async rejectSubmission(submissionId: number, schoolId: number) {
         const submission = await prisma.resultSubmission.findFirst({

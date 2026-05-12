@@ -179,6 +179,7 @@ router.get("/broadsheet", auth.authenticateSuperAdmin, auth.attachSchoolId, asse
 
 
 router.post("/results/publish", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.publishResults);
+router.get("/results", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getResultsByStatus);
 router.get("/results/submissions", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getPendingSubmissions);
 router.get("/results/rejected", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getRejectedResults);
 router.delete("/results/submissions/:submissionId/reject", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.rejectSubmission);

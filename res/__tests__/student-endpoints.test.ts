@@ -1,8 +1,12 @@
 import { StudentDashboardService } from "../Services/student/StudentDashboardService";
+import { StudentResultService } from "../Services/student/StudentResultService";
 
 describe("Student Endpoints Tests", () => {
   const dashboardService = new StudentDashboardService();
+  const resultService = new StudentResultService();
   const testStudentId = 1;
+  const testSchoolId = 1;
+  const testAcademicSessionId = 1;
 
   describe("Student Dashboard Endpoint", () => {
     test("Should return student basic information", async () => {
@@ -133,6 +137,147 @@ describe("Student Endpoints Tests", () => {
       // The school should be the one the student belongs to
       expect(result.student.school).toHaveProperty("id");
       expect(result.student.school).toHaveProperty("name");
+    });
+  });
+
+  describe("Student Results Endpoint", () => {
+    test("Should return result sheet data", async () => {
+      const result = await resultService.getResults(
+        testStudentId,
+        testSchoolId,
+        testAcademicSessionId
+      );
+
+      expect(result).toBeDefined();
+      expect(Array.isArray(result)).toBe(true);
+    });
+
+    test("Should include required result sheet columns", async () => {
+      const result = await resultService.getResults(
+        testStudentId,
+        testSchoolId,
+        testAcademicSessionId
+      );
+
+      if (result.length > 0) {
+        const resultRow = result[0];
+        expect(resultRow).toHaveProperty("sn");
+        expect(resultRow).toHaveProperty("subject");
+        expect(resultRow).toHaveProperty("cas");
+        expect(resultRow).toHaveProperty("exam");
+        expect(resultRow).toHaveProperty("total");
+        expect(resultRow).toHaveProperty("grade");
+        expect(resultRow).toHaveProperty("classAvg");
+        expect(resultRow).toHaveProperty("position");
+      }
+    });
+
+    test("Should calculate total correctly", async () => {
+      const result = await resultService.getResults(
+        testStudentId,
+        testSchoolId,
+        testAcademicSessionId
+      );
+
+      result.forEach(row => {
+        const caTotal = row.cas.reduce((sum, score) => sum + score, 0);
+        const expectedTotal = caTotal + row.exam;
+        expect(row.total).toBe(expectedTotal);
+      });
+    });
+
+    test("Should return valid grade", async () => {
+      const result = await resultService.getResults(
+        testStudentId,
+        testSchoolId,
+        testAcademicSessionId
+      );
+
+      result.forEach(row => {
+        expect(typeof row.grade).toBe("string");
+        expect(row.grade.length).toBeGreaterThan(0);
+      });
+    });
+
+    test("Should calculate class average", async () => {
+      const result = await resultService.getResults(
+        testStudentId,
+        testSchoolId,
+        testAcademicSessionId
+      );
+
+      result.forEach(row => {
+        expect(typeof row.classAvg).toBe("number");
+        expect(row.classAvg).toBeGreaterThanOrEqual(0);
+      });
+    });
+
+    test("Should calculate student position in class", async () => {
+      const result = await resultService.getResults(
+        testStudentId,
+        testSchoolId,
+        testAcademicSessionId
+      );
+
+      result.forEach(row => {
+        expect(typeof row.position).toBe("number");
+        expect(row.position).toBeGreaterThanOrEqual(1);
+      });
+    });
+
+    test("Should include all CA scores", async () => {
+      const result = await resultService.getResults(
+        testStudentId,
+        testSchoolId,
+        testAcademicSessionId
+      );
+
+      result.forEach(row => {
+        expect(Array.isArray(row.cas)).toBe(true);
+        row.cas.forEach(caScore => {
+          expect(typeof caScore).toBe("number");
+          expect(caScore).toBeGreaterThanOrEqual(0);
+        });
+      });
+    });
+
+    test("Should support filtering by academicSessionId", async () => {
+      const result = await resultService.getResults(
+        testStudentId,
+        testSchoolId,
+        testAcademicSessionId
+      );
+
+      expect(result).toBeDefined();
+      expect(Array.isArray(result)).toBe(true);
+    });
+
+    test("Should support filtering by termId", async () => {
+      const result = await resultService.getResults(
+        testStudentId,
+        testSchoolId,
+        testAcademicSessionId,
+        1 // termId
+      );
+
+      expect(result).toBeDefined();
+      expect(Array.isArray(result)).toBe(true);
+    });
+
+    test("Should return results in correct format", async () => {
+      const result = await resultService.getResults(
+        testStudentId,
+        testSchoolId,
+        testAcademicSessionId
+      );
+
+      result.forEach((row, index) => {
+        expect(row.sn).toBe(index + 1);
+        expect(typeof row.subject).toBe("string");
+        expect(row.subject.length).toBeGreaterThan(0);
+        expect(typeof row.exam).toBe("number");
+        expect(typeof row.total).toBe("number");
+      });
     });
   });
 });

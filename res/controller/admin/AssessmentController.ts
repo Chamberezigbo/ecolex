@@ -443,4 +443,51 @@ export class AssessmentController {
         }
     };
 
+    getResultsByStatus = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const status = req.query.status as string;
+            const campusId = req.query.campusId ? Number(req.query.campusId) : undefined;
+            const classId = req.query.classId ? Number(req.query.classId) : undefined;
+            const academicSessionId = req.query.academicSessionId ? Number(req.query.academicSessionId) : undefined;
+            const termId = req.query.termId ? Number(req.query.termId) : undefined;
+            const subjectId = req.query.subjectId ? Number(req.query.subjectId) : undefined;
+
+            if (!status || !["published", "rejected", "pending"].includes(status.toLowerCase())) {
+                return res.status(400).json({
+                    message: "Invalid status. Use 'published', 'rejected', or 'pending'"
+                });
+            }
+
+            const filterParams = {
+                schoolId: Number(req.schoolId),
+                campusId,
+                classId,
+                academicSessionId,
+                termId,
+                subjectId
+            };
+
+            let data;
+            if (status.toLowerCase() === "published") {
+                data = await this.service.getPublishedResults(filterParams);
+            } else if (status.toLowerCase() === "rejected") {
+                data = await this.service.getRejectedResults(filterParams);
+            } else {
+                data = await this.service.getPendingSubmissions(filterParams);
+            }
+
+            return res.status(200).json({
+                success: true,
+                status: status.toLowerCase(),
+                data
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
+
 }
