@@ -543,6 +543,48 @@ export class AssessmentService {
         });
     }
 
+    async unpublishResults(publishedResultId: number, schoolId: number) {
+        const publishedResult = await prisma.publishedResult.findFirst({
+            where: {
+                id: publishedResultId,
+                class: { schoolId }
+            },
+            select: {
+                id: true,
+                classId: true,
+                subjectId: true,
+                academicSessionId: true,
+                class: { select: { name: true } },
+                subject: { select: { name: true } },
+                academicSession: { select: { name: true } }
+            }
+        });
+
+        if (!publishedResult) {
+            throw new Error("Published result not found or does not belong to your school");
+        }
+
+        return prisma.$transaction(async (tx) => {
+            await tx.publishedResultRow.deleteMany({
+                where: { publishedResultId }
+            });
+
+            await tx.publishedResult.delete({
+                where: { id: publishedResultId }
+            });
+
+            return {
+                unpublished: true,
+                message: `Results for ${publishedResult.class.name} - ${publishedResult.subject.name} have been unpublished`,
+                data: {
+                    classId: publishedResult.classId,
+                    subjectId: publishedResult.subjectId,
+                    academicSessionId: publishedResult.academicSessionId
+                }
+            };
+        });
+    }
+
     // Admin gets all pending submissions for their school
     async getPendingSubmissions(input: {
         schoolId: number;

@@ -184,6 +184,7 @@ router.get("/results/submissions", auth.authenticateSuperAdmin, auth.attachSchoo
 router.get("/results/rejected", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getRejectedResults);
 router.delete("/results/submissions/:submissionId/reject", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.rejectSubmission);
 router.put("/results/rejected/:submissionId/restore", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.restoreRejectedSubmission);
+router.delete("/results/published/:publishedResultId/unpublish", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.unpublishResults);
 
 router.get("/result/student", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getStudentResult);
 router.get("/result/teacher", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getTeacherResult);

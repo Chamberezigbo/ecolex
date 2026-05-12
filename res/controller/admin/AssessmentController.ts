@@ -355,6 +355,29 @@ export class AssessmentController {
         }
     };
 
+    unpublishResults = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const publishedResultId = Number(req.params.publishedResultId);
+            if (isNaN(publishedResultId)) {
+                return res.status(400).json({ message: "Invalid publishedResultId" });
+            }
+
+            const result = await this.service.unpublishResults(publishedResultId, Number(req.schoolId));
+
+            return res.status(200).json({
+                success: true,
+                message: result.message,
+                data: result.data
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
+
     createRemarkScheme = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             if (!req.schoolId) {
