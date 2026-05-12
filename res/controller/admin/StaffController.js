@@ -127,10 +127,25 @@ exports.getStaffDetails = async (req, res, next) => {
         const { staffId } = req.params;
         const staff = await prisma.staff.findUnique({
           where: { id: Number(staffId) },
-          include: {
+          select: {
+            id: true,
+            schoolId: true,
+            campusId: true,
+            name: true,
+            email: true,
+            gender: true,
+            phoneNumber: true,
+            address: true,
+            duty: true,
+            nextOfKin: true,
+            dateEmployed: true,
+            payroll: true,
+            registrationNumber: true,
+            createdAt: true,
             campus: {
               select: { id: true, name: true },
-            }}
+            }
+          }
         });
 
         if (!staff) {
