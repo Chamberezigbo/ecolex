@@ -143,6 +143,7 @@ model Staff {
   campusId           Int?
   name               String
   email              String?   @unique
+  gender             String?   // "Male", "Female", "Other"
   phoneNumber        String?
   address            String?
   duty               String? // e.g., "Teacher", "Accountant", "Cleaner"

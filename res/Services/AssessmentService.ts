@@ -864,7 +864,8 @@ export class AssessmentService {
                 select: {
                     id: true,
                     name: true,
-                    registrationNumber: true
+                    registrationNumber: true,
+                    gender: true
                 }
             });
 
@@ -960,6 +961,7 @@ export class AssessmentService {
                             name: ca.name,
                             score: ca.caResults[0]?.score ?? null
                         })),
+                        caScore: caTotal,
                         examScore: exams.length > 0 ? exams[0].examResults[0]?.score ?? null : null,
                         total,
                         grade: grade?.grade ?? "N/A",
@@ -984,6 +986,7 @@ export class AssessmentService {
                 teacherInformation: {
                     name: teacher.name,
                     registrationNumber: teacher.registrationNumber,
+                    gender: teacher.gender,
                     subject: subject?.name,
                     subjectCode: subject?.code,
                     class: classRecord?.name,
@@ -1006,7 +1009,7 @@ export class AssessmentService {
         // If no specific assignment, list all teacher assignments
         const teacher = staffId ? await prisma.staff.findUnique({
             where: { id: staffId },
-            select: { id: true, name: true, registrationNumber: true }
+            select: { id: true, name: true, registrationNumber: true, gender: true }
         }) : null;
 
         const teacherFilter: any = { schoolId };
@@ -1015,7 +1018,7 @@ export class AssessmentService {
         const [teachers, totalCount] = await Promise.all([
             prisma.staff.findMany({
                 where: teacherFilter,
-                select: { id: true, name: true, registrationNumber: true },
+                select: { id: true, name: true, registrationNumber: true, gender: true },
                 skip: (page - 1) * pageSize,
                 take: pageSize,
                 orderBy: { name: "asc" }
@@ -1038,6 +1041,7 @@ export class AssessmentService {
                     staffId: t.id,
                     staffName: t.name,
                     registrationNumber: t.registrationNumber,
+                    gender: t.gender,
                     assignments: assignments.map(a => ({
                         classId: a.classId,
                         className: a.class?.name,

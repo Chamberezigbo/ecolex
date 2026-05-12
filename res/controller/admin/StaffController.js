@@ -11,6 +11,7 @@ exports.createStaff = async (req, res, next) => {
     const {
     name,
     email,
+    gender,
     phoneNumber,
     address,
     duty,       // e.g. "Teacher", "Accountant"
@@ -50,6 +51,7 @@ exports.createStaff = async (req, res, next) => {
             campusId,
             name,
             email,
+            gender,
             phoneNumber,
             address,
             duty,
