@@ -111,7 +111,7 @@ export class AssessmentController {
         try {
             if (!req.schoolId) throw new Error("Missing schoolId");
 
-            const { classId, subjectId, academicSessionId, termId } = req.body;
+            const { classId, subjectId, academicSessionId } = req.body;
             const adminId = (req as any).user?.id;
 
             if (!classId || !subjectId || !academicSessionId) {
@@ -123,8 +123,7 @@ export class AssessmentController {
                 subjectId: Number(subjectId),
                 academicSessionId: Number(academicSessionId),
                 schoolId: Number(req.schoolId),
-                adminId: Number(adminId),
-                termId: termId ? Number(termId) : undefined
+                adminId: Number(adminId)
             });
 
             return res.status(201).json({

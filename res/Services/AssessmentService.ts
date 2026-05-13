@@ -475,7 +475,19 @@ export class AssessmentService {
         });
         if (!subject) throw new Error("Subject not found or does not belong to your school");
 
-        // 2. Block re-publication — results already published for this class/subject/session
+        // 2. Get the current active term for this academic session
+        let resolvedTermId = termId;
+        if (!resolvedTermId) {
+            const activeTerm = await prisma.academicTerm.findFirst({
+                where: { sessionId: academicSessionId, isActive: true },
+                select: { id: true }
+            });
+            if (activeTerm) {
+                resolvedTermId = activeTerm.id;
+            }
+        }
+
+        // 3. Block re-publication — results already published for this class/subject/session
         const alreadyPublished = await prisma.publishedResult.findUnique({
             where: { classId_subjectId_academicSessionId: { classId, subjectId, academicSessionId } }
         });
@@ -483,7 +495,7 @@ export class AssessmentService {
             throw new Error("Results for this class and subject have already been published");
         }
 
-        // 3. Compute live results using existing broadsheet logic
+        // 4. Compute live results using existing broadsheet logic
         const computed = await this.computeBroadsheet({
             classId,
             schoolId,
@@ -491,7 +503,7 @@ export class AssessmentService {
             subjectIds: [subjectId]
         });
 
-        // 4. Save snapshot in a transaction
+        // 5. Save snapshot in a transaction
         return prisma.$transaction(async (tx) => {
 
             // Create the publication record
@@ -500,7 +512,7 @@ export class AssessmentService {
                     classId,
                     subjectId,
                     academicSessionId,
-                    termId: termId ?? null,
+                    termId: resolvedTermId ?? null,
                     publishedByAdminId: adminId
                 }
             });
