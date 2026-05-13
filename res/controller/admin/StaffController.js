@@ -9,16 +9,16 @@ exports.createStaff = async (req, res, next) => {
     const schoolId = req.schoolId;   // set by your auth middleware
 
     const {
-    name,
-    email,
-    gender,
-    phoneNumber,
-    address,
-    duty,       // e.g. "Teacher", "Accountant"
-    nextOfKin,
-    dateEmployed,
-    payroll,
-    campusId,
+      name,
+      email,
+      gender,
+      phoneNumber,
+      address,
+      duty,       // e.g. "Teacher", "Accountant"
+      nextOfKin,
+      dateEmployed,
+      payroll,
+      campusId,
     } = req.body;
 
     // Get the school prefix
@@ -39,26 +39,26 @@ exports.createStaff = async (req, res, next) => {
     });
     if (existingStaff) {
       return res.status(409).json({
-            success: false,
-            message: "A staff with this email already exists.",
+        success: false,
+        message: "A staff with this email already exists.",
       });
     }
 
     // ✅ Create staff
     const newStaff = await prisma.staff.create({
       data: {
-            schoolId,
-            campusId,
-            name,
-            email,
-            gender,
-            phoneNumber,
-            address,
-            duty,
-            nextOfKin,
-            registrationNumber: uniqueId,
-            dateEmployed: dateEmployed ? new Date(dateEmployed) : null,
-            payroll,
+        schoolId,
+        campusId,
+        name,
+        email,
+        gender,
+        phoneNumber,
+        address,
+        duty,
+        nextOfKin,
+        registrationNumber: uniqueId,
+        dateEmployed: dateEmployed ? new Date(dateEmployed) : null,
+        payroll,
       },
     });
 
@@ -73,95 +73,88 @@ exports.createStaff = async (req, res, next) => {
 };
 
 exports.updateStaff = async (req, res, next) => {
-       try {     
-         const { staffId } = req.params;
-         const value = req.body;
-     
-         // Ensure staff exists
-         const existingStaff = await prisma.staff.findUnique({
-           where: { id: Number(staffId) },
-         });
-     
-         if (!existingStaff) {
-           return res.status(404).json({
-             success: false,
-             message: "Staff not found",
-           });
-         }
+  try {
+    const { staffId } = req.params;
+    const value = req.body;
 
-         // ✅ Check duplicate email if email is being updated
-         if (value.email) {
-              const duplicateEmail = await prisma.staff.findFirst({
-              where: {
-                     email: value.email,
-                     NOT: { id: Number(staffId) }, // exclude the current staff
-              },
-              });
-       
-              if (duplicateEmail) {
-              return res.status(409).json({
-                     success: false,
-                     message: "A staff with this email already exists.",
-              });
-              }
-       }
-     
-         // Update staff
-         const updatedStaff = await prisma.staff.update({
-           where: { id: Number(staffId) },
-           data: value,
-         });
-     
-         res.status(200).json({
-           success: true,
-           message: "Staff updated successfully",
-           staff: updatedStaff,
-         });
-       } catch (err) {
-         next(err);
-       }
+    // Ensure staff exists
+    const existingStaff = await prisma.staff.findUnique({
+      where: { id: Number(staffId) },
+    });
+
+    if (!existingStaff) {
+      return res.status(404).json({
+        success: false,
+        message: "Staff not found",
+      });
+    }
+
+    // ✅ Check duplicate email if email is being updated
+    if (value.email) {
+      const duplicateEmail = await prisma.staff.findFirst({
+        where: {
+          email: value.email,
+          NOT: { id: Number(staffId) }, // exclude the current staff
+        },
+      });
+
+      if (duplicateEmail) {
+        return res.status(409).json({
+          success: false,
+          message: "A staff with this email already exists.",
+        });
+      }
+    }
+
+    // Update staff
+    const updatedStaff = await prisma.staff.update({
+      where: { id: Number(staffId) },
+      data: value,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Staff updated successfully",
+      staff: updatedStaff,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.getStaffDetails = async (req, res, next) => {
   try {
-        const { staffId } = req.params;
-        const staff = await prisma.staff.findUnique({
-          where: { id: Number(staffId) },
-          select: {
-            id: true,
-            schoolId: true,
-            campusId: true,
-            name: true,
-            email: true,
-            gender: true,
-            phoneNumber: true,
-            address: true,
-            duty: true,
-            nextOfKin: true,
-            dateEmployed: true,
-            payroll: true,
-            registrationNumber: true,
-            createdAt: true,
-            campus: {
-              select: { id: true, name: true },
-            }
+    const { staffId } = req.params;
+    const staff = await prisma.staff.findUnique({
+      where: { id: Number(staffId) },
+      include: {
+        campus: {
+          select: { id: true, name: true },
+        },
+        assignments: {
+          include: {
+            class: { select: { id: true, name: true } },
+            subject: { select: { id: true, name: true, code: true } },
+            campus: { select: { id: true, name: true } }
           }
-        });
-
-        if (!staff) {
-          return res.status(404).json({
-                success: false,
-                message: "Staff not found",
-          });
         }
+      }
+    });
 
-        res.status(200).json({
-          success: true,
-          staff,
-        });
+    if (!staff) {
+      return res.status(404).json({
+        success: false,
+        message: "Staff not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      staff,
+    });
 
   } catch (error) {
-        next(error);
+    next(error);
   }
 }
 
@@ -241,181 +234,181 @@ exports.assignTeacher = async (req, res, next) => {
 
 // GET /staff?name=John&campusId=1&duty=Teacher&classId=2&subjectId=3&page=1&pageSize=7
 exports.getAllStaff = async (req, res, next) => {
-       try {
-         const schoolId = req.schoolId; // ✅ injected by middleware (auth)
-     
-         let {
-           name,
-           campusId,
-           duty,
-           classId,
-           subjectId,
-           page = 1,
-           pageSize = 7,
-         } = req.query;
-     
-         page = parseInt(page);
-         pageSize = parseInt(pageSize);
-     
-         const filters = {
-           schoolId, // ✅ ensures only staff of this school
-           AND: [],
-         };
-     
-         if (name) {
-           filters.AND.push({
-             name: { contains: name, },
-           });
-         }
-     
-         if (campusId) {
-           filters.AND.push({ campusId: Number(campusId) });
-         }
-     
-         if (duty) {
-           filters.AND.push({ duty: { equals: duty } });
-         }
-     
-         if (classId) {
-           filters.AND.push({
-             assignments: {
-               some: {
-                 classId: Number(classId),
-               },
-             },
-           });
-         }
-     
-         if (subjectId) {
-           filters.AND.push({
-             assignments: {
-               some: {
-                 subjectId: Number(subjectId),
-               },
-             },
-           });
-         }
-     
-         const total = await prisma.staff.count({
-           where: filters,
-         });
-     
-         const staff = await prisma.staff.findMany({
-           where: filters,
-           skip: (page - 1) * pageSize,
-           take: pageSize,
-           include: {
-             campus: true,
-             assignments: {
-               include: {
-                 class: true,
-                 subject: true,
-                 campus: true,
-               },
-             },
-           },
-           orderBy: { createdAt: "desc" },
-         });
-     
-         res.status(200).json({
-           success: true,
-           pagination: {
-             total,
-             page,
-             pageSize,
-             totalPages: Math.ceil(total / pageSize),
-           },
-           staff,
-         });
-       } catch (err) {
-         next(err);
-       }
+  try {
+    const schoolId = req.schoolId; // ✅ injected by middleware (auth)
+
+    let {
+      name,
+      campusId,
+      duty,
+      classId,
+      subjectId,
+      page = 1,
+      pageSize = 7,
+    } = req.query;
+
+    page = parseInt(page);
+    pageSize = parseInt(pageSize);
+
+    const filters = {
+      schoolId, // ✅ ensures only staff of this school
+      AND: [],
+    };
+
+    if (name) {
+      filters.AND.push({
+        name: { contains: name, },
+      });
+    }
+
+    if (campusId) {
+      filters.AND.push({ campusId: Number(campusId) });
+    }
+
+    if (duty) {
+      filters.AND.push({ duty: { equals: duty } });
+    }
+
+    if (classId) {
+      filters.AND.push({
+        assignments: {
+          some: {
+            classId: Number(classId),
+          },
+        },
+      });
+    }
+
+    if (subjectId) {
+      filters.AND.push({
+        assignments: {
+          some: {
+            subjectId: Number(subjectId),
+          },
+        },
+      });
+    }
+
+    const total = await prisma.staff.count({
+      where: filters,
+    });
+
+    const staff = await prisma.staff.findMany({
+      where: filters,
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      include: {
+        campus: true,
+        assignments: {
+          include: {
+            class: true,
+            subject: true,
+            campus: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.status(200).json({
+      success: true,
+      pagination: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      },
+      staff,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 // StaffController.js
 exports.deleteStaff = async (req, res, next) => {
-       try {
-         const { staffId } = req.params;
-     
-         // ✅ Ensure staff exists
-         const existingStaff = await prisma.staff.findUnique({
-           where: { id: Number(staffId) },
-         });
-     
-         if (!existingStaff) {
-           return res.status(404).json({
-             success: false,
-             message: "Staff not found",
-           });
-         }
-     
-         // ✅ Delete all teacher assignments linked to staff
-         await prisma.teacherAssignment.deleteMany({
-           where: { staffId: Number(staffId) },
-         });
-     
-         // ✅ Finally, delete staff
-         await prisma.staff.delete({
-           where: { id: Number(staffId) },
-         });
-     
-         res.status(200).json({
-           success: true,
-           message: "Staff and related assignments deleted successfully",
-         });
-       } catch (err) {
-         next(err);
-       }
+  try {
+    const { staffId } = req.params;
+
+    // ✅ Ensure staff exists
+    const existingStaff = await prisma.staff.findUnique({
+      where: { id: Number(staffId) },
+    });
+
+    if (!existingStaff) {
+      return res.status(404).json({
+        success: false,
+        message: "Staff not found",
+      });
+    }
+
+    // ✅ Delete all teacher assignments linked to staff
+    await prisma.teacherAssignment.deleteMany({
+      where: { staffId: Number(staffId) },
+    });
+
+    // ✅ Finally, delete staff
+    await prisma.staff.delete({
+      where: { id: Number(staffId) },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Staff and related assignments deleted successfully",
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.reassignTeacher = async (req, res, next) => {
   try {
     const schoolId = req.schoolId; // from auth middleware
-    const {assignmentId} = req.params;
-    const {staffId,newClassId, newSubjectId, newCampusId} = req.body;
+    const { assignmentId } = req.params;
+    const { staffId, newClassId, newSubjectId, newCampusId } = req.body;
     const assignment = await prisma.teacherAssignment.findUnique({
-      where: {id: parseInt(assignmentId)},
+      where: { id: parseInt(assignmentId) },
     });
 
     if (!assignment) {
-      return res.status(404).json({success: false, message: "Assignment not found"});
+      return res.status(404).json({ success: false, message: "Assignment not found" });
     }
 
     const targetStaffId = staffId ? Number(staffId) : assignment.staffId;
-    const targetClassId = newClassId !==  undefined ? Number(newClassId) : assignment.classId;
-    const targetSubjectId = newSubjectId !==  undefined ? Number(newSubjectId) : assignment.subjectId;
-    const targetCampusId = newCampusId !==  undefined ? Number(newCampusId) : assignment.campusId;
+    const targetClassId = newClassId !== undefined ? Number(newClassId) : assignment.classId;
+    const targetSubjectId = newSubjectId !== undefined ? Number(newSubjectId) : assignment.subjectId;
+    const targetCampusId = newCampusId !== undefined ? Number(newCampusId) : assignment.campusId;
     const staff = await prisma.staff.findUnique({
-      where: {id: targetStaffId, schoolId},
+      where: { id: targetStaffId, schoolId },
     });
     if (!staff) {
-      return res.status(404).json({success: false, message: "Staff not found in your school"});
+      return res.status(404).json({ success: false, message: "Staff not found in your school" });
     }
 
     if (targetClassId) {
       const cls = await prisma.class.findUnique({
-        where: {id: targetClassId, schoolId},
+        where: { id: targetClassId, schoolId },
       });
       if (!cls) {
-        return res.status(404).json({success: false, message: "Class not found in your school"});
+        return res.status(404).json({ success: false, message: "Class not found in your school" });
       }
     }
 
     if (targetSubjectId) {
       const subject = await prisma.subject.findUnique({
-        where: {id: targetSubjectId, schoolId},
+        where: { id: targetSubjectId, schoolId },
       });
       if (!subject) {
-        return res.status(404).json({success: false, message: "Subject not found in your school"});
+        return res.status(404).json({ success: false, message: "Subject not found in your school" });
       }
     }
 
     if (targetCampusId) {
       const campus = await prisma.campus.findUnique({
-        where: {id: targetCampusId, schoolId},
+        where: { id: targetCampusId, schoolId },
       });
       if (!campus) {
-        return res.status(404).json({success: false, message: "Campus not found in your school"});
+        return res.status(404).json({ success: false, message: "Campus not found in your school" });
       }
     }
 
@@ -425,32 +418,31 @@ exports.reassignTeacher = async (req, res, next) => {
         classId: targetClassId,
         subjectId: targetSubjectId,
         campusId: targetCampusId,
-        NOT: {id: assignment.id},
+        NOT: { id: assignment.id },
       },
     });
     if (duplicate) {
-      return res.status(400).json({success: false, message: "An identical assignment already exists"});
+      return res.status(400).json({ success: false, message: "An identical assignment already exists" });
     }
 
-   const updated = await prisma.teacherAssignment.update({
-      where: {id: assignment.id},
-      data: {    
+    const updated = await prisma.teacherAssignment.update({
+      where: { id: assignment.id },
+      data: {
         staffId: targetStaffId,
         classId: targetClassId,
         subjectId: targetSubjectId,
         campusId: targetCampusId,
       },
       include: {
-        staff:{select: {id: true, name: true}},
-        class:{select: {id: true, name: true}},
-        subject:{select: {id: true, name: true}},
-        campus:{select: {id: true, name: true}},
+        staff: { select: { id: true, name: true } },
+        class: { select: { id: true, name: true } },
+        subject: { select: { id: true, name: true } },
+        campus: { select: { id: true, name: true } },
       },
     });
 
-    res.status(200).json({success: true, message: "Teacher reassigned successfully", assignment: updated});
+    res.status(200).json({ success: true, message: "Teacher reassigned successfully", assignment: updated });
   } catch (error) {
     next(error);
   }
 }
-     
