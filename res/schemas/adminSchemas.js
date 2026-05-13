@@ -58,6 +58,7 @@ exports.staffSchema = Joi.object({
   // Basic info
   name: Joi.string().max(100).required(),
   email: Joi.string().email().max(255).required(),
+  gender: Joi.string().valid("Male", "Female", "Other").optional(),
   phoneNumber: Joi.string().pattern(/^[0-9+\-\s]{7,20}$/).optional(),
   address: Joi.string().max(255).optional(),
 
@@ -76,6 +77,7 @@ exports.editStaffSchema = Joi.object({
   // Basic info
   name: Joi.string().max(100).optional(),
   email: Joi.string().email().max(255).optional(),
+  gender: Joi.string().valid("Male", "Female", "Other").optional(),
   phoneNumber: Joi.string().pattern(/^[0-9+\-\s]{7,20}$/).optional(),
   address: Joi.string().max(255).optional(),
 
