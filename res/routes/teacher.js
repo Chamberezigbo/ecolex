@@ -25,10 +25,8 @@ router.post("/scores/exam", teacherAuthMiddleware, teacherController.upsertExamS
 // new: computed result sheet
 router.get("/results", teacherAuthMiddleware, teacherController.getComputedResults);
 
-// new: grading scheme
-router.post("/grading/create", teacherAuthMiddleware, teacherController.createGradingScheme);
-router.post("/grading/:schemeId/classes", teacherAuthMiddleware, teacherController.addApplicableClasses);
-router.delete("/grading/remark/:ruleId", teacherAuthMiddleware, teacherController.deleteRemark);
+// NOTE: Grading scheme creation/management has been moved to admin-only endpoints (POST /admin/grading/create)
+// Teachers can view results using existing schemes but cannot create/modify grading schemes
 router.get("/subjects/:subjectId/cas", teacherAuthMiddleware, teacherController.getSubjectCAs);
 router.get("/subjects/:subjectId/exams", teacherAuthMiddleware, teacherController.getSubjectExams);
 

@@ -2,13 +2,11 @@
 import { Response, NextFunction } from "express";
 import { TeacherRequest } from "../../middleware/teacherMiddleware";
 import { TeacherService } from "../../Services/teacher/TeacherService";
-import { GradingService } from "../../Services/teacher/GradingService";
 import { AcademicTermService } from "../../Services/AcademicTermService";
 
 
 export class TeacherController {
     private service = new TeacherService();
-    private gradingService = new GradingService();
     private academicTermService = new AcademicTermService();
 
     getStudentsForGrading = async (req: TeacherRequest, res: Response, next: NextFunction) => {
@@ -89,81 +87,9 @@ export class TeacherController {
         }
     };
 
-
-    // Grading scheme related endpoints
-    createGradingScheme = async (req: TeacherRequest, res: Response, next: NextFunction) => {
-        try {
-            if (!req.schoolId) {
-                return res.status(401).json({ success: false, message: "Unauthorized" });
-            }
-
-            const schoolId = Number(req.schoolId);
-            if (Number.isNaN(schoolId)) {
-                return res.status(400).json({ success: false, message: "Invalid schoolId" });
-            }
-
-            const data = await this.gradingService.createScheme(schoolId, req.body);
-
-            return res.status(201).json({
-                success: true,
-                message: "Grading scheme created successfully",
-                data
-            });
-        } catch (err) {
-            next(err);
-        }
-    };
-
-    addApplicableClasses = async (req: TeacherRequest, res: Response, next: NextFunction) => {
-        try {
-            if (!req.schoolId) {
-                return res.status(401).json({ success: false, message: "Unauthorized" });
-            }
-
-            const schoolId = Number(req.schoolId);
-            const schemeId = Number(req.params.schemeId);
-            const classIds = req.body.classIds;
-
-            if (Number.isNaN(schoolId) || Number.isNaN(schemeId)) {
-                return res.status(400).json({ success: false, message: "Invalid schoolId or schemeId" });
-            }
-
-            const data = await this.gradingService.addClassesToScheme(schoolId, schemeId, classIds);
-
-            return res.status(200).json({
-                success: true,
-                message: "Applicable classes updated",
-                data
-            });
-        } catch (err) {
-            next(err);
-        }
-    };
-
-    deleteRemark = async (req: TeacherRequest, res: Response, next: NextFunction) => {
-        try {
-            if (!req.schoolId) {
-                return res.status(401).json({ success: false, message: "Unauthorized" });
-            }
-
-            const schoolId = Number(req.schoolId);
-            const ruleId = Number(req.params.ruleId);
-
-            if (Number.isNaN(schoolId) || Number.isNaN(ruleId)) {
-                return res.status(400).json({ success: false, message: "Invalid schoolId or ruleId" });
-            }
-
-            const data = await this.gradingService.deleteRemarkRule(schoolId, ruleId);
-
-            return res.status(200).json({
-                success: true,
-                message: "Remark deleted successfully",
-                data
-            });
-        } catch (err) {
-            next(err);
-        }
-    };
+    // NOTE: Grading scheme creation/management has been moved to admin-only endpoints
+    // See POST /admin/grading/create for the replacement endpoint
+    // Teachers can only view results using existing schemes
 
     getTeacherBroadsheet = async (req: TeacherRequest, res: Response, next: NextFunction) => {
         try {
