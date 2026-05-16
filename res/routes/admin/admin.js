@@ -150,6 +150,8 @@ const gradingController = new GradingController();
 
 router.post('/grading/create', auth.authenticateSuperAdmin, auth.attachSchoolId, gradingController.create);
 
+router.put('/grading/:schemeId', auth.authenticateSuperAdmin, auth.attachSchoolId, gradingController.update);
+
 router.get('/grading', auth.authenticateSuperAdmin, auth.attachSchoolId, gradingController.getSchemes);
 
 router.post(

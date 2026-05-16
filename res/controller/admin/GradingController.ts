@@ -33,6 +33,12 @@ export class GradingController {
         next: NextFunction
     ) => Promise<void>;
 
+    public update: (
+        req: AuthenticatedRequest,
+        res: Response,
+        next: NextFunction
+    ) => Promise<void>;
+
     public deleteScheme: (
         req: AuthenticatedRequest,
         res: Response,
@@ -116,6 +122,27 @@ export class GradingController {
                     success: true,
                     message: "Grading schemes retrieved successfully",
                     data: schemes
+                });
+            } catch (error) {
+                next(error as Error);
+            }
+        };
+
+        this.update = async (req, res, next) => {
+            try {
+                if (req.schoolId === undefined) throw new Error("Missing schoolId");
+                const schoolId = Number(req.schoolId);
+                if (isNaN(schoolId)) throw new Error("Invalid schoolId");
+
+                const schemeId = Number(req.params.schemeId);
+                if (isNaN(schemeId)) throw new Error("Invalid schemeId");
+
+                const result = await this.gradingService.updateScheme(schoolId, schemeId, req.body);
+
+                res.status(200).json({
+                    success: true,
+                    message: "Grading scheme updated successfully",
+                    data: result
                 });
             } catch (error) {
                 next(error as Error);

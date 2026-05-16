@@ -1,6 +1,6 @@
 // src/services/grading/GradingService.ts
 import prisma from "../../util/prisma"
-import { CreateGradingSchemeDTO } from "../../dtos/grading.dto"
+import { CreateGradingSchemeDTO, UpdateGradingSchemeDTO } from "../../dtos/grading.dto"
 
 import { Prisma } from "@prisma/client";
 
@@ -131,6 +131,76 @@ export class GradingService {
         });
     }
 
+    async updateScheme(schoolId: number, schemeId: number, data: UpdateGradingSchemeDTO) {
+        // Validate grades if provided
+        if (data.grades) {
+            this.validateGrades(data.grades);
+        }
+
+        return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+            // Check if scheme exists and belongs to this school
+            const scheme = await tx.gradingScheme.findFirst({
+                where: { id: schemeId, schoolId },
+                select: { id: true }
+            });
+
+            if (!scheme) {
+                throw new Error("Grading scheme not found for this school");
+            }
+
+            // Update scheme basic info
+            const updateData: any = {};
+            if (data.name !== undefined) updateData.name = data.name;
+            if (data.usePosition !== undefined) updateData.usePosition = data.usePosition;
+            if (data.campusId !== undefined) updateData.campusId = data.campusId;
+
+            const updatedScheme = await tx.gradingScheme.update({
+                where: { id: schemeId },
+                data: updateData,
+                select: {
+                    id: true,
+                    schoolId: true,
+                    name: true,
+                    usePosition: true,
+                    campusId: true,
+                    createdAt: true
+                }
+            });
+
+            // Update grades if provided
+            let gradesCount = 0;
+            if (data.grades) {
+                // Delete existing grades
+                await tx.gradingRule.deleteMany({
+                    where: { schemeId }
+                });
+
+                // Create new grades
+                await tx.gradingRule.createMany({
+                    data: data.grades.map(g => ({
+                        schemeId,
+                        minScore: g.min,
+                        maxScore: g.max,
+                        grade: g.grade,
+                        remark: g.remark
+                    }))
+                });
+                gradesCount = data.grades.length;
+            } else {
+                // Get existing grade count if not updating grades
+                gradesCount = await tx.gradingRule.count({
+                    where: { schemeId }
+                });
+            }
+
+            return {
+                scheme: updatedScheme,
+                gradesUpdated: data.grades ? true : false,
+                grades: gradesCount
+            };
+        });
+    }
+
     async deleteRemarkRule(schoolId: number, ruleId: number) {
         const rule = await prisma.gradingRule.findFirst({
             where: {
@@ -154,7 +224,13 @@ export class GradingService {
     async getSchemesBySchool(schoolId: number) {
         const schemes = await prisma.gradingScheme.findMany({
             where: { schoolId },
-            include: {
+            select: {
+                id: true,
+                schoolId: true,
+                name: true,
+                usePosition: true,
+                campusId: true,
+                createdAt: true,
                 grades: {
                     select: {
                         id: true,

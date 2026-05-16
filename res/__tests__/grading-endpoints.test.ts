@@ -507,6 +507,340 @@ describe("Grading Endpoints Tests", () => {
     });
   });
 
+  describe("PUT /admin/grading/:schemeId - Update Grading Scheme", () => {
+    test("Should update scheme name only", async () => {
+      const classIds = getNextClassIds(1);
+      if (classIds.length === 0) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Original Name ${Date.now()}`,
+        usePosition: true,
+        classIds,
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      const result = await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+        name: "Updated Scheme Name"
+      });
+
+      expect(result.scheme.name).toBe("Updated Scheme Name");
+      expect(result.scheme.usePosition).toBe(true);
+      expect(result.gradesUpdated).toBe(false);
+    });
+
+    test("Should update usePosition flag only", async () => {
+      const classIds = getNextClassIds(1);
+      if (classIds.length === 0) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Position Test ${Date.now()}`,
+        usePosition: true,
+        classIds,
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      const result = await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+        usePosition: false
+      });
+
+      expect(result.scheme.usePosition).toBe(false);
+      expect(result.scheme.name).toBe(`Position Test ${Date.now()}`);
+      expect(result.gradesUpdated).toBe(false);
+    });
+
+    test("Should update grades completely", async () => {
+      const classIds = getNextClassIds(1);
+      if (classIds.length === 0) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Grades Update Test ${Date.now()}`,
+        usePosition: true,
+        classIds,
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" },
+          { min: 50, max: 69, grade: "B", remark: "Good" }
+        ]
+      });
+
+      const newGrades = [
+        { min: 80, max: 100, grade: "A+", remark: "Outstanding" },
+        { min: 70, max: 79, grade: "A", remark: "Excellent" },
+        { min: 60, max: 69, grade: "B", remark: "Good" }
+      ];
+
+      const result = await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+        grades: newGrades
+      });
+
+      expect(result.gradesUpdated).toBe(true);
+      expect(result.grades).toBe(3);
+
+      // Verify grades were actually updated in DB
+      const updatedScheme = await prisma.gradingScheme.findUnique({
+        where: { id: scheme.scheme.id },
+        include: { grades: true }
+      });
+
+      expect(updatedScheme?.grades).toHaveLength(3);
+      expect(updatedScheme?.grades[0].grade).toBe("A+");
+    });
+
+    test("Should update name and usePosition together", async () => {
+      const classIds = getNextClassIds(1);
+      if (classIds.length === 0) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Multi Update ${Date.now()}`,
+        usePosition: true,
+        classIds,
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      const result = await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+        name: "New Name",
+        usePosition: false
+      });
+
+      expect(result.scheme.name).toBe("New Name");
+      expect(result.scheme.usePosition).toBe(false);
+      expect(result.gradesUpdated).toBe(false);
+    });
+
+    test("Should update all fields together", async () => {
+      const classIds = getNextClassIds(1);
+      if (classIds.length === 0) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Full Update ${Date.now()}`,
+        usePosition: true,
+        classIds,
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      const newGrades = [
+        { min: 80, max: 100, grade: "A+", remark: "Outstanding" },
+        { min: 60, max: 79, grade: "A", remark: "Excellent" }
+      ];
+
+      const result = await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+        name: "Fully Updated",
+        usePosition: false,
+        grades: newGrades
+      });
+
+      expect(result.scheme.name).toBe("Fully Updated");
+      expect(result.scheme.usePosition).toBe(false);
+      expect(result.gradesUpdated).toBe(true);
+      expect(result.grades).toBe(2);
+    });
+
+    test("Should validate grade ranges do not overlap on update", async () => {
+      const classIds = getNextClassIds(1);
+      if (classIds.length === 0) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Overlap Validation ${Date.now()}`,
+        usePosition: true,
+        classIds,
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      try {
+        await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+          grades: [
+            { min: 70, max: 100, grade: "A", remark: "Excellent" },
+            { min: 60, max: 80, grade: "B", remark: "Good" } // Overlaps
+          ]
+        });
+        fail("Should have thrown overlapping error");
+      } catch (error: any) {
+        expect(error.message).toContain("overlap");
+      }
+    });
+
+    test("Should validate min <= max on grade update", async () => {
+      const classIds = getNextClassIds(1);
+      if (classIds.length === 0) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Range Validation ${Date.now()}`,
+        usePosition: true,
+        classIds,
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      try {
+        await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+          grades: [
+            { min: 100, max: 50, grade: "A", remark: "Invalid" } // min > max
+          ]
+        });
+        fail("Should have thrown range error");
+      } catch (error: any) {
+        expect(error.message).toContain("Invalid range");
+      }
+    });
+
+    test("Should fail if scheme not found", async () => {
+      try {
+        await gradingService.updateScheme(testSchoolId, 9999, {
+          name: "Non-existent"
+        });
+        fail("Should have thrown error for non-existent scheme");
+      } catch (error: any) {
+        expect(error.message).toContain("Grading scheme not found");
+      }
+    });
+
+    test("Should fail if scheme not found for wrong school", async () => {
+      const classIds = getNextClassIds(1);
+      if (classIds.length === 0) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Wrong School Test ${Date.now()}`,
+        usePosition: true,
+        classIds,
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      try {
+        await gradingService.updateScheme(999, scheme.scheme.id, {
+          name: "Should Fail"
+        });
+        fail("Should have thrown error for wrong school");
+      } catch (error: any) {
+        expect(error.message).toContain("Grading scheme not found");
+      }
+    });
+
+    test("Should include campusId in update response", async () => {
+      const classIds = getNextClassIds(1);
+      if (classIds.length === 0) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Campus Response ${Date.now()}`,
+        usePosition: true,
+        campusId: testCampusId,
+        classIds,
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      const result = await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+        name: "Updated with Campus"
+      });
+
+      expect(result.scheme.campusId).toBe(testCampusId);
+      expect(result.scheme.schoolId).toBe(testSchoolId);
+    });
+
+    test("Should update campusId", async () => {
+      const classIds = getNextClassIds(1);
+      if (classIds.length === 0) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Update Campus ${Date.now()}`,
+        usePosition: true,
+        campusId: testCampusId,
+        classIds,
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      const newCampusId = testCampusId === 1 ? 2 : 1;
+      const result = await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+        campusId: newCampusId
+      });
+
+      expect(result.scheme.campusId).toBe(newCampusId);
+    });
+
+    test("Should set campusId to null if provided as null", async () => {
+      const classIds = getNextClassIds(1);
+      if (classIds.length === 0) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Null Campus ${Date.now()}`,
+        usePosition: true,
+        campusId: testCampusId,
+        classIds,
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      const result = await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+        campusId: null
+      });
+
+      expect(result.scheme.campusId).toBeNull();
+    });
+
+    test("Should preserve class assignments when updating", async () => {
+      const classIds = getNextClassIds(2);
+      if (classIds.length < 2) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Preserve Classes ${Date.now()}`,
+        usePosition: true,
+        classIds: [classIds[0]],
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      // Add another class
+      await gradingService.addClassesToScheme(testSchoolId, scheme.scheme.id, [classIds[1]]);
+
+      // Update the scheme
+      await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+        name: "Updated"
+      });
+
+      // Verify classes are still assigned
+      const schemeClasses = await prisma.gradingSchemeClass.findMany({
+        where: { schemeId: scheme.scheme.id }
+      });
+
+      expect(schemeClasses).toHaveLength(2);
+    });
+
+    test("Should handle empty update (no fields specified)", async () => {
+      const classIds = getNextClassIds(1);
+      if (classIds.length === 0) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Empty Update ${Date.now()}`,
+        usePosition: true,
+        classIds,
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      const result = await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {});
+
+      expect(result.scheme.id).toBe(scheme.scheme.id);
+      expect(result.gradesUpdated).toBe(false);
+    });
+  });
+
   describe("Data Integrity Tests", () => {
     test("Should maintain referential integrity when deleting scheme", async () => {
       const classIds = getNextClassIds(1);

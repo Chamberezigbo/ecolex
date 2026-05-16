@@ -13,3 +13,10 @@ export interface CreateGradingSchemeDTO {
     classIds: number[]
     grades: GradeInput[]
 }
+
+export interface UpdateGradingSchemeDTO {
+    name?: string
+    usePosition?: boolean
+    campusId?: number | null
+    grades?: GradeInput[]
+}
