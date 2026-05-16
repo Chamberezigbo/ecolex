@@ -38,33 +38,72 @@ export class AssessmentService {
             );
         }
 
-        // 4. Delete existing templates for this school+class combo before replacing
-        // This allows admin to redefine the template cleanly
-        await prisma.cATemplate.deleteMany({
+        // 4. Get existing templates to compare changes
+        const oldTemplates = await prisma.cATemplate.findMany({
             where: {
                 schoolId,
                 classId: classId ?? null
             }
         });
 
-        // 5. Create all new templates in one go
-        await prisma.cATemplate.createMany({
-            data: templates.map((t) => ({
-                schoolId,
-                classId: classId ?? null,
-                name: t.name,
-                maxScore: t.maxScore,
-                isExam: t.isExam
-            }))
-        });
+        // 5. Run in transaction for data consistency
+        return prisma.$transaction(async (tx) => {
+            // Delete existing templates for this school+class combo before replacing
+            await tx.cATemplate.deleteMany({
+                where: {
+                    schoolId,
+                    classId: classId ?? null
+                }
+            });
 
-        // 6. Return what was saved
-        const saved = await prisma.cATemplate.findMany({
-            where: { schoolId, classId: classId ?? null },
-            select: { id: true, name: true, maxScore: true, isExam: true, classId: true }
-        });
+            // Create all new templates
+            await tx.cATemplate.createMany({
+                data: templates.map((t) => ({
+                    schoolId,
+                    classId: classId ?? null,
+                    name: t.name,
+                    maxScore: t.maxScore,
+                    isExam: t.isExam
+                }))
+            });
 
-        return saved;
+            // Update existing CAs and Exams that match template names
+            // This ensures when templates change, all created assessments update
+            for (const newTemplate of templates) {
+                const oldTemplate = oldTemplates.find((t) => t.name === newTemplate.name && t.isExam === newTemplate.isExam);
+
+                // If maxScore changed, update all matching assessments in the school
+                if (oldTemplate && oldTemplate.maxScore !== newTemplate.maxScore) {
+                    if (newTemplate.isExam) {
+                        // Update all exams with this name in this school
+                        await tx.exam.updateMany({
+                            where: {
+                                name: newTemplate.name,
+                                class: { schoolId }
+                            },
+                            data: { maxScore: newTemplate.maxScore }
+                        });
+                    } else {
+                        // Update all CAs with this name in this school
+                        await tx.continuousAssessment.updateMany({
+                            where: {
+                                name: newTemplate.name,
+                                class: { schoolId }
+                            },
+                            data: { maxScore: newTemplate.maxScore }
+                        });
+                    }
+                }
+            }
+
+            // Return what was saved
+            const saved = await tx.cATemplate.findMany({
+                where: { schoolId, classId: classId ?? null },
+                select: { id: true, name: true, maxScore: true, isExam: true, classId: true }
+            });
+
+            return saved;
+        });
     }
 
     async getCATemplates(schoolId: number, classId?: number) {
@@ -250,6 +289,78 @@ export class AssessmentService {
             className: classRecord.name,
             subjects: classSubjects.map((cs) => cs.subject)
         };
+    }
+
+    async deleteSubjectFromClass(classId: number, subjectId: number, schoolId: number) {
+        // 1. Verify class belongs to this school
+        const classRecord = await prisma.class.findFirst({
+            where: { id: classId, schoolId },
+            select: { id: true }
+        });
+
+        if (!classRecord) throw new Error("Class not found or does not belong to your school");
+
+        // 2. Verify subject exists and belongs to this school
+        const subject = await prisma.subject.findFirst({
+            where: { id: subjectId, schoolId },
+            select: { id: true }
+        });
+
+        if (!subject) throw new Error("Subject not found or does not belong to your school");
+
+        // 3. Run in transaction to cascade delete
+        return prisma.$transaction(async (tx) => {
+            // Delete CA Results for this class+subject
+            const casToDelete = await tx.continuousAssessment.findMany({
+                where: { classId, subjectId },
+                select: { id: true }
+            });
+
+            const caIds = casToDelete.map((ca) => ca.id);
+            if (caIds.length > 0) {
+                await tx.cAResult.deleteMany({
+                    where: { caId: { in: caIds } }
+                });
+            }
+
+            // Delete Exam Results for this class+subject
+            const examsToDelete = await tx.exam.findMany({
+                where: { classId, subjectId },
+                select: { id: true }
+            });
+
+            const examIds = examsToDelete.map((exam) => exam.id);
+            if (examIds.length > 0) {
+                await tx.examResult.deleteMany({
+                    where: { examId: { in: examIds } }
+                });
+            }
+
+            // Delete CAs
+            const casDeleted = await tx.continuousAssessment.deleteMany({
+                where: { classId, subjectId }
+            });
+
+            // Delete Exams
+            const examsDeleted = await tx.exam.deleteMany({
+                where: { classId, subjectId }
+            });
+
+            // Delete ClassSubject link
+            await tx.classSubject.deleteMany({
+                where: { classId, subjectId }
+            });
+
+            return {
+                success: true,
+                deleted: {
+                    caResults: caIds.length,
+                    cas: casDeleted.count,
+                    examResults: examIds.length,
+                    exams: examsDeleted.count
+                }
+            };
+        });
     }
 
     async computeBroadsheet(input: {

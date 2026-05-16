@@ -184,6 +184,7 @@ router.delete(
 router.post("/ca-template", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.createCATemplate);
 router.post("/class-subject/assign", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.assignSubjectsToClass);
 router.get("/class-subject/:classId", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getClassSubjects);
+router.delete("/class-subject/:classId/:subjectId", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.deleteSubjectFromClass);
 
 // broadsheet
 router.get("/broadsheet", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getAdminBroadsheet);

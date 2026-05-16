@@ -107,6 +107,28 @@ export class AssessmentController {
         }
     };
 
+    deleteSubjectFromClass = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if (!req.schoolId) throw new Error("Missing schoolId");
+
+            const classId = Number(req.params.classId);
+            const subjectId = Number(req.params.subjectId);
+
+            if (isNaN(classId)) throw new Error("Invalid classId");
+            if (isNaN(subjectId)) throw new Error("Invalid subjectId");
+
+            const result = await this.service.deleteSubjectFromClass(classId, subjectId, Number(req.schoolId));
+
+            return res.status(200).json({
+                success: true,
+                message: "Subject removed from class and all associated CAs/Exams deleted",
+                data: result
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
+
     publishResults = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             if (!req.schoolId) throw new Error("Missing schoolId");
