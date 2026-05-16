@@ -150,5 +150,64 @@ export class GradingService {
 
         return { deleted: true, ruleId };
     }
+
+    async getSchemesBySchool(schoolId: number) {
+        const schemes = await prisma.gradingScheme.findMany({
+            where: { schoolId },
+            include: {
+                grades: {
+                    select: {
+                        id: true,
+                        minScore: true,
+                        maxScore: true,
+                        grade: true,
+                        remark: true
+                    }
+                },
+                classes: {
+                    select: {
+                        classId: true
+                    }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        return schemes;
+    }
+
+    async deleteScheme(schoolId: number, schemeId: number) {
+        const scheme = await prisma.gradingScheme.findFirst({
+            where: { id: schemeId, schoolId },
+            include: {
+                classes: {
+                    select: { classId: true }
+                }
+            }
+        });
+
+        if (!scheme) {
+            throw new Error("Grading scheme not found for this school");
+        }
+
+        // Prevent deletion if scheme is assigned to classes
+        if (scheme.classes.length > 0) {
+            throw new Error(`Cannot delete scheme that is assigned to ${scheme.classes.length} class(es). Unassign classes first.`);
+        }
+
+        return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+            // Delete all rules for this scheme
+            await tx.gradingRule.deleteMany({
+                where: { schemeId }
+            });
+
+            // Delete the scheme itself
+            await tx.gradingScheme.delete({
+                where: { id: schemeId }
+            });
+
+            return { deleted: true, schemeId };
+        });
+    }
 }
 

@@ -145,16 +145,25 @@ router.get('/assessments', auth.authenticateAdmin, auth.attachSchoolId, getSchoo
 
 router.get("/ca-template", auth.authenticateSuperAdmin, auth.attachSchoolId, assessmentController.getCATemplates);
 
-// Grading routes using ts and oop concept 
+// Grading routes using ts and oop concept
 const gradingController = new GradingController();
 
 router.post('/grading/create', auth.authenticateSuperAdmin, auth.attachSchoolId, gradingController.create);
+
+router.get('/grading', auth.authenticateSuperAdmin, auth.attachSchoolId, gradingController.getSchemes);
 
 router.post(
   "/grading/:schemeId/classes",
   auth.authenticateSuperAdmin,
   auth.attachSchoolId,
   gradingController.addApplicableClasses
+);
+
+router.delete(
+  "/grading/:schemeId",
+  auth.authenticateSuperAdmin,
+  auth.attachSchoolId,
+  gradingController.deleteScheme
 );
 
 // Remark scheme routes

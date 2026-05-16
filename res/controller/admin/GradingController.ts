@@ -27,6 +27,18 @@ export class GradingController {
         next: NextFunction
     ) => Promise<void>;
 
+    public getSchemes: (
+        req: AuthenticatedRequest,
+        res: Response,
+        next: NextFunction
+    ) => Promise<void>;
+
+    public deleteScheme: (
+        req: AuthenticatedRequest,
+        res: Response,
+        next: NextFunction
+    ) => Promise<void>;
+
     constructor() {
         this.gradingService = new GradingService();
 
@@ -85,6 +97,45 @@ export class GradingController {
                 res.status(200).json({
                     success: true,
                     message: "Remark deleted successfully",
+                    data: result
+                });
+            } catch (error) {
+                next(error as Error);
+            }
+        };
+
+        this.getSchemes = async (req, res, next) => {
+            try {
+                if (req.schoolId === undefined) throw new Error("Missing schoolId");
+                const schoolId = Number(req.schoolId);
+                if (isNaN(schoolId)) throw new Error("Invalid schoolId");
+
+                const schemes = await this.gradingService.getSchemesBySchool(schoolId);
+
+                res.status(200).json({
+                    success: true,
+                    message: "Grading schemes retrieved successfully",
+                    data: schemes
+                });
+            } catch (error) {
+                next(error as Error);
+            }
+        };
+
+        this.deleteScheme = async (req, res, next) => {
+            try {
+                if (req.schoolId === undefined) throw new Error("Missing schoolId");
+                const schoolId = Number(req.schoolId);
+                if (isNaN(schoolId)) throw new Error("Invalid schoolId");
+
+                const schemeId = Number(req.params.schemeId);
+                if (isNaN(schemeId)) throw new Error("Invalid schemeId");
+
+                const result = await this.gradingService.deleteScheme(schoolId, schemeId);
+
+                res.status(200).json({
+                    success: true,
+                    message: "Grading scheme deleted successfully",
                     data: result
                 });
             } catch (error) {
