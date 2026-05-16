@@ -125,59 +125,171 @@ When I start a task, tell me which model you're using and why.
 ## Architectural Decisions — Grading Scheme Management (May 16, 2026)
 
 ### What Changed
-Moved grading scheme creation from **teacher-level** to **admin-only** endpoints to ensure data consistency and prevent teachers from inconsistently toggling the `usePosition` ranking flag.
+1. **Phase 1 (May 16):** Moved grading scheme creation from **teacher-level** to **admin-only** endpoints
+2. **Phase 2 (May 16):** Added missing GET and DELETE endpoints for admin to manage schemes
 
 ### Why This Matters
 - The `usePosition` boolean flag controls whether students are ranked (1st, 2nd, 3rd) in result compilations
 - This flag is used by both `TeacherService.computeClassResults()` and `AssessmentService.computeBroadsheet()`
-- If different teachers set different `usePosition` values for the same class, result compilation becomes inconsistent
+- If different teachers set different `usePosition` values, result compilation becomes inconsistent
 - **Solution:** Only admins can create/modify grading schemes → single source of truth per school
 
-### Files Modified
-1. **`/res/routes/teacher.js`** — Removed three endpoints:
-   - `POST /teacher/grading/create`
-   - `POST /teacher/grading/:schemeId/classes`
-   - `DELETE /teacher/grading/remark/:ruleId`
+---
 
-2. **`/res/controller/teacher/TeacherController.ts`** — Removed three methods:
-   - `createGradingScheme()`
-   - `addApplicableClasses()`
-   - `deleteRemark()`
-   - Also removed unused `GradingService` import and initialization
+## Admin Grading Scheme Endpoints (Complete Reference)
 
-### Admin Endpoints (Already Exist — No Changes)
-- `POST /api/admin/grading/create` — Create new grading scheme
-- `POST /api/admin/grading/:schemeId/classes` — Add classes to scheme
-- `DELETE /api/admin/grading/remark/:ruleId` — Delete remark rule
+### Create Grading Scheme
+```
+POST /api/admin/grading/create
+Authorization: Bearer <admin_token>
+Content-Type: application/json
+
+{
+  "name": "JSS Grading System",
+  "usePosition": true,
+  "classIds": [1, 2, 3],
+  "grades": [
+    { "min": 70, "max": 100, "grade": "A", "remark": "Excellent" },
+    { "min": 50, "max": 69, "grade": "B", "remark": "Good" },
+    { "min": 0, "max": 49, "grade": "C", "remark": "Needs Improvement" }
+  ]
+}
+
+Response:
+{
+  "success": true,
+  "message": "Grading scheme created successfully",
+  "data": {
+    "scheme": { "id": 1, "schoolId": 1, "name": "JSS Grading System", "usePosition": true },
+    "classIds": [1, 2, 3],
+    "grades": 3
+  }
+}
+```
+
+### Get All Grading Schemes (NEW)
+```
+GET /api/admin/grading
+Authorization: Bearer <admin_token>
+
+Response:
+{
+  "success": true,
+  "message": "Grading schemes retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "schoolId": 1,
+      "name": "JSS Grading System",
+      "usePosition": true,
+      "createdAt": "2024-01-15T10:30:00Z",
+      "grades": [
+        { "id": 1, "minScore": 70, "maxScore": 100, "grade": "A", "remark": "Excellent" },
+        { "id": 2, "minScore": 50, "maxScore": 69, "grade": "B", "remark": "Good" }
+      ],
+      "classes": [
+        { "classId": 1 },
+        { "classId": 2 }
+      ]
+    }
+  ]
+}
+```
+
+### Add Classes to Scheme
+```
+POST /api/admin/grading/:schemeId/classes
+Authorization: Bearer <admin_token>
+Content-Type: application/json
+
+{
+  "classIds": [4, 5, 6]
+}
+
+Response:
+{
+  "success": true,
+  "message": "Applicable classes updated",
+  "data": { "added": 3, "skipped": 0 }
+}
+```
+
+### Delete Grading Scheme (NEW)
+```
+DELETE /api/admin/grading/:schemeId
+Authorization: Bearer <admin_token>
+
+Response:
+{
+  "success": true,
+  "message": "Grading scheme deleted successfully",
+  "data": { "deleted": true, "schemeId": 1 }
+}
+
+⚠️ Error if scheme is assigned to classes:
+{
+  "error": "Cannot delete scheme that is assigned to 3 class(es). Unassign classes first."
+}
+```
+
+### Delete Remark Rule
+```
+DELETE /api/admin/grading/remark/:ruleId
+Authorization: Bearer <admin_token>
+
+Response:
+{
+  "success": true,
+  "message": "Remark deleted successfully",
+  "data": { "deleted": true, "ruleId": 1 }
+}
+```
+
+---
+
+## Implementation Details
+
+### Files Changed
+| File | Changes |
+|------|---------|
+| `/res/Services/teacher/GradingService.ts` | Added `getSchemesBySchool()` and `deleteScheme()` methods |
+| `/res/controller/admin/GradingController.ts` | Added `getSchemes()` and `deleteScheme()` controller methods |
+| `/res/routes/admin/admin.js` | Added GET and DELETE routes |
+| `/res/__tests__/grading-endpoints.test.ts` | Added comprehensive test suite (26 tests) |
+
+### Key Constraints
+- **Duplicate prevention:** Each class can only be assigned to ONE grading scheme
+- **Deletion safety:** Schemes cannot be deleted while assigned to classes
+- **Grade validation:** Grade ranges must not overlap and min ≤ max
+- **School isolation:** Admins can only manage schemes for their own school
+
+### Testing
+All 68 tests pass including:
+- 26 new grading scheme endpoint tests
+- CRUD operations with validation
+- Error handling and edge cases
+- Transaction safety and rollback
+
+---
+
+## Phase 1 Changes (Teacher Endpoints Removed)
+
+### Removed from Teacher Routes
+- ❌ `POST /teacher/grading/create`
+- ❌ `POST /teacher/grading/:schemeId/classes`
+- ❌ `DELETE /teacher/grading/remark/:ruleId`
 
 ### What Still Works
-- ✅ Teachers can still **view** grading schemes
-- ✅ Teachers can still **compute and submit results** using existing schemes
-- ✅ Result ranking logic unchanged — `usePosition` flag still controls ranking
-- ✅ Existing teacher-created schemes in DB remain functional (no data loss)
-
-### What Breaks
-- ❌ Teacher API calls to `POST /teacher/grading/create` will now get 404
-- ❌ Teachers can no longer create new grading schemes
-- ⚠️ **Frontend Impact:** Frontend code must update to call `/admin/grading/create` instead
+- ✅ Teachers can **compute and submit results** using existing schemes
+- ✅ Result ranking based on `usePosition` flag unchanged
+- ✅ Existing teacher-created schemes remain functional (no data loss)
 
 ### Frontend Updates Needed
-Update any frontend code that calls teacher grading endpoints to use admin endpoints instead:
-```
+Change frontend calls from teacher endpoints to admin endpoints:
+```javascript
 // OLD (BROKEN):
 POST /api/teacher/grading/create
 
 // NEW:
 POST /api/admin/grading/create
 ```
-
-This affects:
-- Teacher dashboard (if it has scheme creation UI)
-- Admin dashboard (if it creates schemes on behalf of schools)
-- Any testing/automation scripts
-
-### How to Verify
-1. Admins can create grading schemes via `POST /admin/grading/create`
-2. Teachers cannot call teacher grading endpoints (should get 404)
-3. Teachers can still compute results using existing schemes
-4. No data loss — existing schemes continue to work
