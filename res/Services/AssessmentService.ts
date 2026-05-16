@@ -27,7 +27,18 @@ export class AssessmentService {
             if (!classRecord) throw new Error("Class not found or does not belong to your school");
         }
 
-        // 3. Delete existing templates for this school+class combo before replacing
+        // 3. Validate that both CA and Exam templates are provided
+        const hasCATemplates = templates.some((t) => !t.isExam);
+        const hasExamTemplates = templates.some((t) => t.isExam);
+
+        if (!hasCATemplates || !hasExamTemplates) {
+            throw new Error(
+                "Templates must include both CA templates (isExam: false) and Exam templates (isExam: true). " +
+                `Received: ${hasCATemplates ? "CA templates ✓" : "No CA templates ✗"}, ${hasExamTemplates ? "Exam templates ✓" : "No Exam templates ✗"}`
+            );
+        }
+
+        // 4. Delete existing templates for this school+class combo before replacing
         // This allows admin to redefine the template cleanly
         await prisma.cATemplate.deleteMany({
             where: {
@@ -36,7 +47,7 @@ export class AssessmentService {
             }
         });
 
-        // 4. Create all new templates in one go
+        // 5. Create all new templates in one go
         await prisma.cATemplate.createMany({
             data: templates.map((t) => ({
                 schoolId,
@@ -47,7 +58,7 @@ export class AssessmentService {
             }))
         });
 
-        // 5. Return what was saved
+        // 6. Return what was saved
         const saved = await prisma.cATemplate.findMany({
             where: { schoolId, classId: classId ?? null },
             select: { id: true, name: true, maxScore: true, isExam: true, classId: true }
@@ -147,13 +158,21 @@ export class AssessmentService {
 
         if (templates.length === 0) {
             throw new Error(
-                "No CA template found. Please define a CA template for this school or class before assigning subjects."
+                "No templates found. Please define CA and Exam templates for this school before assigning subjects."
             );
         }
 
-        // 5. Separate CAs from Exams
+        // 5. Separate CAs from Exams and validate both exist
         const caTemplates = templates.filter((t) => !t.isExam);
         const examTemplates = templates.filter((t) => t.isExam);
+
+        if (caTemplates.length === 0 || examTemplates.length === 0) {
+            throw new Error(
+                `Templates incomplete. Both CA and Exam templates are required before assigning subjects. ` +
+                `Found: ${caTemplates.length} CA template(s), ${examTemplates.length} exam template(s). ` +
+                `Please create complete templates with both CAs and Exams.`
+            );
+        }
 
         // 6. Run everything in a transaction — all or nothing
         return prisma.$transaction(async (tx) => {
