@@ -193,10 +193,69 @@ export class GradingService {
                 });
             }
 
+            // Handle class assignments if provided
+            let classesUpdated = false;
+            let addedClasses = 0;
+            let removedClasses = 0;
+
+            if (data.classIds !== undefined) {
+                // Get current class assignments for this scheme
+                const currentAssignments = await tx.gradingSchemeClass.findMany({
+                    where: { schemeId },
+                    select: { classId: true }
+                });
+
+                const currentClassIds = currentAssignments.map(a => a.classId);
+                const newClassIds = data.classIds;
+
+                // Find classes to add and remove
+                const classesToAdd = newClassIds.filter(id => !currentClassIds.includes(id));
+                const classesToRemove = currentClassIds.filter(id => !newClassIds.includes(id));
+
+                // Validate classes being added don't already have other schemes
+                if (classesToAdd.length > 0) {
+                    const existingAssignments = await tx.gradingSchemeClass.findMany({
+                        where: {
+                            classId: { in: classesToAdd },
+                            schemeId: { not: schemeId }
+                        }
+                    });
+
+                    if (existingAssignments.length > 0) {
+                        throw new Error("One or more classes already have a different grading scheme assigned");
+                    }
+
+                    // Add new classes
+                    await tx.gradingSchemeClass.createMany({
+                        data: classesToAdd.map(classId => ({
+                            schemeId,
+                            classId
+                        }))
+                    });
+                    addedClasses = classesToAdd.length;
+                }
+
+                // Remove classes that are no longer selected
+                if (classesToRemove.length > 0) {
+                    const deleteResult = await tx.gradingSchemeClass.deleteMany({
+                        where: {
+                            schemeId,
+                            classId: { in: classesToRemove }
+                        }
+                    });
+                    removedClasses = deleteResult.count;
+                }
+
+                classesUpdated = classesToAdd.length > 0 || classesToRemove.length > 0;
+            }
+
             return {
                 scheme: updatedScheme,
                 gradesUpdated: data.grades ? true : false,
-                grades: gradesCount
+                grades: gradesCount,
+                classesUpdated,
+                classesAdded: addedClasses,
+                classesRemoved: removedClasses
             };
         });
     }

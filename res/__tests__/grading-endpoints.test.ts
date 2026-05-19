@@ -839,6 +839,183 @@ describe("Grading Endpoints Tests", () => {
       expect(result.scheme.id).toBe(scheme.scheme.id);
       expect(result.gradesUpdated).toBe(false);
     });
+
+    test("Should add classes to scheme via update", async () => {
+      const classIds = getNextClassIds(3);
+      if (classIds.length < 3) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Add Via Update ${Date.now()}`,
+        usePosition: true,
+        classIds: [classIds[0]],
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      const result = await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+        classIds: [classIds[0], classIds[1], classIds[2]]
+      });
+
+      expect(result.classesUpdated).toBe(true);
+      expect(result.classesAdded).toBe(2);
+      expect(result.classesRemoved).toBe(0);
+
+      // Verify in database
+      const schemeClasses = await prisma.gradingSchemeClass.findMany({
+        where: { schemeId: scheme.scheme.id }
+      });
+      expect(schemeClasses).toHaveLength(3);
+    });
+
+    test("Should remove classes from scheme via update", async () => {
+      const classIds = getNextClassIds(3);
+      if (classIds.length < 3) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Remove Via Update ${Date.now()}`,
+        usePosition: true,
+        classIds: [classIds[0], classIds[1], classIds[2]],
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      const result = await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+        classIds: [classIds[0]]
+      });
+
+      expect(result.classesUpdated).toBe(true);
+      expect(result.classesAdded).toBe(0);
+      expect(result.classesRemoved).toBe(2);
+
+      // Verify in database
+      const schemeClasses = await prisma.gradingSchemeClass.findMany({
+        where: { schemeId: scheme.scheme.id }
+      });
+      expect(schemeClasses).toHaveLength(1);
+      expect(schemeClasses[0].classId).toBe(classIds[0]);
+    });
+
+    test("Should both add and remove classes via update", async () => {
+      const classIds = getNextClassIds(4);
+      if (classIds.length < 4) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Mixed Update ${Date.now()}`,
+        usePosition: true,
+        classIds: [classIds[0], classIds[1]],
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      // Replace classIds[1] with classIds[2] and classIds[3]
+      const result = await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+        classIds: [classIds[0], classIds[2], classIds[3]]
+      });
+
+      expect(result.classesUpdated).toBe(true);
+      expect(result.classesAdded).toBe(2);
+      expect(result.classesRemoved).toBe(1);
+
+      // Verify in database
+      const schemeClasses = await prisma.gradingSchemeClass.findMany({
+        where: { schemeId: scheme.scheme.id },
+        select: { classId: true }
+      });
+      expect(schemeClasses).toHaveLength(3);
+      const assignedClassIds = schemeClasses.map(c => c.classId);
+      expect(assignedClassIds).toContain(classIds[0]);
+      expect(assignedClassIds).toContain(classIds[2]);
+      expect(assignedClassIds).toContain(classIds[3]);
+    });
+
+    test("Should prevent assigning classes that have other schemes via update", async () => {
+      const classIds = getNextClassIds(4);
+      if (classIds.length < 4) return;
+
+      // Create first scheme with classIds[0]
+      const scheme1 = await gradingService.createScheme(testSchoolId, {
+        name: `Scheme 1 ${Date.now()}`,
+        usePosition: true,
+        classIds: [classIds[0]],
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      // Create second scheme with classIds[1]
+      const scheme2 = await gradingService.createScheme(testSchoolId, {
+        name: `Scheme 2 ${Date.now()}`,
+        usePosition: true,
+        classIds: [classIds[1]],
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      // Try to add classIds[1] (which belongs to scheme2) to scheme1
+      try {
+        await gradingService.updateScheme(testSchoolId, scheme1.scheme.id, {
+          classIds: [classIds[0], classIds[1]]
+        });
+        fail("Should have thrown error for class already assigned to another scheme");
+      } catch (error: any) {
+        expect(error.message).toContain("already have a different grading scheme");
+      }
+    });
+
+    test("Should unassign all classes and then allow scheme deletion", async () => {
+      const classIds = getNextClassIds(2);
+      if (classIds.length < 2) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Deletable Via Update ${Date.now()}`,
+        usePosition: true,
+        classIds: [classIds[0], classIds[1]],
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      // Remove all classes via update
+      const result = await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+        classIds: []
+      });
+
+      expect(result.classesUpdated).toBe(true);
+      expect(result.classesRemoved).toBe(2);
+
+      // Now scheme should be deletable
+      const deleteResult = await gradingService.deleteScheme(testSchoolId, scheme.scheme.id);
+      expect(deleteResult.deleted).toBe(true);
+    });
+
+    test("Should update campusId along with classIds", async () => {
+      const classIds = getNextClassIds(2);
+      if (classIds.length < 2) return;
+
+      const scheme = await gradingService.createScheme(testSchoolId, {
+        name: `Campus and Classes ${Date.now()}`,
+        usePosition: true,
+        campusId: testCampusId,
+        classIds: [classIds[0]],
+        grades: [
+          { min: 70, max: 100, grade: "A", remark: "Excellent" }
+        ]
+      });
+
+      const newCampusId = testCampusId === 1 ? 2 : 1;
+      const result = await gradingService.updateScheme(testSchoolId, scheme.scheme.id, {
+        campusId: newCampusId,
+        classIds: [classIds[0], classIds[1]]
+      });
+
+      expect(result.scheme.campusId).toBe(newCampusId);
+      expect(result.classesUpdated).toBe(true);
+      expect(result.classesAdded).toBe(1);
+    });
   });
 
   describe("Data Integrity Tests", () => {

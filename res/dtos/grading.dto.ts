@@ -19,4 +19,5 @@ export interface UpdateGradingSchemeDTO {
     usePosition?: boolean
     campusId?: number | null
     grades?: GradeInput[]
+    classIds?: number[]
 }
