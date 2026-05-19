@@ -18,7 +18,21 @@ const studentDash = require("./res/routes/studentDashboard");
 
 const app = express();
 
-app.use(cors());
+// CORS Configuration
+const corsOptions = {
+  origin: [
+    "https://demo.ecolex.com.ng",
+    "http://localhost:3000",
+    "http://localhost:3001",
+    process.env.FRONTEND_URL
+  ].filter(Boolean),
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 
 // Parse JSON bodies//
 app.use(express.json());
