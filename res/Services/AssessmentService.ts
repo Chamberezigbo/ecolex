@@ -1175,9 +1175,6 @@ export class AssessmentService {
                         select: { rules: { orderBy: { minScore: "desc" } } }
                     });
 
-                    const remarkTemplate = remarkScheme?.rules.find(r => total >= r.minScore && total <= r.maxScore)?.remark ?? "";
-                    const personalized = remarkTemplate.replace('{studentName}', `${student.surname} ${student.name}`);
-
                     return {
                         registrationNumber: student.registrationNumber,
                         studentName: `${student.surname} ${student.name}`,
@@ -1189,7 +1186,7 @@ export class AssessmentService {
                         examScore: exams.length > 0 ? exams[0].examResults[0]?.score ?? null : null,
                         total,
                         grade: grade?.grade ?? "N/A",
-                        remarks: personalized || grade?.remark || ""
+                        remarks: grade?.remark || ""
                     };
                 })
             );
@@ -1519,27 +1516,67 @@ export class AssessmentService {
         // Calculate performance summary
         const totalScore = subjects.reduce((sum, s) => sum + s.subjectTotal, 0);
         const averageScore = subjects.length > 0 ? Math.round(totalScore / subjects.length) : 0;
-        const overallGrade = gradingScheme?.grades.find(g => totalScore >= g.minScore && totalScore <= g.maxScore);
+        const overallGrade = gradingScheme?.grades.find(g => averageScore >= g.minScore && averageScore <= g.maxScore);
 
-        // Get class position
+        // Get class position - rank students by total score
         const classStudents = await prisma.student.findMany({
             where: { classId: student.classId, academicSessionId: sessionId },
             select: { id: true }
         });
 
-        const classPosition = classStudents.length;
+        // Calculate scores for all students in class to determine position
+        const classStudentScores = await Promise.all(
+            classStudents.map(async (cs) => {
+                const csSubjects = await prisma.classSubject.findMany({
+                    where: { classId: student.classId },
+                    select: { subject: { select: { id: true } } }
+                });
 
-        // Fetch remark based on overall score using RemarkScheme
+                let csTotal = 0;
+                for (const subj of csSubjects) {
+                    const cas = await prisma.continuousAssessment.findMany({
+                        where: { classId: student.classId, subjectId: subj.subject.id },
+                        select: {
+                            caResults: {
+                                where: { studentId: cs.id, academicSessionId: sessionId, ...(termId ? { termId } : {}) },
+                                select: { score: true }
+                            }
+                        }
+                    });
+                    const exams = await prisma.exam.findMany({
+                        where: { classId: student.classId, subjectId: subj.subject.id },
+                        select: {
+                            examResults: {
+                                where: { studentId: cs.id, academicSessionId: sessionId, ...(termId ? { termId } : {}) },
+                                select: { score: true }
+                            }
+                        }
+                    });
+
+                    const caTotal = cas.reduce((sum, ca) => sum + Number(ca.caResults[0]?.score ?? 0), 0);
+                    const examTotal = exams.reduce((sum, exam) => sum + Number(exam.examResults[0]?.score ?? 0), 0);
+                    csTotal += caTotal + examTotal;
+                }
+
+                return { studentId: cs.id, score: csTotal };
+            })
+        );
+
+        // Sort by score descending and find position
+        const sortedByScore = classStudentScores.sort((a, b) => b.score - a.score);
+        const classPosition = sortedByScore.findIndex(s => s.studentId === studentId) + 1;
+
+        // Fetch remark based on average score using RemarkScheme
         const remarkScheme = await prisma.remarkScheme.findUnique({
             where: { schoolId },
             select: { rules: { orderBy: { minScore: "desc" } } }
         });
 
-        const remarkTemplate = remarkScheme?.rules.find(r => totalScore >= r.minScore && totalScore <= r.maxScore)?.remark ?? "";
+        const remarkTemplate = remarkScheme?.rules.find(r => averageScore >= r.minScore && averageScore <= r.maxScore)?.remark ?? "";
 
         // Personalize remark with student name
         const studentDisplayName = `${student.surname} ${student.name}`;
-        const personalizedRemark = remarkTemplate ? remarkTemplate.replace('{studentName}', studentDisplayName) : null;
+        const personalizedRemark = remarkTemplate ? remarkTemplate.replace('{studentName}', studentDisplayName) : "";
 
         // Get session and term names
         const session = await prisma.academicSession.findUnique({
